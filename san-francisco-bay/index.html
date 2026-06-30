@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SF Bay Bike Loop — Brevet Card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@500;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+  :root{
+    --lav:#7a5cf0; --lav-2:#9b86f3; --lav-bg:#f1ecff;
+    --aqua:#13b3a4; --aqua-2:#34d6c6; --aqua-bg:#dcf6f1;
+    --sun:#f4a02f; --pink:#ec5aa0;
+    --ink:#2b2457; --ink-soft:#6f679a;
+    --card:#ffffff; --line:rgba(43,36,87,.12);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; color:var(--ink); font-family:"Plus Jakarta Sans",system-ui,sans-serif; line-height:1.55;
+    background:
+      radial-gradient(1100px 520px at 12% -8%, var(--lav-bg), transparent 60%),
+      radial-gradient(1000px 520px at 92% 4%, var(--aqua-bg), transparent 60%),
+      linear-gradient(180deg,#fbfaff 0%, #f4f7fb 100%);
+    background-attachment:fixed;
+  }
+  .wrap{max-width:1080px; margin:0 auto; padding:0 20px}
+  a{color:inherit}
+
+  /* ---------- HERO ---------- */
+  .hero{max-width:1080px; margin:26px auto 0; border-radius:28px; overflow:hidden; color:#fff; position:relative;
+    background:linear-gradient(135deg,#8a6cf3 0%,#6f5bef 38%,#19b8a9 100%); box-shadow:0 24px 60px -28px rgba(122,92,240,.7)}
+  .hero::after{content:""; position:absolute; inset:0; pointer-events:none;
+    background:radial-gradient(420px 200px at 88% 14%, rgba(255,255,255,.20), transparent 70%)}
+  .hero-inner{padding:30px 30px 30px; position:relative; z-index:1}
+  .badge-row{display:flex; flex-wrap:wrap; gap:8px 10px; align-items:center; font-family:"Space Mono",monospace; font-size:11.5px; letter-spacing:.12em; text-transform:uppercase}
+  .pill-soft{background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.32); border-radius:100px; padding:4px 11px}
+  h1{font-family:"Gabarito",sans-serif; font-weight:900; letter-spacing:-.02em; line-height:.92;
+    font-size:clamp(2.6rem,7.5vw,4.8rem); margin:18px 0 0; text-shadow:0 2px 0 rgba(43,36,87,.12)}
+  h1 em{font-style:normal; color:#ffe27a}
+  .tagline{margin:12px 0 0; max-width:50ch; font-size:15.5px; color:rgba(255,255,255,.92)}
+  .stats{display:flex; flex-wrap:wrap; gap:14px; margin:22px 0 0}
+  .stat{background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.28); border-radius:16px; padding:12px 16px; min-width:96px}
+  .stat .n{font-family:"Gabarito",sans-serif; font-weight:800; font-size:1.85rem; line-height:1}
+  .stat .l{font-family:"Space Mono",monospace; font-size:10px; letter-spacing:.12em; text-transform:uppercase; opacity:.9; margin-top:4px}
+  #stampN{color:#ffe27a}
+  .wave{display:block; width:100%; height:30px; margin-top:-2px}
+
+  /* ---------- DAY RAIL ---------- */
+  .rail{display:flex; gap:10px; margin:24px auto 4px; max-width:1080px; padding:0 20px; flex-wrap:wrap}
+  .daybtn{flex:1 1 140px; min-width:128px; text-align:left; cursor:pointer; background:var(--card); border:2px solid transparent;
+    border-radius:18px; padding:13px 15px; font-family:inherit; color:var(--ink); box-shadow:0 8px 22px -16px rgba(43,36,87,.55);
+    transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease; position:relative}
+  .daybtn:hover{transform:translateY(-3px); box-shadow:0 14px 26px -16px rgba(122,92,240,.6)}
+  .daybtn.active{border-color:var(--lav); background:linear-gradient(180deg,#fff,#f6f2ff)}
+  .daybtn .dn{font-family:"Space Mono",monospace; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--lav); font-weight:700}
+  .daybtn .dt{font-family:"Gabarito",sans-serif; font-weight:800; font-size:1rem; margin-top:4px; line-height:1.12}
+  .daybtn .dm{font-family:"Space Mono",monospace; font-size:11px; margin-top:7px; color:var(--ink-soft)}
+  .daybtn .tick{position:absolute; top:11px; right:12px; width:20px; height:20px; border-radius:50%; background:var(--aqua); color:#fff;
+    display:grid; place-items:center; font-size:12px; opacity:0; transform:scale(.5); transition:.2s}
+  .daybtn.complete .tick{opacity:1; transform:scale(1)}
+
+  /* ---------- MAP ---------- */
+  .mapcard{max-width:1080px; margin:18px auto 0; padding:0 20px}
+  #map{height:360px; border-radius:22px; border:2px solid var(--line); box-shadow:0 14px 34px -22px rgba(43,36,87,.6); background:#e9eef2}
+  .map-fallback{height:100%; display:grid; place-items:center; text-align:center; padding:20px; color:var(--ink-soft);
+    font-family:"Space Mono",monospace; font-size:13px; border-radius:20px}
+  .mk{width:34px; height:34px; border-radius:50%; display:grid; place-items:center; font-size:18px; border:2px solid #fff; box-shadow:0 2px 6px rgba(0,0,0,.3)}
+  .leaflet-popup-content{font-family:"Plus Jakarta Sans",sans-serif; font-size:13px}
+
+  /* ---------- DAY PANEL ---------- */
+  main{padding:8px 0 30px}
+  .panel-head{margin:22px 0 2px}
+  .panel-head h2{font-family:"Gabarito",sans-serif; font-weight:900; font-size:clamp(1.7rem,4.5vw,2.5rem); margin:0; letter-spacing:-.01em}
+  .legline{display:flex; flex-wrap:wrap; gap:8px 12px; align-items:center; margin-top:8px; font-family:"Space Mono",monospace; font-size:12px}
+  .mile-badge{background:var(--lav); color:#fff; border-radius:100px; padding:4px 12px; font-weight:700}
+  .mile-break{color:var(--ink-soft)}
+  .climb-badge{background:#fff; border:2px solid var(--sun); color:#c9760a; border-radius:100px; padding:3px 11px; font-weight:700}
+  .narrative{color:var(--ink-soft); margin:10px 0 2px; max-width:62ch; font-size:15px}
+  .btnrow{display:flex; flex-wrap:wrap; gap:10px; margin-top:12px}
+  .actbtn{display:inline-flex; align-items:center; gap:8px; text-decoration:none; font-family:"Space Mono",monospace; font-size:12px;
+    font-weight:700; border-radius:100px; padding:9px 16px; transition:transform .12s; cursor:pointer; border:none}
+  .actbtn:hover{transform:translateY(-2px)}
+  .actbtn.nav{color:#fff; background:var(--aqua); box-shadow:0 8px 18px -10px var(--aqua)}
+  .actbtn.hotel{color:#fff; background:var(--lav); box-shadow:0 8px 18px -10px var(--lav)}
+
+  /* ---------- FILTERS ---------- */
+  .filters{display:flex; gap:9px; flex-wrap:wrap; margin:20px 0 0; align-items:center}
+  .filters .lead{font-family:"Space Mono",monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); margin-right:2px}
+  .chip{cursor:pointer; border:2px solid var(--line); background:var(--card); border-radius:100px; padding:7px 14px;
+    font-family:"Space Mono",monospace; font-size:11.5px; color:var(--ink-soft); transition:all .14s ease; display:inline-flex; gap:7px; align-items:center; font-weight:700}
+  .chip:hover{border-color:var(--lav-2); color:var(--ink)}
+  .chip.on{background:var(--ink); color:#fff; border-color:var(--ink)}
+  .chip .dot{width:10px; height:10px; border-radius:50%}
+
+  /* ---------- CONTROL CARDS ---------- */
+  .controls{list-style:none; margin:18px 0 0; padding:0; display:grid; gap:14px}
+  .ctrl{--c:var(--lav); position:relative; display:grid; grid-template-columns:64px 1fr auto; gap:16px; align-items:center;
+    background:var(--card); border-radius:20px; padding:14px; border:2px solid var(--line); box-shadow:0 10px 26px -20px rgba(43,36,87,.6);
+    animation:rise .35s ease both; overflow:hidden}
+  .ctrl::before{content:""; position:absolute; left:0; top:0; bottom:0; width:6px; background:var(--c)}
+  @keyframes rise{from{opacity:0; transform:translateY(8px)}to{opacity:1; transform:none}}
+  @media(prefers-reduced-motion:reduce){ .ctrl{animation:none} }
+  .thumb{width:64px; height:64px; border-radius:16px; display:grid; place-items:center; font-size:30px; flex:0 0 auto;
+    background:linear-gradient(135deg, color-mix(in srgb,var(--c) 32%, white), color-mix(in srgb,var(--c) 12%, white));
+    box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--c) 55%, white)}
+  .body .toprow{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+  .ctrl .name{font-family:"Gabarito",sans-serif; font-weight:800; font-size:1.18rem; line-height:1.15}
+  .tag{font-family:"Space Mono",monospace; font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:3px 9px; border-radius:100px; color:#fff; background:var(--c)}
+  .detour{font-family:"Space Mono",monospace; font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:100px}
+  .detour.on{background:var(--aqua-bg); color:#0a7a70}
+  .detour.add{background:#fff3df; color:#b9750c; border:1px solid #f4d49a}
+  .meta{font-family:"Space Mono",monospace; font-size:12px; color:var(--ink-soft); margin-top:7px; display:flex; flex-wrap:wrap; gap:3px 16px}
+  .note{margin-top:7px; font-size:14px; max-width:60ch}
+  .maplink{display:inline-block; margin-top:8px; font-family:"Space Mono",monospace; font-size:11.5px; font-weight:700; color:var(--lav);
+    text-decoration:none; border-bottom:2px solid color-mix(in srgb,var(--lav) 35%, white)}
+  .maplink:hover{border-bottom-color:var(--lav)}
+  .stampbtn{align-self:center; cursor:pointer; border:2px solid var(--ink); background:#fff; color:var(--ink); border-radius:14px; padding:12px 14px;
+    font-family:"Space Mono",monospace; font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; white-space:nowrap; position:relative; transition:transform .1s ease}
+  .stampbtn:hover{background:var(--lav-bg)}
+  .stampbtn:active{transform:scale(.93)}
+  .stamp-ink{position:absolute; inset:-7px -10px; border:3px solid var(--pink); border-radius:12px; color:var(--pink); font-family:"Gabarito",sans-serif;
+    font-weight:900; display:grid; place-items:center; font-size:12.5px; letter-spacing:.1em; transform:rotate(-8deg); pointer-events:none; opacity:0}
+  .ctrl.stamped{border-color:color-mix(in srgb,var(--aqua) 55%, white); background:linear-gradient(180deg,#fff,#f3fdfb)}
+  .ctrl.stamped .stampbtn{border-style:dashed; color:transparent}
+  .ctrl.stamped .stamp-ink{opacity:.95; animation:thunk .26s ease}
+  @keyframes thunk{0%{transform:rotate(-8deg) scale(1.7); opacity:0}60%{opacity:1}100%{transform:rotate(-8deg) scale(1); opacity:.95}}
+  @media(prefers-reduced-motion:reduce){ .ctrl.stamped .stamp-ink{animation:none} }
+  .ctrl.hide{display:none}
+  @media(max-width:620px){
+    .ctrl{grid-template-columns:56px 1fr; gap:12px}
+    .thumb{width:56px; height:56px; font-size:26px}
+    .stampbtn{grid-column:1 / -1; justify-self:start; margin-top:2px}
+  }
+
+  /* ---------- FUN FACTS ---------- */
+  .facts{margin:22px 0 0; border-radius:22px; padding:20px 22px; background:linear-gradient(135deg,#fff, var(--aqua-bg));
+    border:2px solid color-mix(in srgb,var(--aqua) 35%, white); box-shadow:0 12px 30px -22px rgba(19,179,164,.7)}
+  .facts h3{font-family:"Gabarito",sans-serif; margin:0 0 10px; font-size:1.2rem; display:flex; align-items:center; gap:9px}
+  .facts ul{margin:0; padding-left:20px; display:grid; gap:8px}
+  .facts li{font-size:14.5px}
+  .watch{margin-top:14px; padding:12px 14px; border-radius:14px; background:#fff7e9; border:1px solid #f4d49a; font-size:14px}
+  .watch b{font-family:"Space Mono",monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#b9750c; display:block; margin-bottom:3px}
+
+  /* ---------- FINISHER ---------- */
+  .finisher{max-width:1080px; margin:24px auto 0; border-radius:22px; padding:20px 24px; display:none; gap:20px; align-items:center;
+    background:linear-gradient(135deg,#fff, var(--lav-bg)); border:2px solid var(--pink); box-shadow:0 18px 40px -22px rgba(236,90,160,.6)}
+  .finisher.show{display:flex; animation:rise .4s ease both}
+  .seal{flex:0 0 auto; width:84px; height:84px; border:3px double var(--pink); border-radius:50%; display:grid; place-items:center; text-align:center;
+    color:var(--pink); transform:rotate(-7deg); font-family:"Gabarito",sans-serif; font-weight:900; font-size:11px; letter-spacing:.04em; line-height:1.15}
+  .finisher h3{font-family:"Gabarito",sans-serif; margin:0; font-size:1.35rem}
+  .finisher p{margin:5px 0 0; color:var(--ink-soft); font-size:14px}
+
+  /* ---------- FOOTER ---------- */
+  footer{margin-top:40px; padding:24px 0 56px}
+  footer .wrap{display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap}
+  .reset{cursor:pointer; background:#fff; border:2px solid var(--line); border-radius:12px; padding:9px 15px; font-family:"Space Mono",monospace;
+    font-size:11px; font-weight:700; color:var(--ink-soft)}
+  .reset:hover{border-color:var(--pink); color:var(--pink)}
+  .hint{font-family:"Space Mono",monospace; font-size:11px; color:var(--ink-soft)}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="badge-row">
+      <span class="pill-soft">Randonneur control card</span>
+      <span class="pill-soft">No. SFBAY-179</span>
+      <span class="pill-soft">Self-supported · 6 days</span>
+    </div>
+    <h1>San Francisco<br>Bay <em>Loop</em></h1>
+    <p class="tagline">Six days around the whole bay from Pleasanton. Stamp a control at every stop — a daily market resupply, olive-oil tasting rooms, quirky local shops, and the landmarks in between.</p>
+    <div class="stats">
+      <div class="stat"><div class="n">≈179</div><div class="l">total miles</div></div>
+      <div class="stat"><div class="n">~29</div><div class="l">detour miles</div></div>
+      <div class="stat"><div class="n">6</div><div class="l">days</div></div>
+      <div class="stat"><div class="n">2</div><div class="l">climbs</div></div>
+      <div class="stat"><div class="n"><span id="stampN">0</span>/<span id="stampTot">0</span></div><div class="l">stamped</div></div>
+    </div>
+  </div>
+  <svg class="wave" viewBox="0 0 1080 30" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0,16 C140,30 260,2 420,14 C580,26 700,4 860,14 C980,22 1040,26 1080,18 L1080,30 L0,30 Z" fill="#fbfaff"/>
+  </svg>
+</header>
+
+<nav class="rail" id="rail" aria-label="Choose a day"></nav>
+
+<section class="mapcard"><div id="map" aria-label="Route map for the selected day"></div></section>
+
+<main class="wrap">
+  <div class="panel-head">
+    <h2 id="dayTitle"></h2>
+    <div class="legline" id="dayLeg"></div>
+  </div>
+  <p class="narrative" id="dayNarr"></p>
+  <div class="btnrow">
+    <a class="actbtn nav" id="dayNav" href="#" target="_blank" rel="noopener">▸ Navigate this day</a>
+    <a class="actbtn hotel" id="dayHotel" href="#" target="_blank" rel="noopener">🏨 Hotels near tonight's stop</a>
+  </div>
+  <div class="filters" id="filters">
+    <span class="lead">Show:</span>
+    <button class="chip on" data-f="all">Everything</button>
+    <button class="chip" data-f="market"><span class="dot" style="background:var(--lav)"></span>Markets</button>
+    <button class="chip" data-f="oil"><span class="dot" style="background:var(--aqua)"></span>Olive oil</button>
+    <button class="chip" data-f="sight"><span class="dot" style="background:var(--sun)"></span>Sights</button>
+  </div>
+  <ul class="controls" id="controls"></ul>
+  <section class="facts" id="facts"></section>
+</main>
+
+<section class="finisher" id="finisher" aria-live="polite">
+  <div class="seal">RANDONNEUR<br>FINISHER</div>
+  <div>
+    <h3>Card complete — you closed the loop! 🚴‍♀️🫒🛒</h3>
+    <p>34 controls, ~179 miles (about 29 of them happy detours), two climbs, and five olive-oil tasting rooms. Frame it.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span class="hint">Tap a control to stamp it. Your card lives in this tab — reloading starts fresh.</span>
+    <button class="reset" id="resetBtn">Reset card</button>
+  </div>
+</footer>
+
+<script>
+const CATHEX = { market:"#7a5cf0", oil:"#13b3a4", sight:"#f4a02f", route:"#ec5aa0" };
+const CATVAR = { market:"var(--lav)", oil:"var(--aqua)", sight:"var(--sun)", route:"var(--pink)" };
+
+const DAYS = [
+  { n:1, title:"Over the Hills to the Bay", base:30, climb:true, destCity:"San Jose, CA",
+    narr:"Tri-Valley down to the bay through Niles Canyon. The big climb comes early; history and good food fill the middle.",
+    stops:[
+      {name:"Pleasanton", cat:"route", icon:"🚩", kind:"Start", detour:0, addr:"Downtown Pleasanton, CA", hours:"", note:"Pump up, fill bottles, grab Main Street coffee before you roll.", lat:37.6624, lng:-121.8747},
+      {name:"The Olive Market", cat:"oil", icon:"🫒", kind:"Olive oil & deli", detour:2, addr:"6455 Owens Dr, Pleasanton", hours:"10a–6p daily", note:"Gourmet oils and balsamics, plus a legendary pastrami sandwich for the road.", lat:37.6986122, lng:-121.9056628},
+      {name:"Sunol Water Temple", cat:"sight", icon:"⛲", kind:"Landmark", detour:1, addr:"505 Paloma Way, Sunol", hours:"Daylight hours", note:"A serene 1910 Beaux-Arts rotunda over the creek. Quick scenic detour.", lat:37.5854629, lng:-121.8854882},
+      {name:"Niles Essanay Silent Film Museum", cat:"sight", icon:"🎬", kind:"Museum", detour:0, addr:"37417 Niles Blvd, Fremont", hours:"Sat–Sun only", note:"Charlie Chaplin shot films in this district. Free tours and a vintage theater.", lat:37.5769082, lng:-121.9802137},
+      {name:"Sprouts — Fremont", cat:"market", icon:"🥬", kind:"Local market", detour:0, addr:"3900 Mowry Ave, Fremont", hours:"7a–10p", note:"Handy stop right after the canyon — good for a lunch raid.", lat:37.5489571, lng:-121.9867676},
+      {name:"Sprouts — San Jose (Brokaw)", cat:"market", icon:"🛒", kind:"Market resupply", detour:0, addr:"1028 E Brokaw Rd, San Jose", hours:"7a–10p", note:"Tonight's resupply — closest market to the day's end in north San Jose.", lat:37.3812612, lng:-121.8981646}
+    ],
+    facts:[
+      "In 1915 Charlie Chaplin filmed <i>The Tramp</i> right here in Niles — the little town was once home to Essanay Studios and the first cowboy movie star, Broncho Billy Anderson.",
+      "Niles Canyon carried the western leg of the first transcontinental railroad; a heritage railway still runs the original alignment on weekends.",
+      "The Sunol Water Temple (1910) was modeled on a Roman temple at Tivoli and marks where three water sources meet on their way to San Francisco's taps."
+    ],
+    watch:"Niles Canyon Road is narrow and fast with little shoulder in places — ride alert, and hop onto the Alameda Creek Trail where you can." },
+
+  { n:2, title:"Around the South Bay", base:22, climb:false, destCity:"Mountain View, CA",
+    narr:"Flat recovery day curving up the western edge of the bay, with a mission and a museum.",
+    stops:[
+      {name:"Zanotto's Family Market", cat:"oil", icon:"🫒", kind:"Gourmet market", detour:1, addr:"1970 Naglee Ave, San Jose", hours:"8a–8p daily", note:"Old-school market with a standout olive-oil shelf (Graza and friends) and great deli sandwiches.", lat:37.3279381, lng:-121.9313812},
+      {name:"Mission Santa Clara de Asís", cat:"sight", icon:"⛪", kind:"Landmark", detour:1, addr:"500 El Camino Real, Santa Clara", hours:"7a–7p", note:"A 1777 mission and rose gardens on the Santa Clara University campus.", lat:37.3488338, lng:-121.9418536},
+      {name:"Whole Foods — Santa Clara", cat:"market", icon:"🧺", kind:"Local market", detour:0, addr:"2732 Augustine Dr, Santa Clara", hours:"8a–10p", note:"Big, well-stocked store if you want to browse mid-route.", lat:37.3810157, lng:-121.9759063},
+      {name:"Computer History Museum", cat:"sight", icon:"💾", kind:"Museum", detour:2, addr:"1401 N Shoreline Blvd, Mountain View", hours:"Open Wed–Fri & Sun", note:"The whole story of computing, next to Shoreline Park's bayfront trails.", lat:37.4142744, lng:-122.077409},
+      {name:"Sprouts — Mountain View", cat:"market", icon:"🛒", kind:"Market resupply", detour:0, addr:"630 San Antonio Rd, Mountain View", hours:"7a–10p", note:"Tonight's resupply — closest market to the day's end.", lat:37.4028844, lng:-122.1137666}
+    ],
+    facts:[
+      "Santa Clara University grew out of an 1851 mission and is California's oldest operating college; its mission bells have rung nightly for over two centuries.",
+      "The Computer History Museum keeps a working 1959 IBM 1401 and a hand-cranked recreation of Babbage's Victorian 'Difference Engine.'",
+      "Shoreline Park's rolling green hills are built over a capped landfill — and the surrounding marsh is one of the best places around to spot burrowing owls."
+    ],
+    watch:"Spring-to-summer afternoon headwinds blow in off the bay — bank your miles in the morning." },
+
+  { n:3, title:"Up the Peninsula", base:23.5, climb:false, destCity:"Daly City, CA",
+    narr:"Up the Peninsula with a Stanford campus loop, a true olive-oil specialty shop, and a bayfront park.",
+    stops:[
+      {name:"Stanford University — Main Quad", cat:"sight", icon:"🎓", kind:"Landmark", detour:2, addr:"20 Palm Dr, Stanford", hours:"Open 24h", note:"Sandstone arcades, Memorial Church, Hoover Tower. (Sigona's at the Stanford mall also has great oils.)", lat:37.4276648, lng:-122.1701779},
+      {name:"Crystal Springs Produce — San Mateo", cat:"market", icon:"🥬", kind:"Local produce market", detour:3, addr:"770 Polhemus Rd, San Mateo", hours:"8:30a–7:30p", note:"A beloved local gem (4.8★). A real little climb up off the bay, but worth it.", lat:37.5199182, lng:-122.3385442},
+      {name:"Del' Oliva — Burlingame", cat:"oil", icon:"🫒", kind:"Olive oil specialty", detour:1.5, addr:"1440 Burlingame Ave, Burlingame", hours:"Tue–Sun (closed Mon)", note:"Tiny 5★ shop — taste single-origin oils and wild balsamics with Eddie.", lat:37.577412, lng:-122.3490148},
+      {name:"Coyote Point / CuriOdyssey", cat:"sight", icon:"🐾", kind:"Bayfront park", detour:1, addr:"1651 Coyote Point Dr, San Mateo", hours:"Park daily; center closed Sat", note:"Eucalyptus groves, a beach, and a small wildlife science center.", lat:37.5907, lng:-122.3196},
+      {name:"Sprouts — Daly City", cat:"market", icon:"🛒", kind:"Market resupply", detour:1, addr:"301 Gellert Blvd, Daly City", hours:"7a–10p", note:"Tonight's resupply — closest market to the day's end.", lat:37.6687203, lng:-122.4669125}
+    ],
+    facts:[
+      "Crystal Springs Reservoir sits directly atop the San Andreas Fault — you're riding right along the plate boundary.",
+      "Burlingame is home to the world's only PEZ museum, with hundreds of dispensers and (allegedly) the largest one ever made.",
+      "Daly City's pastel rows of tract houses inspired the 1962 protest song 'Little Boxes' — and the city is famous for vanishing into fog."
+    ],
+    watch:"Wind and fog ramp up as you near Daly City; a packable windbreaker earns its spot in the bag." },
+
+  { n:4, title:"Across the Golden Gate", base:26, climb:false, destCity:"San Rafael, CA",
+    narr:"The marquee day: through the city, past the Palace of Fine Arts, and over the Golden Gate Bridge into Marin.",
+    stops:[
+      {name:"Sprouts — Daly City (top off)", cat:"market", icon:"🧺", kind:"Local market", detour:0, addr:"301 Gellert Blvd, Daly City", hours:"7a–10p", note:"Stock up before the city if you skipped it last night.", lat:37.6687203, lng:-122.4669125},
+      {name:"Stonehouse California Olive Oil", cat:"oil", icon:"🫒", kind:"Olive oil specialty", detour:3, addr:"1 Ferry Building #28, San Francisco", hours:"Mon–Fri 10–6, Sat 8–5, Sun 10–5", note:"Ferry Building institution with refillable California EVOO. A scenic Embarcadero detour.", lat:37.7952258, lng:-122.3932805},
+      {name:"Palace of Fine Arts", cat:"sight", icon:"🏛️", kind:"Landmark", detour:0, addr:"3301 Lyon St, San Francisco", hours:"Grounds always open", note:"Greco-Roman rotunda and lagoon, right by Crissy Field and the bridge approach.", lat:37.8029308, lng:-122.4484231},
+      {name:"Golden Gate Bridge", cat:"sight", icon:"🌉", kind:"Bridge crossing", detour:0, addr:"Golden Gate Bridge bike path", hours:"Bike path daily", note:"The big one. Take the path, mind the wind, soak it in.", lat:37.8199, lng:-122.4783},
+      {name:"Driver's Market & Deli — Sausalito", cat:"market", icon:"🥪", kind:"Local market & deli", detour:0, addr:"200 Caledonia St, Sausalito", hours:"8a–8:30p", note:"Gorgeous little gourmet deli just over the bridge — a perfect snack stop.", lat:37.8593408, lng:-122.4862739},
+      {name:"Bay Model Visitor Center", cat:"sight", icon:"🌊", kind:"Museum", detour:1, addr:"2100 Bridgeway, Sausalito", hours:"Tue–Sat (closed Sun/Mon)", note:"A free, room-sized working hydraulic model of the entire bay. Wonderfully nerdy.", lat:37.8634613, lng:-122.4956896},
+      {name:"Sprouts — San Rafael", cat:"market", icon:"🛒", kind:"Market resupply", detour:0, addr:"655 Irwin St, San Rafael", hours:"7a–10p", note:"Tonight's resupply — closest market to the day's end.", lat:37.9686389, lng:-122.5230012}
+    ],
+    facts:[
+      "The Golden Gate Bridge is painted 'International Orange' partly so ships and planes can pick it out of the fog — and it's held together by roughly 1.2 million rivets.",
+      "The Palace of Fine Arts was built for the 1915 world's fair out of temporary plaster; it was so beloved the city later rebuilt it permanently in concrete.",
+      "Sausalito's Bay Model was built by the Army Corps in 1957 to test a scheme to dam the bay — the model helped prove the dam was a terrible idea."
+    ],
+    watch:"Follow the signs for the correct bridge bike path (it switches sides by time of day), and brace for crosswinds mid-span." },
+
+  { n:5, title:"Back to the East Bay", base:23.5, climb:false, destCity:"Oakland, CA",
+    narr:"Over the Richmond–San Rafael Bridge bike path, then south through Richmond and Berkeley.",
+    stops:[
+      {name:"Sprouts — San Rafael (top off)", cat:"market", icon:"🧺", kind:"Local market", detour:0, addr:"655 Irwin St, San Rafael", hours:"7a–10p", note:"Grab a snack before the bridge.", lat:37.9686389, lng:-122.5230012},
+      {name:"Richmond–San Rafael Bridge", cat:"sight", icon:"🌉", kind:"Bridge crossing", detour:0, addr:"RSR Bridge bike/ped path", hours:"Bike path daily", note:"The upper-deck bike/ped path (opened 2019) carries you over the water.", lat:37.9286, lng:-122.449},
+      {name:"Rosie the Riveter WWII Home Front NHP", cat:"sight", icon:"🔧", kind:"National park", detour:1.5, addr:"1414 Harbour Way S, Richmond", hours:"10a–5p daily", note:"A free, excellent national park on the WWII shipyards and the women who ran them.", lat:37.9097083, lng:-122.3572222},
+      {name:"Whole Foods — Berkeley (Gilman)", cat:"market", icon:"🧺", kind:"Local market", detour:0, addr:"1025 Gilman St, Berkeley", hours:"8a–10p", note:"Easy resupply browse; Berkeley Marina and campus are nearby.", lat:37.8806582, lng:-122.2974496},
+      {name:"Amphora Nueva — Berkeley Olive Oil Works", cat:"oil", icon:"🫒", kind:"Olive oil specialty", detour:3, addr:"2928 Domingo Ave, Berkeley", hours:"Sun–Thu 10–5 (closed Fri/Sat)", note:"Four decades of EVOO and barrel-aged balsamics — taste a flight before Oakland.", lat:37.8583139, lng:-122.2441167},
+      {name:"Sprouts — Oakland (Broadway)", cat:"market", icon:"🛒", kind:"Market resupply", detour:0, addr:"3035 Broadway, Oakland", hours:"6a–10p", note:"Tonight's resupply — closest market to the day's end. Lake Merritt is a short spin away.", lat:37.8193096, lng:-122.2624368}
+    ],
+    facts:[
+      "Richmond's WWII Kaiser Shipyards launched more ships than any other in the country — one Liberty ship was assembled in under five days as a publicity stunt.",
+      "You roll right past San Quentin at the bridge's west end — California's oldest prison, opened in 1852.",
+      "The elements berkelium and californium were both created and named at UC Berkeley's lab up the hill."
+    ],
+    watch:"The RSR bridge path has two big humps and serious wind — and Point Isabel along the way is one of the largest off-leash dog parks in the U.S." },
+
+  { n:6, title:"Home Over the Dublin Grade", base:25, climb:true, destCity:"Pleasanton, CA",
+    narr:"South through Castro Valley with a lakeside break, then up and over the Dublin grade back into the Tri-Valley.",
+    stops:[
+      {name:"Sprouts — Oakland (top off)", cat:"market", icon:"🧺", kind:"Local market", detour:0, addr:"3035 Broadway, Oakland", hours:"6a–10p", note:"Last big-city stock-up before the climb home.", lat:37.8193096, lng:-122.2624368},
+      {name:"Lake Chabot Marina & Café", cat:"sight", icon:"🛶", kind:"Lakeside stop", detour:3, addr:"17936 Lake Chabot Rd, Castro Valley", hours:"7a–5p", note:"Scenic reservoir with a lakeside café — a great breather before the grade.", lat:37.7172611, lng:-122.1044222},
+      {name:"Sprouts — Dublin", cat:"market", icon:"🛒", kind:"Market resupply", detour:1, addr:"7153 Amador Plaza Rd, Dublin", hours:"7a–10p", note:"Final resupply — closest market to the finish, about 4 miles from home.", lat:37.7077248, lng:-121.9291759},
+      {name:"The Olive Market — Pleasanton", cat:"oil", icon:"🫒", kind:"Olive oil & deli", detour:1, addr:"6455 Owens Dr, Pleasanton", hours:"10a–6p daily", note:"Homecoming oils and one more sandwich.", lat:37.6986122, lng:-121.9056628},
+      {name:"Pleasanton", cat:"route", icon:"🏁", kind:"Finish", detour:0, addr:"Downtown Pleasanton, CA", hours:"", note:"Loop closed: ~179 miles, two climbs, infinite snacks. Stamp it and celebrate.", lat:37.6624, lng:-121.8747}
+    ],
+    facts:[
+      "Oakland's Lake Merritt became North America's first official wildlife refuge back in 1870.",
+      "Lake Chabot's dam was built in the 1870s by blasting hillsides with water cannons and packing the earth with herds of horses — and you still can't swim in it (it's drinking water).",
+      "Pleasanton's fairgrounds hold the oldest one-mile horse-racing track in America, dating to 1858."
+    ],
+    watch:"The Dublin grade is a wind gap — expect a headwind on the climb, then an easy roll down into the Tri-Valley." }
+];
+
+/* ---------- state ---------- */
+let selDay=1, filter="all";
+const stamped=new Set();
+const idOf=(d,i)=>"d"+d+"-"+i;
+const dayTotal=d=>d.base + d.stops.reduce((a,s)=>a+s.detour,0);
+const totalControls=DAYS.reduce((a,d)=>a+d.stops.length,0);
+document.getElementById("stampTot").textContent=totalControls;
+const fmt=n=>Number.isInteger(n)?n:n.toFixed(1);
+
+/* ---------- map (Leaflet) ---------- */
+let map=null, layerGroup=null;
+function initMap(){
+  if(typeof L==="undefined"){
+    document.getElementById("map").innerHTML='<div class="map-fallback">The map appears when you open this file in a web browser (it needs an internet connection for map tiles). Meanwhile, use the “Navigate this day” button for turn-by-turn directions.</div>';
+    return;
+  }
+  map=L.map("map",{scrollWheelZoom:false}).setView([37.82,-122.25],9);
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",{
+    attribution:'&copy; OpenStreetMap &copy; CARTO', subdomains:"abcd", maxZoom:19
+  }).addTo(map);
+  layerGroup=L.layerGroup().addTo(map);
+}
+function drawDayMap(d){
+  if(!map||!layerGroup) return;
+  layerGroup.clearLayers();
+  const pts=[];
+  d.stops.forEach((s)=>{
+    const icon=L.divIcon({className:"", html:`<div class="mk" style="background:${CATHEX[s.cat]}">${s.icon}</div>`, iconSize:[34,34], iconAnchor:[17,17]});
+    L.marker([s.lat,s.lng],{icon}).addTo(layerGroup).bindPopup(`<b>${s.name}</b><br>${s.kind} · ${s.detour===0?"on route":"+"+fmt(s.detour)+" mi"}`);
+    pts.push([s.lat,s.lng]);
+  });
+  L.polyline(pts,{color:"#7a5cf0", weight:3, opacity:.75, dashArray:"2 8"}).addTo(layerGroup);
+  map.fitBounds(pts,{padding:[42,42]});
+  setTimeout(()=>map.invalidateSize(),60);
+}
+
+/* ---------- day rail ---------- */
+const rail=document.getElementById("rail");
+DAYS.forEach(d=>{
+  const b=document.createElement("button");
+  b.className="daybtn"; b.dataset.day=d.n;
+  b.innerHTML=`<div class="dn">Day ${d.n}${d.climb?" · ▲ climb":""}</div>
+    <div class="dt">${d.title}</div>
+    <div class="dm">≈${dayTotal(d)} mi</div>
+    <span class="tick">✓</span>`;
+  b.addEventListener("click",()=>selectDay(d.n));
+  rail.appendChild(b);
+});
+
+/* ---------- filters ---------- */
+document.querySelectorAll(".chip").forEach(c=>{
+  c.addEventListener("click",()=>{
+    filter=c.dataset.f;
+    document.querySelectorAll(".chip").forEach(x=>x.classList.toggle("on",x===c));
+    applyFilter();
+  });
+});
+
+/* ---------- helpers ---------- */
+const mapsSearch=s=>`https://www.google.com/maps/search/?api=1&query=${s.lat},${s.lng}`;
+const hotelSearch=city=>`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent("hotels in "+city)}`;
+function mapsDay(d){
+  const s=d.stops, o=s[0], dest=s[s.length-1];
+  const way=s.slice(1,-1).map(p=>`${p.lat},${p.lng}`).join("|");
+  let u=`https://www.google.com/maps/dir/?api=1&origin=${o.lat},${o.lng}&destination=${dest.lat},${dest.lng}&travelmode=bicycling`;
+  if(way) u+=`&waypoints=${encodeURIComponent(way)}`;
+  return u;
+}
+
+/* ---------- render ---------- */
+function selectDay(n){
+  selDay=n;
+  document.querySelectorAll(".daybtn").forEach(b=>b.classList.toggle("active",+b.dataset.day===n));
+  renderDay();
+}
+function renderDay(){
+  const d=DAYS[selDay-1];
+  const det=d.stops.reduce((a,s)=>a+s.detour,0);
+  document.getElementById("dayTitle").textContent=`Day ${d.n} — ${d.title}`;
+  document.getElementById("dayLeg").innerHTML=
+    `<span class="mile-badge">≈${dayTotal(d)} mi</span>`+
+    `<span class="mile-break">${d.base} base + ${fmt(det)} detour</span>`+
+    (d.climb?`<span class="climb-badge">▲ one big climb</span>`:``);
+  document.getElementById("dayNarr").textContent=d.narr;
+  document.getElementById("dayNav").href=mapsDay(d);
+  const hotel=document.getElementById("dayHotel");
+  hotel.href=hotelSearch(d.destCity);
+  hotel.innerHTML=`🏨 Hotels near ${d.destCity.split(",")[0]}`;
+
+  const ul=document.getElementById("controls"); ul.innerHTML="";
+  d.stops.forEach((s,i)=>{
+    const id=idOf(d.n,i);
+    const li=document.createElement("li");
+    li.className="ctrl"+(stamped.has(id)?" stamped":"");
+    li.dataset.cat=s.cat; li.dataset.id=id;
+    li.style.setProperty("--c",CATVAR[s.cat]);
+    const det = s.detour===0 ? `<span class="detour on">● on route</span>` : `<span class="detour add">+${fmt(s.detour)} mi detour</span>`;
+    li.innerHTML=
+      `<div class="thumb">${s.icon}</div>
+       <div class="body">
+         <div class="toprow"><span class="name">${s.name}</span><span class="tag">${s.kind}</span>${det}</div>
+         <div class="meta"><span>📍 ${s.addr}</span>${s.hours?`<span>🕑 ${s.hours}</span>`:``}</div>
+         <div class="note">${s.note}</div>
+         <a class="maplink" href="${mapsSearch(s)}" target="_blank" rel="noopener">Open in Google Maps ↗</a>
+       </div>
+       <button class="stampbtn" aria-label="Stamp ${s.name}">Stamp<span class="stamp-ink">STAMPED</span></button>`;
+    li.querySelector(".stampbtn").addEventListener("click",()=>toggleStamp(id));
+    ul.appendChild(li);
+  });
+
+  document.getElementById("facts").innerHTML=
+    `<h3>📖 Fun facts &amp; what to look for</h3>
+     <ul>${d.facts.map(f=>`<li>${f}</li>`).join("")}</ul>
+     <div class="watch"><b>Watch for</b>${d.watch}</div>`;
+
+  applyFilter(); updateProgress(); drawDayMap(d);
+}
+function applyFilter(){
+  document.querySelectorAll(".ctrl").forEach(li=>{
+    const show=(filter==="all")||li.dataset.cat===filter||li.dataset.cat==="route";
+    li.classList.toggle("hide",!show);
+  });
+}
+function toggleStamp(id){
+  if(stamped.has(id)) stamped.delete(id); else stamped.add(id);
+  const li=document.querySelector(`.ctrl[data-id="${id}"]`);
+  if(li) li.classList.toggle("stamped",stamped.has(id));
+  updateProgress();
+}
+function updateProgress(){
+  document.getElementById("stampN").textContent=stamped.size;
+  DAYS.forEach(d=>{
+    const all=d.stops.every((_,i)=>stamped.has(idOf(d.n,i)));
+    const btn=document.querySelector(`.daybtn[data-day="${d.n}"]`);
+    if(btn) btn.classList.toggle("complete",all);
+  });
+  document.getElementById("finisher").classList.toggle("show",stamped.size===totalControls);
+}
+document.getElementById("resetBtn").addEventListener("click",()=>{
+  stamped.clear();
+  document.querySelectorAll(".ctrl.stamped").forEach(li=>li.classList.remove("stamped"));
+  updateProgress();
+});
+
+/* boot */
+initMap();
+selectDay(1);
+</script>
+</body>
+</html>
