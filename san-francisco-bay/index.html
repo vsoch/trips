@@ -173,10 +173,9 @@
       <span class="pill-soft">Self-supported · 6 days</span>
     </div>
     <h1>San Francisco<br>Bay <em>Loop</em></h1>
-    <p class="tagline">Six days around the whole bay from Pleasanton. Stamp a control at every stop — a daily market resupply, olive-oil tasting rooms, quirky local shops, and the landmarks in between.</p>
+    <p class="tagline">Six days around the whole bay from Pleasanton. Optimizing for a balance of biking and exploration — a daily market resupply, olive-oil tasting rooms, quirky local shops, and the landmarks in between.</p>
     <div class="stats">
-      <div class="stat"><div class="n">≈179</div><div class="l">total miles</div></div>
-      <div class="stat"><div class="n">~29</div><div class="l">detour miles</div></div>
+      <div class="stat"><div class="n">≈208</div><div class="l">total miles</div></div>
       <div class="stat"><div class="n">6</div><div class="l">days</div></div>
       <div class="stat"><div class="n">2</div><div class="l">climbs</div></div>
       <div class="stat"><div class="n"><span id="stampN">0</span>/<span id="stampTot">0</span></div><div class="l">stamped</div></div>
@@ -233,13 +232,13 @@ const CATVAR = { market:"var(--lav)", oil:"var(--aqua)", sight:"var(--sun)", rou
 
 const DAYS = [
   { n:1, title:"Over the Hills to the Bay", base:30, climb:true, destCity:"San Jose, CA",
-    narr:"Tri-Valley down to the bay through Niles Canyon. The big climb comes early; history and good food fill the middle.",
+    narr:"Tri-Valley down to the bay through Niles Canyon. The big climb comes early; history and fun stops fill the middle.",
     stops:[
       {name:"Pleasanton", cat:"route", icon:"🚩", kind:"Start", detour:0, addr:"Downtown Pleasanton, CA", hours:"", note:"Pump up, fill bottles, grab Main Street coffee before you roll.", lat:37.6624, lng:-121.8747},
-      {name:"The Olive Market", cat:"oil", icon:"🫒", kind:"Olive oil & deli", detour:2, addr:"6455 Owens Dr, Pleasanton", hours:"10a–6p daily", note:"Gourmet oils and balsamics, plus a legendary pastrami sandwich for the road.", lat:37.6986122, lng:-121.9056628},
+      {name:"The Olive Market", cat:"oil", icon:"🫒", kind:"Olive oil & deli", detour:2, addr:"6455 Owens Dr, Pleasanton", hours:"10a–6p daily", note:"Gourmet oils and balsamics, plus legendary snacks for the road.", lat:37.6986122, lng:-121.9056628},
       {name:"Sunol Water Temple", cat:"sight", icon:"⛲", kind:"Landmark", detour:1, addr:"505 Paloma Way, Sunol", hours:"Daylight hours", note:"A serene 1910 Beaux-Arts rotunda over the creek. Quick scenic detour.", lat:37.5854629, lng:-121.8854882},
       {name:"Niles Essanay Silent Film Museum", cat:"sight", icon:"🎬", kind:"Museum", detour:0, addr:"37417 Niles Blvd, Fremont", hours:"Sat–Sun only", note:"Charlie Chaplin shot films in this district. Free tours and a vintage theater.", lat:37.5769082, lng:-121.9802137},
-      {name:"Sprouts — Fremont", cat:"market", icon:"🥬", kind:"Local market", detour:0, addr:"3900 Mowry Ave, Fremont", hours:"7a–10p", note:"Handy stop right after the canyon — good for a lunch raid.", lat:37.5489571, lng:-121.9867676},
+      {name:"Sprouts — Fremont", cat:"market", icon:"🥬", kind:"Local market", detour:0, addr:"3900 Mowry Ave, Fremont", hours:"7a–10p", note:"Handy stop right after the canyon — check out yogurt supply if I go climbing in Fremont.", lat:37.5489571, lng:-121.9867676},
       {name:"Sprouts — San Jose (Brokaw)", cat:"market", icon:"🛒", kind:"Market resupply", detour:0, addr:"1028 E Brokaw Rd, San Jose", hours:"7a–10p", note:"Tonight's resupply — closest market to the day's end in north San Jose.", lat:37.3812612, lng:-121.8981646}
     ],
     facts:[
@@ -252,7 +251,7 @@ const DAYS = [
   { n:2, title:"Around the South Bay", base:22, climb:false, destCity:"Mountain View, CA",
     narr:"Flat recovery day curving up the western edge of the bay, with a mission and a museum.",
     stops:[
-      {name:"Zanotto's Family Market", cat:"oil", icon:"🫒", kind:"Gourmet market", detour:1, addr:"1970 Naglee Ave, San Jose", hours:"8a–8p daily", note:"Old-school market with a standout olive-oil shelf (Graza and friends) and great deli sandwiches.", lat:37.3279381, lng:-121.9313812},
+      {name:"Zanotto's Family Market", cat:"oil", icon:"🫒", kind:"Gourmet market", detour:1, addr:"1970 Naglee Ave, San Jose", hours:"8a–8p daily", note:"Old-school market with a standout olive-oil shelf (Graza and friends) and great snacks.", lat:37.3279381, lng:-121.9313812},
       {name:"Mission Santa Clara de Asís", cat:"sight", icon:"⛪", kind:"Landmark", detour:1, addr:"500 El Camino Real, Santa Clara", hours:"7a–7p", note:"A 1777 mission and rose gardens on the Santa Clara University campus.", lat:37.3488338, lng:-121.9418536},
       {name:"Whole Foods — Santa Clara", cat:"market", icon:"🧺", kind:"Local market", detour:0, addr:"2732 Augustine Dr, Santa Clara", hours:"8a–10p", note:"Big, well-stocked store if you want to browse mid-route.", lat:37.3810157, lng:-121.9759063},
       {name:"Computer History Museum", cat:"sight", icon:"💾", kind:"Museum", detour:2, addr:"1401 N Shoreline Blvd, Mountain View", hours:"Open Wed–Fri & Sun", note:"The whole story of computing, next to Shoreline Park's bayfront trails.", lat:37.4142744, lng:-122.077409},
@@ -284,7 +283,6 @@ const DAYS = [
   { n:4, title:"Across the Golden Gate", base:26, climb:false, destCity:"San Rafael, CA",
     narr:"The marquee day: through the city, past the Palace of Fine Arts, and over the Golden Gate Bridge into Marin.",
     stops:[
-      {name:"Sprouts — Daly City (top off)", cat:"market", icon:"🧺", kind:"Local market", detour:0, addr:"301 Gellert Blvd, Daly City", hours:"7a–10p", note:"Stock up before the city if you skipped it last night.", lat:37.6687203, lng:-122.4669125},
       {name:"Stonehouse California Olive Oil", cat:"oil", icon:"🫒", kind:"Olive oil specialty", detour:3, addr:"1 Ferry Building #28, San Francisco", hours:"Mon–Fri 10–6, Sat 8–5, Sun 10–5", note:"Ferry Building institution with refillable California EVOO. A scenic Embarcadero detour.", lat:37.7952258, lng:-122.3932805},
       {name:"Palace of Fine Arts", cat:"sight", icon:"🏛️", kind:"Landmark", detour:0, addr:"3301 Lyon St, San Francisco", hours:"Grounds always open", note:"Greco-Roman rotunda and lagoon, right by Crissy Field and the bridge approach.", lat:37.8029308, lng:-122.4484231},
       {name:"Golden Gate Bridge", cat:"sight", icon:"🌉", kind:"Bridge crossing", detour:0, addr:"Golden Gate Bridge bike path", hours:"Bike path daily", note:"The big one. Take the path, mind the wind, soak it in.", lat:37.8199, lng:-122.4783},
@@ -302,7 +300,6 @@ const DAYS = [
   { n:5, title:"Back to the East Bay", base:23.5, climb:false, destCity:"Oakland, CA",
     narr:"Over the Richmond–San Rafael Bridge bike path, then south through Richmond and Berkeley.",
     stops:[
-      {name:"Sprouts — San Rafael (top off)", cat:"market", icon:"🧺", kind:"Local market", detour:0, addr:"655 Irwin St, San Rafael", hours:"7a–10p", note:"Grab a snack before the bridge.", lat:37.9686389, lng:-122.5230012},
       {name:"Richmond–San Rafael Bridge", cat:"sight", icon:"🌉", kind:"Bridge crossing", detour:0, addr:"RSR Bridge bike/ped path", hours:"Bike path daily", note:"The upper-deck bike/ped path (opened 2019) carries you over the water.", lat:37.9286, lng:-122.449},
       {name:"Rosie the Riveter WWII Home Front NHP", cat:"sight", icon:"🔧", kind:"National park", detour:1.5, addr:"1414 Harbour Way S, Richmond", hours:"10a–5p daily", note:"A free, excellent national park on the WWII shipyards and the women who ran them.", lat:37.9097083, lng:-122.3572222},
       {name:"Whole Foods — Berkeley (Gilman)", cat:"market", icon:"🧺", kind:"Local market", detour:0, addr:"1025 Gilman St, Berkeley", hours:"8a–10p", note:"Easy resupply browse; Berkeley Marina and campus are nearby.", lat:37.8806582, lng:-122.2974496},
@@ -319,11 +316,10 @@ const DAYS = [
   { n:6, title:"Home Over the Dublin Grade", base:25, climb:true, destCity:"Pleasanton, CA",
     narr:"South through Castro Valley with a lakeside break, then up and over the Dublin grade back into the Tri-Valley.",
     stops:[
-      {name:"Sprouts — Oakland (top off)", cat:"market", icon:"🧺", kind:"Local market", detour:0, addr:"3035 Broadway, Oakland", hours:"6a–10p", note:"Last big-city stock-up before the climb home.", lat:37.8193096, lng:-122.2624368},
       {name:"Lake Chabot Marina & Café", cat:"sight", icon:"🛶", kind:"Lakeside stop", detour:3, addr:"17936 Lake Chabot Rd, Castro Valley", hours:"7a–5p", note:"Scenic reservoir with a lakeside café — a great breather before the grade.", lat:37.7172611, lng:-122.1044222},
       {name:"Sprouts — Dublin", cat:"market", icon:"🛒", kind:"Market resupply", detour:1, addr:"7153 Amador Plaza Rd, Dublin", hours:"7a–10p", note:"Final resupply — closest market to the finish, about 4 miles from home.", lat:37.7077248, lng:-121.9291759},
       {name:"The Olive Market — Pleasanton", cat:"oil", icon:"🫒", kind:"Olive oil & deli", detour:1, addr:"6455 Owens Dr, Pleasanton", hours:"10a–6p daily", note:"Homecoming oils and one more sandwich.", lat:37.6986122, lng:-121.9056628},
-      {name:"Pleasanton", cat:"route", icon:"🏁", kind:"Finish", detour:0, addr:"Downtown Pleasanton, CA", hours:"", note:"Loop closed: ~179 miles, two climbs, infinite snacks. Stamp it and celebrate.", lat:37.6624, lng:-121.8747}
+      {name:"Pleasanton", cat:"route", icon:"🏁", kind:"Finish", detour:0, addr:"Downtown Pleasanton, CA", hours:"", note:"Loop closed: ~208 miles (including off routes for stops), two climbs, infinite snacks. Stamp it and celebrate, bitches.", lat:37.6624, lng:-121.8747}
     ],
     facts:[
       "Oakland's Lake Merritt became North America's first official wildlife refuge back in 1870.",
