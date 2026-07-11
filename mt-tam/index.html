@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mill Valley — Trails & Rides · Field Companion</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#233729;           /* redwood shadow — text */
+    --ink-soft:#4b5a4d;
+    --fog:#E7E9E1;           /* cool sage-fog page */
+    --paper:#F5F5EE;         /* card surface */
+    --paper-2:#EEEFE6;
+    --gold:#B47F27;          /* summer-hill gold accent */
+    --gold-deep:#8c611a;
+    --bay:#2C5F63;           /* pacific / bay teal */
+    --bay-deep:#1f4649;
+    --chaparral:#7f8f52;     /* muted olive */
+    --line:#cdd0c3;
+    --line-strong:#b7bcab;
+    --stamp:#efe7d5;         /* trail-sign stamp bg */
+    --shadow:0 1px 2px rgba(35,55,41,.06),0 6px 22px rgba(35,55,41,.07);
+    --r:14px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--fog);color:var(--ink);
+    font-family:"Inter",system-ui,sans-serif;font-size:16px;line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--bay);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+
+  /* ---------- Hero ---------- */
+  header.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line-strong);
+    background:linear-gradient(180deg,#20342a 0%,#2b4436 62%,#33513f 100%);color:#eef1e6;}
+  .hero .contours{position:absolute;inset:0;opacity:.28;pointer-events:none}
+  .hero .wrap{position:relative;padding:52px 22px 44px}
+  .eyebrow{font-family:"Space Mono",monospace;font-size:12px;letter-spacing:.32em;
+    text-transform:uppercase;color:var(--gold);margin:0 0 14px}
+  .hero h1{font-family:"Fraunces",serif;font-weight:500;font-size:clamp(34px,6vw,60px);
+    line-height:1.02;margin:0;letter-spacing:-.01em}
+  .hero h1 em{font-style:italic;color:#f0d9a6}
+  .hero p.lede{max-width:60ch;margin:18px 0 0;color:#d6ddcd;font-size:clamp(15px,2vw,18px)}
+  .basecard{display:inline-flex;align-items:center;gap:10px;margin-top:22px;
+    background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);
+    padding:9px 15px;border-radius:999px;font-family:"Space Mono",monospace;
+    font-size:12.5px;letter-spacing:.02em;color:#eef1e6}
+  .basecard b{color:#f0d9a6;font-weight:700}
+  .legend{margin-top:26px;display:flex;flex-wrap:wrap;gap:8px 20px;font-size:13px;color:#c9d1c1}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .dot{width:11px;height:11px;border-radius:50%;display:inline-block;border:2px solid #fff5}
+  .dot.hike{background:var(--chaparral)}
+  .dot.ride{background:var(--gold)}
+  .dot.beach{background:var(--bay)}
+
+  /* ---------- Filter bar ---------- */
+  .filterbar{position:sticky;top:0;z-index:500;background:rgba(231,233,225,.9);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line-strong)}
+  .filterbar .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 22px}
+  .seg{display:inline-flex;background:var(--paper);border:1px solid var(--line-strong);
+    border-radius:999px;padding:3px;box-shadow:var(--shadow)}
+  .seg button{font-family:"Space Mono",monospace;font-size:12px;letter-spacing:.12em;
+    text-transform:uppercase;border:0;background:transparent;color:var(--ink-soft);
+    padding:8px 15px;border-radius:999px;cursor:pointer;transition:.18s}
+  .seg button[aria-pressed="true"]{background:var(--ink);color:#f3f2ea}
+  .seg button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+  .count{font-family:"Space Mono",monospace;font-size:12px;color:var(--ink-soft);letter-spacing:.04em}
+
+  /* ---------- Route grid ---------- */
+  main{padding:34px 0 10px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:26px}
+  @media(max-width:860px){.grid{grid-template-columns:1fr}}
+
+  .route{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);
+    box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;
+    opacity:0;transform:translateY(10px);animation:rise .5s forwards}
+  @keyframes rise{to{opacity:1;transform:none}}
+  @media(prefers-reduced-motion:reduce){.route{animation:none;opacity:1;transform:none}}
+
+  .route .top{padding:20px 22px 4px}
+  .tag{display:inline-flex;align-items:center;gap:7px;font-family:"Space Mono",monospace;
+    font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
+  .tag .idx{color:var(--gold-deep);font-weight:700}
+  .route h2{font-family:"Fraunces",serif;font-weight:500;font-size:25px;line-height:1.1;
+    margin:8px 0 6px;letter-spacing:-.01em}
+  .blurb{margin:0 0 4px;color:var(--ink-soft);font-size:15px}
+  .season{margin:8px 0 0;font-family:"Space Mono",monospace;font-size:11.5px;
+    color:var(--bay-deep);letter-spacing:.03em}
+
+  /* stat stamp */
+  .stats{display:flex;flex-wrap:wrap;gap:8px;padding:16px 22px 4px}
+  .stat{background:var(--stamp);border:1px solid #e0d3b4;border-radius:8px;
+    padding:7px 11px;min-width:74px}
+  .stat .k{font-family:"Space Mono",monospace;font-size:9.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--gold-deep);display:block}
+  .stat .v{font-family:"Space Mono",monospace;font-size:14px;font-weight:700;color:var(--ink)}
+
+  /* map */
+  .map{height:280px;margin:16px 0 0;background:#dfe2d7;border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line)}
+  .leaflet-container{font-family:"Inter",sans-serif;font-size:12px}
+  .pin{background:var(--ink);color:#fff;width:24px;height:24px;border-radius:50% 50% 50% 2px;
+    transform:rotate(45deg);display:flex;align-items:center;justify-content:center;
+    box-shadow:0 2px 5px rgba(0,0,0,.35);border:2px solid #fff}
+  .pin span{transform:rotate(-45deg);font-family:"Space Mono",monospace;font-weight:700;font-size:12px}
+  .pin.ride{background:var(--gold-deep)}
+  .pin.hike{background:var(--chaparral)}
+  .pin.beach{background:var(--bay)}
+  .pin.home{background:#8a3d2e;border-radius:50%}
+  .pop b{font-family:"Fraunces",serif;font-size:15px}
+  .pop .note{color:#444;margin:3px 0 6px;display:block}
+  .pop a{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.04em}
+
+  /* stops */
+  .stops{padding:18px 22px 4px}
+  .stops h3,.facts h3{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--ink-soft);margin:0 0 12px}
+  .stops ol{list-style:none;margin:0;padding:0;counter-reset:s}
+  .stops li{position:relative;padding:0 0 14px 34px;counter-increment:s}
+  .stops li:not(:last-child)::before{content:"";position:absolute;left:11px;top:22px;bottom:0;
+    width:2px;background:var(--line-strong)}
+  .stops li::after{content:counter(s);position:absolute;left:0;top:0;width:23px;height:23px;
+    border-radius:50%;background:var(--ink);color:#f3f2ea;font-family:"Space Mono",monospace;
+    font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .stops li.food::after{background:var(--gold-deep)}
+  .stops .nm{font-weight:600}
+  .stops .ds{color:var(--ink-soft);font-size:14px;display:block;margin-top:1px}
+  .stops .ds a{font-family:"Space Mono",monospace;font-size:11px}
+
+  /* facts */
+  .facts{padding:6px 22px 8px}
+  .fact{border-left:3px solid var(--chaparral);padding:2px 0 2px 14px;margin:0 0 14px;font-size:14.5px}
+  .fact .lab{font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--chaparral);display:block;margin-bottom:3px}
+  .fact.beyond{border-left-color:var(--bay);background:linear-gradient(90deg,rgba(44,95,99,.07),transparent);
+    border-radius:0 8px 8px 0;padding:10px 12px 10px 14px}
+  .fact.beyond .lab{color:var(--bay-deep)}
+  .fact.beyond .theme{color:var(--gold-deep)}
+
+  .route .foot{margin-top:auto;padding:14px 22px 20px;border-top:1px solid var(--line)}
+  .dirbtn{display:inline-flex;align-items:center;gap:8px;font-family:"Space Mono",monospace;
+    font-size:12px;letter-spacing:.06em;background:var(--ink);color:#f3f2ea;
+    padding:10px 16px;border-radius:999px}
+  .dirbtn:hover{background:var(--bay-deep);text-decoration:none}
+
+  /* type icons */
+  .ic{width:1.05em;height:1.05em;flex:0 0 auto}
+  .tag{display:inline-flex;align-items:center;gap:6px}
+  .tag .ic.lead{width:16px;height:16px}
+  .tag.hike .ic.lead{color:var(--chaparral)}
+  .tag.ride .ic.lead{color:var(--gold-deep)}
+  .tag .ic.beachtint{width:15px;height:15px;color:var(--bay);margin-left:2px}
+  .seg button .ic{width:14px;height:14px;vertical-align:-.18em;margin-right:6px}
+  .legend .ic{width:17px;height:17px;vertical-align:-.28em}
+
+  /* footer */
+  footer{border-top:1px solid var(--line-strong);margin-top:30px;background:var(--paper-2)}
+  footer .wrap{padding:28px 22px 44px;color:var(--ink-soft);font-size:13.5px}
+  footer h4{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--ink);margin:0 0 10px}
+  footer ul{margin:0 0 18px;padding-left:18px}
+  footer li{margin:4px 0}
+  .hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <svg class="contours" viewBox="0 0 1200 420" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <g fill="none" stroke="#e9d9b0" stroke-width="1.1">
+      <path d="M-40,300 C200,250 340,330 560,280 C780,230 940,300 1240,250"/>
+      <path d="M-40,340 C220,290 360,370 580,320 C800,270 960,340 1240,290"/>
+      <path d="M-40,260 C180,215 320,285 540,240 C760,195 920,260 1240,210"/>
+      <path d="M-40,220 C160,185 300,245 520,205 C740,165 900,225 1240,180"/>
+      <path d="M-40,180 C160,150 300,205 520,170 C740,135 900,190 1240,150"/>
+      <path d="M-40,380 C240,330 380,410 600,360 C820,310 980,380 1240,330"/>
+      <ellipse cx="640" cy="150" rx="150" ry="52"/>
+      <ellipse cx="640" cy="150" rx="96" ry="30"/>
+      <ellipse cx="640" cy="150" rx="46" ry="13"/>
+    </g>
+  </svg>
+  <div class="wrap">
+    <p class="eyebrow">Field Companion · Marin County</p>
+    <h1>Mill Valley<br>Trails &amp; <em>Rides</em></h1>
+    <p class="lede">A hand-built adventure guide for Mount Tam and the coast — half-day and full-day hikes, a beach or two, and 20–30 mile rides that just happen to pass a great market, an olive-oil tasting bar, and chocolate. Each route has its own map, an ordered list of stops, and a few things worth learning along the way.</p>
+    <div class="basecard">◈ Home base — <b>&nbsp;Edgewood Ave, Unit A</b></div>
+    <div class="legend">
+      <span><svg class="ic" style="color:#b8c98a" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z"/><path d="M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z"/><path d="M16 17h4"/><path d="M4 13h4"/></svg> Hike</span>
+      <span><svg class="ic" style="color:#f0d9a6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg> Bike ride</span>
+      <span><svg class="ic" style="color:#bfe0e2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg> Beach day</span>
+      <span>Tap any map pin for notes + directions</span>
+    </div>
+  </div>
+</header>
+
+<nav class="filterbar" aria-label="Filter routes">
+  <div class="wrap">
+    <div class="seg" role="group" aria-label="Route type">
+      <button data-f="all" aria-pressed="true">All</button>
+      <button data-f="hike" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z"/><path d="M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z"/><path d="M16 17h4"/><path d="M4 13h4"/></svg>Hikes</button>
+      <button data-f="ride" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>Rides</button>
+      <button data-f="beach" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg>Beach</button>
+    </div>
+    <span class="count" id="count"></span>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap">
+    <div class="grid" id="grid"></div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <h4>Before you head out</h4>
+    <ul>
+      <li><b>Fog &amp; layers.</b> The marine layer can turn a warm valley into a cold ridge in minutes. Bring a wind layer even on clear mornings, especially for Mt Tam and the coast.</li>
+      <li><b>Muir Woods needs a reservation.</b> Parking <em>and</em> shuttle must be booked in advance at gomuirwoods.com — check current rules before the Dipsea hike.</li>
+      <li><b>Tides &amp; time.</b> Tennessee Cove, Pirates Cove and the tide pools are best (and safest) at low tide. Never turn your back on the surf here — sneaker waves are real.</li>
+      <li><b>Waterfalls are seasonal.</b> Cataract Falls is spectacular after winter/spring rain and can be a trickle by late summer.</li>
+      <li><b>Ride mornings.</b> Bay wind builds in the afternoon; the Paradise and Sausalito loops are calmest before noon. Watch for tourist foot traffic in Sausalito and on the bridge path.</li>
+    </ul>
+    <h4>About the maps</h4>
+    <p>Pins mark the key stops in order; the dashed line shows the sequence, not a turn-by-turn GPS track. Use the <b>“Open turn-by-turn directions”</b> button on each route for live navigation (walking for hikes, cycling for rides). A few backcountry waypoints are approximate — trust trail signs and a dedicated app (AllTrails, Gaia) over these markers once you're out there. Base map: OpenTopoMap (contours + trails); switch layers with the control in each map's corner.</p>
+  </div>
+</footer>
+
+<script>
+const HOME = {name:"Home base — Edgewood Ave", lat:37.9058, lng:-122.5535, home:true,
+  note:"Your starting point in Mill Valley.", q:"Edgewood Ave, Mill Valley, CA"};
+
+const ROUTES = [
+  /* ---------------- HIKES ---------------- */
+  {
+    id:"tennessee", kind:"hike", beach:true, num:"H1",
+    name:"Tennessee Valley to Tennessee Beach",
+    blurb:"A wide, gentle valley trail that opens onto a hidden black-sand cove. The easiest way to earn a beach.",
+    season:"Half day · good year-round · dog-friendly on-leash",
+    stats:{Distance:"3.8 mi RT",Gain:"180 ft",Time:"2–2.5 h",Grade:"Easy"},
+    stops:[
+      {name:"Tennessee Valley Trailhead", lat:37.860487, lng:-122.5362384, note:"Free lot + restrooms. Start on the wide, flat fire road down the valley.", q:"Tennessee Valley Trailhead, Mill Valley"},
+      {name:"Valley lagoon", lat:37.8566, lng:-122.5455, note:"A small pond and marsh — good for herons and, in spring, wildflowers.", q:"37.8566,-122.5455"},
+      {name:"Tennessee Cove Beach", lat:37.8557, lng:-122.5407, note:"Black-sand pocket beach framed by cliffs. Wreck of the SS Tennessee lies just offshore.", q:"Tennessee Beach, Mill Valley CA"},
+      {name:"Battery / beach overlook", lat:37.8421503, lng:-122.5530277, note:"Optional climb up the south ridge to old gun-battery ruins and big ocean views.", q:"Tennessee Valley Beach Overlook"}
+    ],
+    land:[
+      "The cove is named for the steamship SS Tennessee, which ran aground here in thick fog in 1853. Remarkably, all 550+ aboard survived — and at very low tide you can sometimes still spot part of the engine in the surf.",
+      "You're inside the Golden Gate National Recreation Area, one of the largest urban national parks on Earth at roughly 82,000 acres straddling the bay."
+    ],
+    beyond:{theme:"Quantum computing", text:"A classical bit is a 0 or a 1. A qubit can hold a superposition of both at once — so n qubits can represent 2ⁿ states simultaneously. Around 300 well-behaved qubits could, in principle, track more states than there are atoms in the observable universe."}
+  },
+  {
+    id:"dipsea", kind:"hike", beach:false, num:"H2",
+    name:"Dipsea Steps to Muir Woods",
+    blurb:"688 stairs straight up out of town, then a ridge walk down into the world's most famous redwoods.",
+    season:"Half day · strenuous start · book Muir Woods entry ahead",
+    stats:{Distance:"~5 mi RT",Gain:"1,500 ft",Time:"3–4 h",Grade:"Strenuous"},
+    stops:[
+      {name:"Old Mill Park / Dipsea Trailhead", lat:37.9048392, lng:-122.5544848, note:"The legendary three flights of Dipsea stairs — 688 steps to warm you up.", q:"Dipsea Trail Head, Mill Valley"},
+      {name:"Panoramic ridge", lat:37.9005, lng:-122.5675, note:"Catch your breath — views back over Mill Valley and the bay.", q:"37.9005,-122.5675"},
+      {name:"Muir Woods National Monument", lat:37.8970199, lng:-122.5811177, note:"Cathedral Grove of coast redwoods. Reservation required to enter — check gomuirwoods.com.", q:"Muir Woods National Monument"}
+    ],
+    land:[
+      "The Dipsea Race, run from Mill Valley to Stinson Beach since 1905, is the oldest trail race in America. Its famous handicap start gives head-starts by age and sex, so a 7-year-old or a 70-year-old can genuinely win.",
+      "Muir Woods was protected in 1908 by Theodore Roosevelt and named for John Muir. In May 1945, delegates who had just drafted the United Nations Charter in San Francisco gathered among these trees for a memorial to FDR."
+    ],
+    beyond:{theme:"High-performance computing", text:"About 55 miles east, in Livermore, sits El Capitan. From late 2024 until June 2026 it was the fastest known supercomputer on Earth — roughly 1.8 exaflops, or 1.8 quintillion calculations per second — before China's LineShine edged ahead in June 2026. You were living next door to the record-holder."}
+  },
+  {
+    id:"cataract", kind:"hike", beach:false, num:"H3",
+    name:"Cataract Falls & the Mt Tam Watershed",
+    blurb:"A staircase of mossy waterfalls tumbling through the mountain's shaded north side. Best after rain.",
+    season:"Half day · moderate · spectacular Dec–Apr, quiet by late summer",
+    stats:{Distance:"3–7 mi",Gain:"600–1,400 ft",Time:"2–4 h",Grade:"Moderate"},
+    stops:[
+      {name:"Cataract Trailhead (Alpine Dam)", lat:37.9345, lng:-122.6300, note:"Trail starts along Cataract Creek. Roadside parking here is very limited — arrive early. (Location approximate.)", q:"Alpine Dam, Fairfax CA"},
+      {name:"Cataract Falls cascades", lat:37.9260, lng:-122.6260, note:"A chain of falls and pools stepping up the canyon. (Location approximate.)", q:"Cataract Falls, Mount Tamalpais"},
+      {name:"Rock Spring & meadow", lat:37.9083, lng:-122.6206, note:"Top-of-trail meadow and alternate trailhead off Ridgecrest Blvd.", q:"Rock Spring Trailhead, Mount Tamalpais"}
+    ],
+    land:[
+      "Mt Tam's north face feeds a chain of reservoirs — Alpine, Bon Tempe and Lagunitas — first dammed in the 1870s and still supplying drinking water to much of Marin today.",
+      "In October 1965, poets Gary Snyder, Allen Ginsberg and Philip Whalen ceremonially 'opened' Mount Tamalpais as a sacred mountain with a Buddhist circumambulation. Pilgrims still walk that same loop around the peak."
+    ],
+    beyond:{theme:"Quantum physics", text:"Entangle two particles and they stay correlated no matter how far apart you carry them — measure one and you instantly know the other. Einstein hated it, calling it 'spooky action at a distance.' Experiments have since proven it real, work honored with the 2022 Nobel Prize in Physics."}
+  },
+  {
+    id:"steepravine", kind:"hike", beach:false, num:"H4",
+    name:"Matt Davis – Steep Ravine – Dipsea Loop",
+    blurb:"The Marin classic: ocean-view ridges, a fern-choked redwood canyon, and a wooden ladder beside a waterfall.",
+    season:"Full day · strenuous · start early, finish with lunch in Stinson",
+    stats:{Distance:"7.5 mi loop",Gain:"1,700 ft",Time:"4–5 h",Grade:"Strenuous"},
+    stops:[
+      {name:"Stinson Beach trailhead", lat:37.9004816, lng:-122.6444263, note:"Start (and finish) here. Save time for a swim or lunch in town after.", q:"Stinson Beach, CA"},
+      {name:"Matt Davis viewpoints", lat:37.9030, lng:-122.6320, note:"Switchbacks climb through ferns to wide-open Pacific panoramas. (Approximate.)", q:"Matt Davis Trail, Stinson Beach"},
+      {name:"Pantoll Ranger Station", lat:37.9058, lng:-122.6046, note:"Midpoint — restrooms, water, trail junction.", q:"Pantoll Ranger Station, Mount Tamalpais"},
+      {name:"Steep Ravine / Webb Creek ladder", lat:37.8970, lng:-122.6290, note:"A redwood canyon with a short wooden ladder climb beside a small waterfall. (Approximate.)", q:"Steep Ravine Trail, Mount Tamalpais"}
+    ],
+    land:[
+      "The Steep Ravine cabins, just downhill from the trail, were built in the 1930s and are among the most coveted — and hardest to book — rustic cabins in the entire California State Parks system.",
+      "On a foggy day you're literally walking inside the Bay Area's air-conditioning: hot Central Valley air rises, pulling cool ocean air (and its fog) in through the Golden Gate and over these ridges."
+    ],
+    beyond:{theme:"HPC + weather", text:"Forecasting that fog is a supercomputing problem. Models slice the atmosphere into a 3-D grid of millions of cells and solve fluid-dynamics equations for each, every few minutes. Numerical weather prediction was one of the very first jobs ever handed to a computer."}
+  },
+  {
+    id:"eastpeak", kind:"hike", beach:false, num:"H5",
+    name:"Mount Tam East Peak & Verna Dunshee Loop",
+    blurb:"Drive most of the way up, then a short walk to a staffed fire lookout and a 360° view of Northern California.",
+    season:"Half day (or longer on foot up Old Railroad Grade) · $8–9 parking",
+    stats:{Distance:"0.7–5 mi",Gain:"200–1,600 ft",Time:"1–4 h",Grade:"Easy–Mod"},
+    stops:[
+      {name:"East Peak parking lot", lat:37.9291167, lng:-122.5777194, note:"Visitor center, restrooms. Bring cash for parking. Start of the loop.", q:"Mount Tamalpais East Peak"},
+      {name:"Gardner Fire Lookout (summit)", lat:37.9273, lng:-122.5806, note:"Short steep spur to the 2,571-ft summit and its historic lookout.", q:"Gardner Lookout, Mount Tamalpais"},
+      {name:"Verna Dunshee Loop", lat:37.9288, lng:-122.5790, note:"A paved, near-level 0.7-mi loop that wraps the peak with views in every direction.", q:"Verna Dunshee Trail, Mount Tamalpais"}
+    ],
+    land:[
+      "From 1896 to 1930 you could ride the Mt Tamalpais & Muir Woods Railway toward this summit — nicknamed 'The Crookedest Railroad in the World' for its 281 curves in about 8 miles. Its old grade is now the Old Railroad Grade trail.",
+      "On exceptionally clear winter days, the snow-capped Sierra Nevada is visible from up here — roughly 150 miles to the east."
+    ],
+    beyond:{theme:"Relativity + GPS", text:"The GPS pin on these maps quietly runs on Einstein. Clocks on GPS satellites tick faster than clocks on the ground — about 38 microseconds a day, because they sit higher in Earth's gravity. Left uncorrected, your position would drift roughly 10 km off every single day."}
+  },
+  {
+    id:"muirbeach", kind:"hike", beach:true, num:"H6",
+    name:"Muir Beach, Pirates Cove & the Pelican Inn",
+    blurb:"An easy beach day: a lagoon boardwalk, a smuggler's cove for the adventurous, and a 16th-century-style English pub.",
+    season:"Easy beach day · Pirates Cove side-trip is steep & low-tide only",
+    stats:{Distance:"0.3–3 mi",Gain:"0–500 ft",Time:"1–3 h",Grade:"Easy–Mod"},
+    stops:[
+      {name:"Muir Beach", lat:37.8622625, lng:-122.5787638, note:"Boardwalk over the restored Redwood Creek lagoon down to the sand.", q:"Muir Beach, CA"},
+      {name:"Muir Beach Overlook", lat:37.8619, lng:-122.5820, note:"WWII gun-battery platforms on the bluff with dramatic coast views.", q:"Muir Beach Overlook"},
+      {name:"Pirates Cove", lat:37.8500, lng:-122.5730, note:"Hidden pocket beach via the Coastal Trail — steep, unsigned, safe only at low tide. (Approximate.)", q:"Pirates Cove, Marin"},
+      {name:"The Pelican Inn", lat:37.8646722, lng:-122.5749306, note:"Tudor-style pub for fish & chips and a pint after the sand.", q:"Pelican Inn, Muir Beach", food:true}
+    ],
+    land:[
+      "Redwood Creek at Muir Beach was re-engineered in the 2010s to bring back endangered coho salmon and steelhead. In winter you can sometimes watch them spawn from the footbridge.",
+      "Sir Francis Drake is thought to have careened the Golden Hind somewhere along this coast in 1579; 'Drakes Bay' just north still carries his name, though historians still argue the exact landing spot."
+    ],
+    beyond:{theme:"AI + biology", text:"Working out how a protein folds — the shape that decides what it does, including in salmon muscle — was a 50-year grand challenge. In 2020, DeepMind's AlphaFold, trained on banks of GPUs, largely cracked it and has since predicted structures for nearly every protein known to science."}
+  },
+  {
+    id:"dipsea-full", kind:"hike", beach:true, num:"H7",
+    name:"The Dipsea — Your Door to Stinson Beach",
+    blurb:"The one you asked for: step off Edgewood Ave straight onto the Dipsea and follow it over the mountain all the way to the sand.",
+    season:"Full day · strenuous · point-to-point — arrange a ride/bus back",
+    stats:{Distance:"~7.2 mi one-way",Gain:"2,200 ft",Time:"4–5 h",Grade:"Strenuous"},
+    stops:[
+      {name:"Home base — Edgewood Ave", lat:37.9058, lng:-122.5535, note:"You're right on the route. Walk down to the Dipsea stairs by Old Mill Park and start climbing — the first mile is ~680 steps.", q:"Edgewood Ave, Mill Valley, CA", home:true},
+      {name:"Windy Gap", lat:37.9005, lng:-122.5675, note:"Top of the stairs and the first ridge — the neighborhoods fall away and the real trail begins. (Approximate.)", q:"37.9005,-122.5675"},
+      {name:"Muir Woods crossing", lat:37.8970199, lng:-122.5811177, note:"The Dipsea crosses Redwood Creek near the midpoint (seasonal footbridge, or detour via Deer Park to protect spawning salmon).", q:"Muir Woods National Monument"},
+      {name:"Cardiac Hill", lat:37.8955, lng:-122.6095, note:"~1,360 ft high point with San Francisco and ocean views. The only drinking water on the whole route — fill up. (Approximate.)", q:"Cardiac Hill, Dipsea Trail"},
+      {name:"Steep Ravine / Webb Creek", lat:37.8970, lng:-122.6290, note:"Plunge into a dense redwood canyon, cross Webb Creek on a footbridge, then one last climb. (Approximate.)", q:"Steep Ravine Trail, Mount Tamalpais"},
+      {name:"Stinson Beach (finish)", lat:37.9004816, lng:-122.6444263, note:"Cross Highway 1 to the sand. Reward: the Parkside snack bar. Return via Marin Transit Bus 61 or a rideshare.", q:"Stinson Beach, CA"}
+    ],
+    land:[
+      "The Dipsea began in 1905 as a bet between San Francisco Olympic Club members racing to the new Dipsea Inn — the name nudged guests to take a 'dip in the sea.' It's now the oldest trail race in America, and Coast Miwok people are believed to have followed a similar inland-to-ocean route long before.",
+      "Runners named the trail's ordeals for how they feel: 'Dynamite,' 'Cardiac,' and 'Insult' (as in, 'I thought we were done with the uphills'). You'll meet all three."
+    ],
+    beyond:{theme:"Computer science", text:"The 'shortest path' algorithm your phone uses to route you to the beach — Dijkstra's — was worked out in about 20 minutes in 1956 by Edsger Dijkstra while café-hopping in Amsterdam with his fiancée. The same idea now routes internet traffic and power grids worldwide."}
+  },
+  /* ---------------- RIDES ---------------- */
+  {
+    id:"paradise", kind:"ride", beach:false, num:"R1",
+    name:"Paradise Loop (Tiburon)",
+    blurb:"The definitive Marin cruise: one gentle climb, quiet rollers around the Tiburon peninsula, and a market stop en route.",
+    season:"~25 mi from Mill Valley · ride mornings (afternoon wind) · mostly flat",
+    stats:{Distance:"~25 mi",Gain:"1,300 ft",Time:"2–3 h",Grade:"Easy–Mod"},
+    stops:[
+      {name:"Home base — Edgewood Ave", lat:37.9058, lng:-122.5535, note:"Roll out toward downtown Mill Valley.", q:"Edgewood Ave, Mill Valley, CA"},
+      {name:"Mill Valley Market", lat:37.9068639, lng:-122.5473942, note:"Grab a house-made sandwich for later. A local institution since 1929.", q:"Mill Valley Market", food:true},
+      {name:"Camino Alto summit", lat:37.9210, lng:-122.5310, note:"The day's only real climb — about 300 ft — then a wooded descent into Corte Madera. (Approximate.)", q:"Camino Alto, Mill Valley"},
+      {name:"Paradise Drive (Tiburon peninsula)", lat:37.9050, lng:-122.4780, note:"Quiet, undulating road with Angel Island and open-bay views. (Approximate.)", q:"Paradise Drive, Tiburon"},
+      {name:"Downtown Tiburon (Main Street)", lat:37.8734327, lng:-122.4559042, note:"Waterfront coffee stop; ferries to Angel Island leave from here.", q:"Main Street, Tiburon"},
+      {name:"Blackie's Pasture → bay path", lat:37.8850, lng:-122.4890, note:"Join the separated bay path back toward the Mill Valley–Sausalito route. (Approximate.)", q:"Blackie's Pasture, Tiburon"}
+    ],
+    land:[
+      "'Tiburon' is Spanish for shark. Its Main Street 'Ark Row' is built from beached Victorian-era houseboats — 'arks' — that were hauled ashore and converted into shops.",
+      "The flat path you finish on, the Mill Valley–Sausalito Multi-Use Path, runs on the old Northwestern Pacific Railroad bed through Bothin Marsh — prime birdwatching, especially at high tide."
+    ],
+    beyond:{theme:"Computer science", text:"Finding the single shortest route through your stops (the 'traveling salesman problem') explodes as you add stops: just 20 stops allow over 60 quadrillion possible orderings. It's why real route-planners lean on clever approximations instead of checking every option."}
+  },
+  {
+    id:"sausalito", kind:"ride", beach:false, num:"R2",
+    name:"Sausalito & the Golden Gate Bridge",
+    blurb:"A near-flat waterfront spin to a chocolate-and-gelato stop, then a climb to the most famous bridge on the planet.",
+    season:"~22 mi round trip · mostly flat with one bridge climb · expect crowds",
+    stats:{Distance:"~22 mi",Gain:"900 ft",Time:"~2 h",Grade:"Easy"},
+    stops:[
+      {name:"Home base — Edgewood Ave", lat:37.9058, lng:-122.5535, note:"Drop down to the bay path.", q:"Edgewood Ave, Mill Valley, CA"},
+      {name:"Bothin Marsh path", lat:37.8880, lng:-122.5100, note:"Bayfront cruising past the marsh and houseboats. (Approximate.)", q:"Bothin Marsh, Mill Valley"},
+      {name:"Downtown Sausalito (Bridgeway)", lat:37.8558211, lng:-122.4796781, note:"Waterfront with views straight across to San Francisco.", q:"Downtown Sausalito"},
+      {name:"Atalia Gelato & Chocolate", lat:37.8558716, lng:-122.4796714, note:"Chocolate + gelato stop right on Bridgeway. (Sausalito Sweets nearby is an alternative.)", q:"Atalia Gelato and Chocolate, Sausalito", food:true},
+      {name:"Golden Gate Bridge North Vista Point", lat:37.8328324, lng:-122.4802804, note:"The classic Marin-side view. Turn around here, or cross the bridge and back.", q:"Golden Gate Bridge North Vista Point"}
+    ],
+    land:[
+      "During WWII, Sausalito's shoreline was Marinship — a shipyard that built 93 Liberty ships and tankers in under four years. Leftover wartime materials later helped seed its bohemian houseboat community.",
+      "The bridge isn't really red: its color is 'International Orange,' chosen so it stands out against fog and sea. A dedicated crew repaints it essentially all year round."
+    ],
+    beyond:{theme:"Quantum computing", text:"Many quantum computers must be chilled colder than deep space — a hair above absolute zero (about −273 °C). The faintest heat or vibration collapses the fragile quantum states, so the processor hangs inside a gold-plated 'chandelier' of nested cooling stages."}
+  },
+  {
+    id:"olivechoc", kind:"ride", beach:false, num:"R3",
+    name:"Ross Valley Olive-Oil & Chocolate Run",
+    blurb:"A rolling loop through leafy towns to an olive-oil tasting bar and quirky Fairfax — the actual birthplace of the mountain bike.",
+    season:"~26 mi round trip · rolling · shops open ~10:30–5:30",
+    stats:{Distance:"~26 mi",Gain:"1,100 ft",Time:"2.5–3 h",Grade:"Moderate"},
+    stops:[
+      {name:"Home base — Edgewood Ave", lat:37.9058, lng:-122.5535, note:"Head north via Corte Madera and Larkspur.", q:"Edgewood Ave, Mill Valley, CA"},
+      {name:"Larkspur / Corte Madera path", lat:37.9340, lng:-122.5350, note:"Quiet paved paths and creekside streets through the Ross Valley. (Approximate.)", q:"Larkspur, CA"},
+      {name:"Amphora Nueva, San Anselmo", lat:37.9742496, lng:-122.5625068, note:"Tasting-bar olive oils and aged balsamics — sample before you buy.", q:"Amphora Nueva San Anselmo", food:true},
+      {name:"Downtown Fairfax (Revolution 9)", lat:37.9867759, lng:-122.5892187, note:"Quirky gift shop and a mellow, treat-filled main street. Turnaround point.", q:"Revolution 9, Fairfax CA", food:true},
+      {name:"Return via Ross & Kentfield", lat:37.9620, lng:-122.5560, note:"Loop back through some of Marin's leafiest, flattest streets. (Approximate.)", q:"Ross, CA"}
+    ],
+    land:[
+      "Fairfax is widely called the birthplace of the mountain bike. In the mid-1970s, riders like Joe Breeze, Gary Fisher and Charlie Kelly bombed modified balloon-tire 'clunkers' down Mt Tam's Repack fire road and built the first purpose-made mountain bikes here. You're pedaling through the sport's hometown.",
+      "San Anselmo's downtown 'Imagination Park' honors filmmaker George Lucas, who wrote and edited early Star Wars in the area — and Skywalker Ranch sits just over the hills to the north."
+    ],
+    beyond:{theme:"Machine learning + food", text:"Telling real extra-virgin olive oil from cheaper adulterated blends is now partly a data problem: labs feed each oil's chemical 'fingerprint' from mass spectrometry into machine-learning models that flag the fakes far faster than a human taster can."}
+  }
+];
+
+/* ---------- render ---------- */
+const ICONS={
+  hike:'<path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z"/><path d="M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z"/><path d="M16 17h4"/><path d="M4 13h4"/>',
+  ride:'<circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/>',
+  beach:'<path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>'
+};
+const icon=(t,cls)=>`<svg class="ic ${cls||''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[t]}</svg>`;
+
+const grid = document.getElementById('grid');
+const maps = {};   // id -> {map, drawn}
+const gmap = q => "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q);
+
+function directionsURL(r){
+  const mode = r.kind === 'ride' ? 'bicycling' : 'walking';
+  const pts = r.stops.slice();
+  const origin = pts[0], dest = pts[pts.length-1];
+  const mids = pts.slice(1,-1);
+  let u = "https://www.google.com/maps/dir/?api=1"
+        + "&origin=" + encodeURIComponent(origin.q)
+        + "&destination=" + encodeURIComponent(dest.q)
+        + "&travelmode=" + mode;
+  if(mids.length) u += "&waypoints=" + mids.map(m=>encodeURIComponent(m.q)).join("%7C");
+  return u;
+}
+
+function statHTML(stats){
+  return Object.entries(stats).map(([k,v])=>
+    `<div class="stat"><span class="k">${k}</span><span class="v">${v}</span></div>`).join("");
+}
+function stopsHTML(r){
+  return r.stops.map(s=>`
+    <li class="${s.food?'food':''}">
+      <span class="nm">${s.name}</span>
+      <span class="ds">${s.note} <a href="${gmap(s.q)}" target="_blank" rel="noopener">map ↗</a></span>
+    </li>`).join("");
+}
+function factsHTML(r){
+  const land = r.land.map(f=>`<div class="fact"><span class="lab">From the land</span>${f}</div>`).join("");
+  const beyond = `<div class="fact beyond"><span class="lab">Beyond the trail · <span class="theme">${r.beyond.theme}</span></span>${r.beyond.text}</div>`;
+  return land + beyond;
+}
+
+ROUTES.forEach((r,i)=>{
+  const el = document.createElement('article');
+  el.className = 'route';
+  el.dataset.kind = r.kind;
+  el.dataset.beach = r.beach ? 'yes' : 'no';
+  el.style.animationDelay = (i%2)*0.06 + 's';
+  el.innerHTML = `
+    <div class="top">
+      <span class="tag ${r.kind}">${icon(r.kind,'lead')}<span class="idx">${r.num}</span> · ${r.kind==='ride'?'Bike ride':'Hike'}${r.beach?' · '+icon('beach','beachtint')+'Beach':''}</span>
+      <h2>${r.name}</h2>
+      <p class="blurb">${r.blurb}</p>
+      ${r.season?`<p class="season">${r.season}</p>`:''}
+    </div>
+    <div class="stats">${statHTML(r.stats)}</div>
+    <div class="map" id="map-${r.id}" role="img" aria-label="Map of ${r.name}"></div>
+    <div class="stops"><h3>Stops along the way</h3><ol>${stopsHTML(r)}</ol></div>
+    <div class="facts"><h3>Worth knowing</h3>${factsHTML(r)}</div>
+    <div class="foot"><a class="dirbtn" href="${directionsURL(r)}" target="_blank" rel="noopener">◈ Open turn-by-turn directions</a></div>
+  `;
+  grid.appendChild(el);
+  el._route = r;
+});
+
+/* ---------- Leaflet: lazy init when a card scrolls into view ---------- */
+function buildMap(r){
+  if(maps[r.id]) return;
+  const topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',{
+    maxZoom:17, attribution:'Map data: © OpenStreetMap contributors, SRTM | © OpenTopoMap (CC-BY-SA)'});
+  const street = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{
+    maxZoom:19, attribution:'© OpenStreetMap contributors © CARTO'});
+  const map = L.map('map-'+r.id, {scrollWheelZoom:false, layers:[topo]});
+  L.control.layers({"Terrain":topo,"Street":street}, null, {position:'topright'}).addTo(map);
+
+  const pts = [];
+  r.stops.forEach((s,idx)=>{
+    const cls = s.home ? 'home' : r.kind;
+    const label = s.home ? '◈' : (idx+1);
+    const icon = L.divIcon({className:'', html:`<div class="pin ${cls} ${s.beach?'':''}"><span>${label}</span></div>`,
+      iconSize:[24,24], iconAnchor:[12,22], popupAnchor:[0,-20]});
+    const m = L.marker([s.lat,s.lng],{icon}).addTo(map);
+    m.bindPopup(`<div class="pop"><b>${s.name}</b><span class="note">${s.note}</span>
+      <a href="${gmap(s.q)}" target="_blank" rel="noopener">Open in Google Maps ↗</a></div>`);
+    pts.push([s.lat,s.lng]);
+  });
+  L.polyline(pts,{color:'#233729',weight:2,opacity:.55,dashArray:'2,7',lineCap:'round'}).addTo(map);
+  map.fitBounds(pts,{padding:[34,34]});
+  if(pts.length===1) map.setZoom(14);
+  maps[r.id] = {map};
+}
+
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      buildMap(e.target._route);
+      io.unobserve(e.target);
+    }
+  });
+},{rootMargin:'200px'});
+document.querySelectorAll('.route').forEach(el=>io.observe(el));
+
+/* ---------- filtering ---------- */
+const buttons = document.querySelectorAll('.seg button');
+const countEl = document.getElementById('count');
+function applyFilter(f){
+  let shown = 0;
+  document.querySelectorAll('.route').forEach(el=>{
+    const match = f==='all' || (f==='beach' ? el.dataset.beach==='yes' : el.dataset.kind===f);
+    el.classList.toggle('hidden', !match);
+    if(match){
+      shown++;
+      const r = el._route;
+      if(maps[r.id]) setTimeout(()=>maps[r.id].map.invalidateSize(),60);
+    }
+  });
+  const noun = f==='all'?'routes':(f==='beach'?'beach days':(f==='ride'?'rides':'hikes'));
+  countEl.textContent = shown + ' ' + noun;
+}
+buttons.forEach(b=>b.addEventListener('click',()=>{
+  buttons.forEach(x=>x.setAttribute('aria-pressed', x===b));
+  applyFilter(b.dataset.f);
+}));
+applyFilter('all');
+</script>
+</body>
+</html>
