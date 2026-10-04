@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Three Sunday drives in the 911</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E9EEEC; --panel:#F7F9F8; --ink:#1D2B30; --muted:#566A70; --line:#C9D4D2;
+  --ocean:#C4D7DA; --land:#F3F1E9; --bay:#C4D7DA; --accent:#B8142B; --good:#2F6B4A; --warn:#A35F0B;
+  --c1:#2F6B4A; --c2:#2369A0; --c3:#7A4B8C; --c4:#B57A12; --c5:#B8142B; --c6:#1D8A8A;
+  --display:"Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body:"Source Serif 4", Georgia, "Times New Roman", serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121D21; --panel:#1A272C; --ink:#E4ECEA; --muted:#98ABAF; --line:#2E3F45;
+    --ocean:#16323A; --land:#22302F; --bay:#16323A; --accent:#F0546A; --good:#6FC197; --warn:#E9A94A;
+    --c1:#6FC197; --c2:#6EB2E6; --c3:#C79BDA; --c4:#E7B55A; --c5:#F0546A; --c6:#58C9C6;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121D21; --panel:#1A272C; --ink:#E4ECEA; --muted:#98ABAF; --line:#2E3F45;
+  --ocean:#16323A; --land:#22302F; --bay:#16323A; --accent:#F0546A; --good:#6FC197; --warn:#E9A94A;
+  --c1:#6FC197; --c2:#6EB2E6; --c3:#C79BDA; --c4:#E7B55A; --c5:#F0546A; --c6:#58C9C6;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55}
+a{color:inherit}
+img,svg{max-width:100%}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+.wrap{max-width:1240px;margin:0 auto;padding:28px 20px 60px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,470px);gap:40px;align-items:start}
+@media (max-width:900px){.layout{grid-template-columns:1fr;gap:24px}.mapcol{order:-1}}
+
+h1{font-family:var(--display);font-variation-settings:"wdth" 125;font-weight:800;font-size:clamp(2rem,4.6vw,3.3rem);line-height:1.02;letter-spacing:-.01em;margin:0 0 14px;max-width:16ch}
+.lede{max-width:60ch;color:var(--muted);margin:0 0 22px}
+.facts{display:flex;flex-wrap:wrap;gap:8px 22px;font-family:var(--display);font-size:.92rem;margin:0 0 28px;padding:0;list-style:none}
+.facts b{font-weight:700}
+
+.extend{background:var(--panel);border-left:4px solid var(--warn);padding:18px 20px;margin:0 0 30px;border-radius:0 10px 10px 0}
+.extend h2{font-family:var(--display);font-variation-settings:"wdth" 110;font-size:1.15rem;margin:0 0 8px}
+.extend p{margin:0 0 10px;max-width:68ch}
+.extend ul{margin:6px 0 0;padding-left:20px;max-width:68ch}
+.extend li{margin-bottom:6px}
+
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}
+.filters button{font-family:var(--display);font-size:.9rem;font-weight:600;padding:8px 14px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+.pick{display:inline-block;font-family:var(--display);font-size:.75rem;font-weight:700;color:var(--rc);margin-bottom:2px}
+.modes{display:inline-flex;border:1.5px solid var(--line);border-radius:10px;overflow:hidden;margin:4px 0 14px}
+.modes button{font-family:var(--display);font-weight:700;font-size:.92rem;padding:8px 16px;border:0;background:transparent;color:var(--ink);cursor:pointer;text-align:left;line-height:1.25}
+.modes button+button{border-left:1.5px solid var(--line)}
+.modes button span{display:block;font-weight:400;font-size:.78rem;color:var(--muted)}
+.modes button[aria-pressed="true"]{background:var(--rc);color:var(--bg)}
+.modes button[aria-pressed="true"] span{color:var(--bg);opacity:.85}
+.extlabel{font-weight:600;color:var(--rc)}
+.bestif{max-width:66ch;margin:0 0 12px}
+.bestif b{font-family:var(--display)}
+.group-title{font-family:var(--display);font-variation-settings:"wdth" 110;font-size:1rem;font-weight:700;margin:26px 0 10px;color:var(--muted)}
+.route{border-top:1.5px solid var(--line)}
+.route:last-of-type{border-bottom:1.5px solid var(--line)}
+.route-head{width:100%;display:grid;grid-template-columns:14px 1fr auto;gap:14px;align-items:center;background:none;border:0;color:inherit;text-align:left;padding:16px 4px;cursor:pointer;font:inherit}
+.swatch{width:14px;height:14px;border-radius:50%;background:var(--rc)}
+.route-name{font-family:var(--display);font-variation-settings:"wdth" 112;font-weight:700;font-size:1.18rem;line-height:1.2;display:block}
+.route-sub{color:var(--muted);font-size:.95rem;display:block;margin-top:2px}
+.route-meta{font-family:var(--display);font-size:.88rem;text-align:right;white-space:nowrap}
+.route-meta .back{display:block;font-weight:700}
+.back.late{color:var(--warn)}
+.back.ok{color:var(--good)}
+.route[aria-current="true"] .route-head{background:linear-gradient(90deg,color-mix(in srgb,var(--rc) 12%,transparent),transparent)}
+.detail{display:none;padding:4px 4px 24px 32px}
+.route.open .detail{display:block;animation:open .25s ease-out}
+@keyframes open{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.route.open .detail{animation:none}}
+@media (max-width:560px){.detail{padding-left:4px}.route-head{grid-template-columns:12px 1fr}.route-meta{grid-column:2;text-align:left}}
+
+.chain{font-family:var(--display);font-size:.93rem;line-height:1.7;margin:0 0 14px}
+.chain span{white-space:nowrap}
+.chain span:not(:last-child)::after{content:" ›";color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:0 0 16px}
+.stat{background:var(--panel);border-radius:8px;padding:10px 12px}
+.stat dt{font-family:var(--display);font-size:.8rem;color:var(--muted)}
+.stat dd{margin:2px 0 0;font-family:var(--display);font-weight:700;font-size:.98rem}
+.detail h3{font-family:var(--display);font-variation-settings:"wdth" 105;font-size:1rem;margin:18px 0 6px}
+.detail ul{margin:0;padding-left:20px}
+.detail li{margin-bottom:6px;max-width:66ch}
+.sights{list-style:none;padding:0!important;margin:0;position:relative}
+.sights li{display:grid;grid-template-columns:30px 1fr;gap:12px;padding:10px 0;max-width:none;position:relative}
+.sights li:not(:last-child)::before{content:"";position:absolute;left:14px;top:38px;bottom:-8px;width:2px;background:color-mix(in srgb,var(--rc) 35%,transparent)}
+.sights .num{width:30px;height:30px;border-radius:50%;background:var(--rc);color:var(--bg);font-family:var(--display);font-weight:800;font-size:.85rem;display:grid;place-items:center;position:relative;z-index:1}
+.sights .k-opt .num{background:var(--bg);color:var(--rc);border:2px dashed var(--rc)}
+.sights .k-eat .num{border-radius:7px}
+.sights b{font-family:var(--display);font-weight:700}
+.sights .tag{font-family:var(--display);font-size:.75rem;font-weight:700;padding:2px 8px;border-radius:999px;background:color-mix(in srgb,var(--rc) 16%,transparent);white-space:nowrap}
+.sights .time{font-family:var(--display);font-size:.8rem;color:var(--muted);white-space:nowrap}
+.sights .maplink{font-family:var(--display);font-size:.85rem}
+.mk text{font-family:var(--display);font-size:11px;font-weight:800;fill:var(--bg);pointer-events:none}
+.note{background:color-mix(in srgb,var(--warn) 12%,var(--panel));border-radius:8px;padding:12px 14px;margin-top:14px;max-width:68ch}
+.note b{font-family:var(--display)}
+.go{display:inline-block;margin-top:18px;font-family:var(--display);font-weight:700;background:var(--rc);color:#fff;text-decoration:none;padding:11px 18px;border-radius:8px}
+:root[data-theme="dark"] .go{color:#10181b}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .go{color:#10181b}}
+.fine{font-size:.85rem;color:var(--muted);margin-top:8px}
+
+/* timeline */
+.tl{margin:6px 0 4px;position:relative}
+.tl-track{position:relative;height:26px;background:var(--panel);border-radius:6px;overflow:hidden}
+.tl-seg{position:absolute;top:0;bottom:0}
+.tl-drive{background:var(--rc)}
+.tl-stop{background:repeating-linear-gradient(45deg,color-mix(in srgb,var(--rc) 45%,transparent) 0 6px,color-mix(in srgb,var(--rc) 25%,transparent) 6px 12px)}
+.tl-traffic{background:repeating-linear-gradient(-45deg,var(--warn) 0 4px,transparent 4px 9px);opacity:.75}
+.tl-five{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--ink)}
+.tl-scale{display:flex;justify-content:space-between;font-family:var(--display);font-size:.75rem;color:var(--muted);margin-top:4px}
+.tl-key{display:flex;gap:14px;flex-wrap:wrap;font-family:var(--display);font-size:.78rem;color:var(--muted);margin-top:6px}
+.tl-key i{display:inline-block;width:12px;height:10px;margin-right:5px;vertical-align:-1px;border-radius:2px}
+
+/* map */
+.mapcol{position:sticky;top:calc(16px + env(safe-area-inset-top,0px))}
+@media (max-width:900px){.mapcol{position:static}}
+.mapbox{background:var(--ocean);border-radius:14px;overflow:hidden;border:1.5px solid var(--line)}
+.mapbox svg{display:block;width:100%;height:auto;max-height:calc(100vh - 110px)}
+@media (max-width:900px){.mapbox svg{max-height:62vh}}
+.mapcap{font-family:var(--display);font-size:.8rem;color:var(--muted);margin:8px 2px 0}
+.rline{fill:none;stroke-linecap:round;stroke-linejoin:round;transition:opacity .2s,stroke-width .2s;cursor:pointer}
+.place text{font-family:var(--display);font-size:13px;fill:var(--ink);paint-order:stroke;stroke:var(--land);stroke-width:3.5px;font-weight:600}
+.place circle{fill:var(--ink)}
+.crowd{font-family:var(--display);font-size:12px;font-weight:700;fill:var(--warn);paint-order:stroke;stroke:var(--land);stroke-width:3px}
+.water-label{font-family:var(--display);font-style:italic;font-size:15px;fill:var(--muted);letter-spacing:.06em}
+
+[hidden]{display:none!important}
+/* tabs */
+.tabs{display:flex;gap:4px;margin:0 0 26px;border-bottom:1.5px solid var(--line)}
+.tabs button{font-family:var(--display);font-variation-settings:"wdth" 110;font-weight:700;font-size:1rem;padding:10px 16px;background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-1.5px;color:var(--muted);cursor:pointer}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.filters button{font-family:var(--display);font-size:.88rem;font-weight:600;padding:7px 13px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+/* trivia */
+.tv-title{max-width:none}
+.tv-controls{display:flex;flex-direction:column;gap:12px;margin:0 0 22px}
+.tv-actions{display:flex;gap:8px;flex-wrap:wrap}
+.tv-btn{font-family:var(--display);font-weight:700;font-size:.9rem;padding:9px 16px;border-radius:8px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
+.tv-btn[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.tv-grid{display:grid;align-items:start;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.tv-card{background:var(--panel);border:1.5px solid var(--line);border-radius:12px;padding:0;text-align:left;font:inherit;color:inherit;cursor:pointer;display:flex;flex-direction:column}
+.tv-card .tv-q{padding:14px 16px 12px;font-family:var(--display);font-weight:700;font-size:1rem;line-height:1.35}
+.tv-card .tv-r{display:block;font-weight:600;font-size:.74rem;color:var(--muted);margin-bottom:6px}
+.tv-card .tv-a{display:none;padding:12px 16px 14px;border-top:1.5px dashed var(--line);font-size:.98rem}
+.tv-card .tv-hint{padding:0 16px 12px;font-family:var(--display);font-size:.8rem;color:var(--accent);font-weight:700}
+.tv-card[aria-expanded="true"] .tv-a{display:block}
+.tv-card[aria-expanded="true"] .tv-hint{display:none}
+.tv-card[aria-expanded="true"]{border-color:var(--ink)}
+.tv-card.flash{outline:3px solid var(--accent);outline-offset:2px}
+
+/* compare table */
+.compare{margin-top:56px}
+.compare h2{font-family:var(--display);font-variation-settings:"wdth" 120;font-weight:800;font-size:1.6rem;margin:0 0 14px}
+.tablewrap{overflow-x:auto;border:1.5px solid var(--line);border-radius:10px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:760px;font-family:var(--display);font-size:.9rem}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:700;color:var(--muted);font-size:.82rem}
+tbody tr:last-child td{border-bottom:0}
+tbody tr{cursor:pointer}
+tbody tr:hover td{background:color-mix(in srgb,var(--ink) 5%,transparent)}
+td .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px}
+.foot{margin-top:28px;font-size:.88rem;color:var(--muted);max-width:75ch}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="tabs" role="tablist" aria-label="Page sections">
+    <button type="button" role="tab" id="tab-routes" aria-controls="panel-routes" aria-selected="true">Routes</button>
+    <button type="button" role="tab" id="tab-trivia" aria-controls="panel-trivia" aria-selected="false" tabindex="-1">Road trip trivia</button>
+  </div>
+  <div class="layout" id="panel-routes" role="tabpanel" aria-labelledby="tab-routes">
+    <main>
+      <h1>Three Sunday drives in the 911</h1>
+      <p class="lede">The coast without the crowds: each of these slips between the Highway 17 and Highway 92 beach traffic and stays cool while San Jose bakes. The first is one big loop combining the best of the other two, and each has an extended version for when you'd both rather keep driving. Pick one to see what to stop for and where it all sits on the map.</p>
+      <ul class="facts">
+        <li><b>Start and finish</b> San Jose</li>
+        <li><b>Inland</b> 90°F and up</li>
+        <li><b>Car</b> Porsche 911 Cabriolet</li>
+      </ul>
+
+      <div id="routes"></div>
+
+      <section class="compare" aria-labelledby="cmp-h">
+        <h2 id="cmp-h">Side by side</h2>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Route</th><th>Distance</th><th>Driving time</th><th>Air temp</th><th>Driving feel</th></tr></thead>
+          <tbody id="cmp"></tbody>
+        </table></div>
+      </section>
+    </main>
+
+    <aside class="mapcol" aria-label="Route map">
+      <div class="mapbox"><svg id="map" role="img" aria-label="Sketch map of the coast from Half Moon Bay to Santa Cruz showing the three routes and the main beach-traffic corridors"></svg></div>
+      <p class="mapcap" id="mapcap">Tap a line or a route to highlight it.</p>
+    </aside>
+  </div>
+  <section id="panel-trivia" role="tabpanel" aria-labelledby="tab-trivia" hidden>
+    <h1 class="tv-title">Road trip trivia</h1>
+    <p class="lede"><span id="tv-count"></span> questions and fun facts about the places along the way. Tap a card to reveal the answer.</p>
+    <div class="tv-controls">
+      <div class="filters" id="tv-filters" role="group" aria-label="Filter by area"></div>
+      <div class="tv-actions">
+        <button type="button" class="tv-btn" id="tv-shuffle">Shuffle</button>
+        <button type="button" class="tv-btn" id="tv-random">Ask me one</button>
+        <button type="button" class="tv-btn" id="tv-revealall" aria-pressed="false">Show all answers</button>
+      </div>
+    </div>
+    <div class="tv-grid" id="tv-grid"></div>
+  </section>
+</div>
+
+<script>
+const gm = q => "https://maps.google.com/?q=" + encodeURIComponent(q);
+const dir = wps => "https://www.google.com/maps/dir/?api=1&origin=" + encodeURIComponent("San Jose, CA") +
+  "&destination=" + encodeURIComponent("San Jose, CA") + "&travelmode=driving&waypoints=" +
+  encodeURIComponent(wps.join("|"));
+
+// shared path pieces [lat, lng]
+const SJ_WOODSIDE = [[37.335,-121.89],[37.32,-121.95],[37.33,-122.04],[37.37,-122.11],[37.40,-122.18],[37.425,-122.23],[37.43,-122.255]];
+const HWY84_W = [[37.41,-122.275],[37.388,-122.266],[37.36,-122.29],[37.32,-122.275],[37.31,-122.33],[37.326,-122.387]];
+const TO_BEACH = [[37.322,-122.403]];
+const HWY1_S = [[37.29,-122.408],[37.25,-122.41],[37.18,-122.394],[37.12,-122.34],[37.07,-122.27],[37.04,-122.23],[37.012,-122.196]];
+const TO_MONTEREY = [[37.335,-121.89],[37.26,-121.82],[37.13,-121.65],[37.01,-121.57],[36.85,-121.54],[36.80,-121.63],[36.775,-121.70],[36.765,-121.758],[36.70,-121.79],[36.65,-121.81],[36.60,-121.885],[36.62,-121.915],[36.635,-121.93],[36.61,-121.955],[36.585,-121.968],[36.565,-121.95],[36.555,-121.925]];
+
+const ROUTES = [
+ {id:"r1", color:"--c1", group:"window", name:"Flowing Redwood Canopy Loop", sub:"Shaded forest roads, gentle curves, zero traffic stress",
+  chain:["San Jose","I-280 North","CA-84 West (Woodside)","Skyline Blvd (CA-35)","Stage Road","Pescadero","CA-84 East","I-280 South","San Jose"],
+  miles:"75–90 mi", drive:2.75, driveText:"2.5–3 hrs", stops:1.5, traffic:0, temp:"68–72°F, shaded", feel:"Easy: wide lanes, gentle curves, great sightlines",
+  why:["Uses I-280 and CA-84 out of Woodside, so it skips Highway 17 and 92 traffic entirely.","CA-84 and Skyline have wide, well-paved, rhythmic sweepers under the redwoods, a comfortable way for a newer sports-car driver to enjoy the handling.","The tree tunnels keep the cabin cool and bounce the exhaust note back at you with the top down."],
+  wps:["Woodside, CA","Alice's Restaurant, Woodside, CA","San Gregorio, CA","Pescadero, CA","San Gregorio, CA","Rossotti's Alpine Inn, Portola Valley, CA"],
+  path:[...SJ_WOODSIDE,...HWY84_W,[37.30,-122.375],[37.275,-122.375],[37.255,-122.383]]},
+
+ {id:"r2", color:"--c2", group:"window", name:"San Mateo Coastal Sweeper Loop", sub:"Ocean bluffs south to Davenport, back through the redwoods",
+  chain:["San Jose","I-280 North","CA-84 West (Woodside)","San Gregorio State Beach","Highway 1 South","Pigeon Point Lighthouse","Davenport (turnaround)","CA-84 East","I-280 South","San Jose"],
+  miles:"~110 mi", drive:3.25, driveText:"3–3.5 hrs", stops:1.5, traffic:0, temp:"60–65°F, ocean breeze", feel:"Moderate to easy: broad, sweeping coastal highway",
+  why:["Touches the Pacific at San Gregorio, then runs south along cliffside bluffs past Pigeon Point.","Highway 1 from San Gregorio to Davenport is open, wide and predictable, with far less traffic than Half Moon Bay or Santa Cruz.","Turning at Davenport avoids Santa Cruz entirely; you retrace Highway 1 north and cut back inland on CA-84 through forest shade."],
+  wps:["Woodside, CA","San Gregorio State Beach, CA","Pigeon Point Lighthouse, CA","Davenport, CA","San Gregorio, CA","Woodside, CA"],
+  path:[...SJ_WOODSIDE,...HWY84_W,...TO_BEACH,...HWY1_S]},
+
+ {id:"r3", color:"--c3", group:"extended", name:"Grand Coast & Redwoods Loop", sub:"Option 2's coastline, then home over the mountains on Highway 9",
+  chain:["San Jose","CA-84 West","San Gregorio","Highway 1 South","Davenport","Bonny Doon Rd","Felton","Highway 9 North","Boulder Creek","Saratoga Gap","Saratoga","San Jose"],
+  miles:"~140 mi", drive:4.5, driveText:"4.5–5 hrs", stops:1.25, traffic:0, temp:"60–75°F, coast then forest", feel:"Moderate: coast is easy; Bonny Doon and Hwy 9 are tighter and twistier",
+  why:["A bigger day out that never touches Highway 17, so the return stays clear.","Instead of backtracking from Davenport, it climbs into the Santa Cruz Mountains and comes home through deep redwood forest.","Highway 9 drops you straight into Saratoga, close to home."],
+  note:"Bonny Doon Road and the Saratoga side of Highway 9 are narrower, steeper and busy with cyclists on weekends. Take it at a relaxed pace.",
+  wps:["Woodside, CA","San Gregorio State Beach, CA","Pigeon Point Lighthouse, CA","Davenport, CA","Bonny Doon, CA","Felton, CA","Boulder Creek, CA","Saratoga, CA"],
+  path:[...SJ_WOODSIDE,...HWY84_W,...TO_BEACH,...HWY1_S,[37.00,-122.18],[37.02,-122.15],[37.04,-122.14],[37.05,-122.09],[37.05,-122.073],[37.08,-122.09],[37.126,-122.122],[37.17,-122.14],[37.21,-122.13],[37.257,-122.123],[37.25,-122.08],[37.264,-122.03],[37.29,-121.98],[37.32,-121.93],[37.335,-121.89]]},
+
+ {id:"r4", color:"--c4", group:"extended", name:"Monterey & 17-Mile Drive", sub:"Cypress-lined coast, Pebble Beach and lunch in Carmel",
+  chain:["San Jose","US-101 South","CA-156 West","Castroville","Highway 1 South","Monterey","Pacific Grove","17-Mile Drive","Carmel-by-the-Sea","return the same way"],
+  miles:"~190 mi", drive:4.25, driveText:"4–4.5 hrs (no traffic)", stops:2, traffic:0.75, temp:"62–70°F, coastal", feel:"Easy: freeways, then slow scenic 17-Mile Drive",
+  why:["17-Mile Drive is a slow, beautiful private road through Pebble Beach: ocean on one side, cypress and mansions on the other. Ideal for top-down cruising.","Carmel is a walkable village for a long, relaxed lunch.","The roads themselves are easy; the trade-off is time on 101."],
+  note:"<b>The return:</b> Highway 156 eastbound near Prunedale and Castroville often backs up on Sunday afternoons. Either leave Carmel by about 2:30, or have an early dinner there and drive home after 7 when it clears. Avoid coming back via Santa Cruz and Highway 17.",
+  wps:["Castroville, CA","Lovers Point, Pacific Grove, CA","Lone Cypress, Pebble Beach, CA","Carmel-by-the-Sea, CA","Castroville, CA"],
+  path:TO_MONTEREY},
+
+ {id:"r5", color:"--c5", group:"extended", name:"Big Sur & Bixby Bridge", sub:"The full California coast moment: best as an overnight",
+  chain:["San Jose","US-101 South","CA-156 West","Monterey","17-Mile Drive","Carmel","Point Lobos","Bixby Creek Bridge","Big Sur","Nepenthe (turnaround)","return via Carmel"],
+  miles:"~250 mi", drive:6, driveText:"6 hrs (no traffic)", stops:2, traffic:0.75, temp:"58–70°F, can be foggy", feel:"Moderate: Highway 1 is narrow and cliffside past Carmel",
+  why:["Bixby Bridge and the Big Sur cliffs are the most dramatic coastline within reach of San Jose.","Builds on Option 4, so you get 17-Mile Drive and Carmel on the way.","As a day trip it lands you home well after dark. As an overnight in Carmel or Monterey, it becomes the most relaxed option of all: Big Sur on Sunday, easy freeway home Monday."],
+  note:"<b>Check before you go:</b> parts of Highway 1 in Big Sur close for slides from time to time. Look at Caltrans QuickMap the morning of. As a day trip, expect to be home around 8–9 PM; consider booking a room in Carmel or Monterey instead.",
+  wps:["Castroville, CA","Lone Cypress, Pebble Beach, CA","Carmel-by-the-Sea, CA","Point Lobos State Natural Reserve, CA","Bixby Creek Bridge, CA","Nepenthe, Big Sur, CA","Castroville, CA"],
+  path:[...TO_MONTEREY,[36.52,-121.94],[36.47,-121.93],[36.40,-121.91],[36.372,-121.902],[36.31,-121.89],[36.27,-121.81],[36.235,-121.77]]},
+
+ {id:"r6", color:"--c6", group:"extended", name:"Golden Gate & Marin Headlands", sub:"Over the bridge, along the cliffs to Stinson, up Mount Tam",
+  chain:["San Jose","I-280 North","San Francisco","Golden Gate Bridge","Marin Headlands","Highway 1","Muir Beach","Stinson Beach","Panoramic Hwy","Mt. Tamalpais","Mill Valley","US-101 South","San Jose"],
+  miles:"~160 mi", drive:4.5, driveText:"4–5 hrs", stops:1.5, traffic:1, temp:"55–68°F, often foggy", feel:"Moderate: tight, winding cliff road on Highway 1 north of Muir Beach",
+  why:["I-280 north is one of the prettiest freeways in the state, then you cross the Golden Gate with the top down.","The Highway 1 stretch toward Stinson and the climb up Panoramic Highway are classic sports-car roads with huge views.","A completely different feel from the southern options: big city, bridge, then wild coast."],
+  note:"<b>The return:</b> southbound Golden Gate Bridge and 19th Avenue get slow on Sunday afternoons, and Stinson Beach itself jams up on hot days. The bridge toll is collected electronically only (FasTrak, or pay online by license plate afterwards). Coastal Marin is often foggy and cold even when San Jose is 95°F.",
+  wps:["Golden Gate Bridge, San Francisco, CA","Battery Spencer, Sausalito, CA","Muir Beach Overlook, CA","Stinson Beach, CA","Mount Tamalpais East Peak, CA","Mill Valley, CA"],
+  path:[[37.335,-121.89],[37.32,-121.95],[37.33,-122.04],[37.37,-122.11],[37.42,-122.20],[37.48,-122.27],[37.55,-122.34],[37.62,-122.42],[37.69,-122.47],[37.75,-122.476],[37.80,-122.477],[37.83,-122.48],[37.83,-122.50],[37.85,-122.53],[37.86,-122.575],[37.88,-122.61],[37.90,-122.64],[37.915,-122.61],[37.925,-122.58],[37.91,-122.55],[37.895,-122.525],[37.875,-122.51],[37.85,-122.49],[37.83,-122.48]]}
+];
+
+const PICK = {
+  r2:{badge:"Best for ocean views", best:"you want cliffs and open ocean. Driving south on Highway 1 puts you in the lane right beside the bluffs, the best side for a convertible."},
+  r1:{badge:"Most relaxed", best:"you want shade, cool air and the smallest chance of any traffic at all. The gentlest roads of the three for a newer sports-car driver."},
+  r3:{badge:"Stretch the day", best:"you want the coastline of the ocean route but don't want to retrace it: you come home over the mountains on Highway 9 instead, never touching Highway 17."}
+};
+PICK.r7 = {badge:"Best of both, no turning around", best:"you want the forest and the ocean in one big loop that never doubles back: the highlights of Options 1 and 2, linked through Stage Road, then home through the Santa Cruz Mountains and along the Skyline ridge."};
+const PATH_LAHONDA_HOME = [[37.27,-122.33],[37.278,-122.30],[37.29,-122.28],[37.31,-122.272],[37.32,-122.275]];
+ROUTES.push({id:"r7", color:"--c3", group:"all", name:"Grand Coast & Redwoods Loop", sub:"Forest, Stage Road, the whole coast to Davenport, Boulder Creek, and home along Skyline Ridge",
+  chain:["San Jose","I-280 North","CA-84 West (Woodside)","Alice's at Skylonda","La Honda","San Gregorio","Stage Road","Pescadero","Highway 1 South","Pigeon Point","Davenport","Bonny Doon Rd","Felton","Highway 9 North","Boulder Creek","Saratoga Gap","Skyline Blvd North","Russian Ridge","Windy Hill","CA-84 East","Alpine Inn","I-280 South","San Jose"],
+  miles:"~170 mi", drive:5.25, stops:1.75, traffic:0, temp:"60–75°F, coast then forest", feel:"Moderate: coast is easy; Bonny Doon, Highway 9 and southern Skyline are tighter and twistier",
+  why:["It folds in Option 1's best bits: CA-84 past Alice's and through La Honda, then Stage Road across ranch country to Pescadero for the artichoke bread.","Then all of Option 2's coastline, from San Gregorio past Bean Hollow and Pigeon Point down to Davenport.","Up through the redwoods of Felton and Boulder Creek, then the grand finale: north along Skyline Boulevard past Russian Ridge and Windy Hill, with the ocean on one side and the Bay on the other. Stay out late and you can watch the sunset from up there."],
+  note:"No turning around anywhere: the only repeat is a few miles of CA-84 between Woodside and Alice's, once on the way out and once on the way home. Bonny Doon Road, Highway 9 and the southern part of Skyline are narrower and twistier and busy with cyclists on weekends, so take them at a relaxed pace.",
+  wps:["Alice's Restaurant, Woodside, CA","San Gregorio State Beach, CA","Stage Rd, Pescadero, CA","Davenport, CA","Bonny Doon, CA","Felton, CA","Boulder Creek, CA","Windy Hill Open Space Preserve, Skyline Blvd, CA","Rossotti's Alpine Inn, Portola Valley, CA"],
+  path:[...SJ_WOODSIDE,...HWY84_W,[37.322,-122.403],[37.326,-122.387],[37.30,-122.375],[37.275,-122.375],[37.255,-122.383],[37.252,-122.41],[37.229,-122.410],[37.18,-122.394],[37.12,-122.34],[37.07,-122.27],[37.04,-122.23],[37.012,-122.196],[37.00,-122.18],[37.02,-122.15],[37.04,-122.14],[37.05,-122.09],[37.05,-122.073],[37.08,-122.09],[37.126,-122.122],[37.17,-122.14],[37.21,-122.13],[37.257,-122.123],[37.27,-122.14],[37.29,-122.165],[37.316,-122.205],[37.345,-122.225],[37.364,-122.245],[37.388,-122.266],[37.41,-122.275],[37.43,-122.255],[37.42,-122.23],[37.3998,-122.1972],[37.37,-122.11],[37.33,-122.04],[37.32,-121.95],[37.335,-121.89]]});
+const ALL = [...ROUTES];
+ROUTES.splice(0, ROUTES.length, ...["r7","r2","r1"].map(id=>ROUTES.find(r=>r.id===id)));
+ROUTES.forEach(r=>r.group="all");
+
+// Things to see along each route, in driving order. kind: see | eat (famous only) | opt (optional detour)
+const CID = {
+  alice:"https://maps.google.com/?cid=8676013312519486251", arc:"https://maps.google.com/?cid=13283704940571574921",
+  alpine:"https://maps.google.com/?cid=16224416469531209440", sgb:"https://maps.google.com/?cid=10610463126118344037",
+  pp:"https://maps.google.com/?cid=17540242178797210837", dav:"https://maps.google.com/?cid=10724292121113198610"};
+const S = {
+  alice:{n:"Alice's Restaurant",kind:"eat",at:[37.3875,-122.2655],t:"Lunch or coffee",d:"The famous one: a Skyline institution where weekend lots fill with sports cars and motorcycles. Grab a table outside and car-watch.",map:CID.alice},
+  sggs:{n:"San Gregorio General Store",kind:"see",at:[37.3268,-122.3866],t:"15 min",d:"Rustic store and bar dating to 1889, often with live music on weekend afternoons.",map:gm("San Gregorio General Store, CA")},
+  arc:{n:"Arcangeli Grocery Co.",kind:"eat",at:[37.2555,-122.3825],t:"20 min",d:"Home of the famous warm artichoke garlic bread. Loaves go fast on busy weekends, so earlier is better.",map:CID.arc},
+  pp:{n:"Pigeon Point Lighthouse",kind:"see",at:[37.1817,-122.3944],t:"20 min",d:"One of the tallest lighthouses on the West Coast. Walk the grounds and look for seals, and sometimes whales, offshore.",map:CID.pp},
+  dav:{n:"Davenport bluffs",kind:"see",at:[37.0105,-122.1965],t:"15 min",d:"Cliff-top path right across from town, a classic whale-watching spot.",map:CID.dav},
+  shark:{n:"Shark Fin Cove",kind:"opt",at:[37.003,-122.181],t:"15 min",d:"A dramatic fin-shaped sea stack a mile south of Davenport. Enjoy it from the bluff; the path down is steep.",map:gm("Shark Fin Cove, Davenport, CA")},
+  lone:{n:"Lone Cypress",kind:"see",at:[36.5685,-121.9655],t:"10 min",d:"The wind-sculpted cypress on its granite perch, symbol of Pebble Beach.",map:gm("Lone Cypress, Pebble Beach, CA")},
+  carmel:{n:"Carmel-by-the-Sea & Carmel Beach",kind:"see",at:[36.5535,-121.9275],t:"1 hr+",d:"Storybook cottages, galleries and a white-sand beach at the bottom of Ocean Avenue. A good place for a long lunch.",map:gm("Carmel Beach, Carmel-by-the-Sea, CA")}
+};
+const SIGHTS = {
+ r1:[
+  {n:"Woodside Store",kind:"see",at:[37.419,-122.2715],t:"15 min",d:"An 1854 general store from the logging days, now a small free museum. Open select days only.",map:gm("Woodside Store, Woodside, CA")},
+  S.alice,
+  {n:"Windy Hill Preserve",kind:"see",at:[37.364,-122.245],t:"15–30 min",d:"Grassy ridge on Skyline with the ocean on one side and the Bay on the other; a short walk from the roadside lot.",map:gm("Windy Hill Open Space Preserve Skyline Blvd")},
+  {n:"La Honda",kind:"see",at:[37.319,-122.274],t:"Drive-by",d:"Tiny redwood town where Ken Kesey and the Merry Pranksters lived in the early '60s. The stretch of CA-84 through it is a highlight.",map:gm("La Honda, CA")},
+  S.sggs,
+  {n:"Stage Road",kind:"see",at:[37.29,-122.375],t:"Drive",d:"About seven quiet, rolling miles of ranch land between San Gregorio and Pescadero; one of the loveliest little roads on the coast.",map:gm("Stage Rd, Pescadero, CA")},
+  S.arc,
+  {n:"Pescadero State Beach & Marsh",kind:"opt",at:[37.262,-122.411],t:"20 min",d:"A few minutes west of town: dunes, tide pools and a marsh full of herons.",map:gm("Pescadero State Beach, CA")},
+  {n:"Rossotti's Alpine Inn",kind:"eat",at:[37.3998,-122.1972],t:"Last stop",d:"Roadhouse dating to the 1850s. A plaque out back marks a 1976 network test that helped lead to the internet. Easy final stop near I-280.",map:CID.alpine}],
+ r2:[
+  S.alice, S.sggs,
+  {n:"San Gregorio State Beach",kind:"see",at:[37.3215,-122.403],t:"15 min",d:"Sandstone cliffs and a creek lagoon meeting the surf: your first ocean view of the day.",map:CID.sgb},
+  {n:"Arcangeli Grocery Co.",kind:"eat",at:[37.2555,-122.3825],t:"2 mi detour",d:"Two miles inland from Highway 1 on Pescadero Road, and worth it for the artichoke garlic bread.",map:CID.arc},
+  {n:"Bean Hollow State Beach",kind:"see",at:[37.229,-122.410],t:"15 min",d:"Rocky cove with honeycomb-weathered sandstone and tide pools along a short bluff trail.",map:gm("Bean Hollow State Beach, CA")},
+  S.pp,
+  {n:"Año Nuevo elephant seals",kind:"opt",at:[37.108,-122.336],t:"1.5–2 hrs",d:"Big seal colony, but seeing it means a 3–4 mile round-trip walk. Only worth it if you skip other stops.",map:gm("Año Nuevo State Park, CA")},
+  {n:"Waddell Beach",kind:"see",at:[37.095,-122.276],t:"10 min",d:"Huge open beach where kite surfers launch, with easy roadside parking.",map:gm("Waddell Beach, CA")},
+  S.dav, S.shark],
+ r3:[
+  S.alice, S.sggs, S.arc, S.pp, S.dav,
+  {...S.shark, kind:"see", d:"A dramatic fin-shaped sea stack just past Davenport, right on this route. Enjoy it from the bluff; the path down is steep."},
+  {n:"Felton Covered Bridge",kind:"see",at:[37.0508,-122.0716],t:"10 min",d:"An 1892 wooden covered bridge, said to be the tallest of its kind in the country. A two-minute walk from parking.",map:gm("Felton Covered Bridge Park, CA")},
+  {n:"Henry Cowell Redwood Grove",kind:"see",at:[37.0405,-122.0632],t:"30–45 min",d:"A flat loop of under a mile through towering old-growth redwoods. Day-use fee.",map:gm("Henry Cowell Redwoods State Park, Felton, CA")},
+  {n:"Boulder Creek",kind:"see",at:[37.126,-122.122],t:"15 min",d:"Old logging-town main street for a quick coffee or ice cream.",map:gm("Boulder Creek, CA")},
+  {n:"Castle Rock State Park",kind:"opt",at:[37.2305,-122.096],t:"30 min",d:"Wind-carved sandstone and long views, a short walk from the lot on Skyline just south of Saratoga Gap.",map:gm("Castle Rock State Park, CA")},
+  {n:"Hakone Gardens",kind:"opt",at:[37.2552,-122.0405],t:"45 min",d:"Japanese gardens from the 1910s, among the oldest in the Western Hemisphere. Entry fee.",map:gm("Hakone Estate and Gardens, Saratoga, CA")},
+  {n:"Saratoga Village",kind:"see",at:[37.2638,-122.0230],t:"Final break",d:"Leafy Big Basin Way for a last stretch of the legs, close to home.",map:gm("Big Basin Way, Saratoga, CA")}],
+ r4:[
+  {n:"Castroville artichoke fields",kind:"see",at:[36.766,-121.758],t:"Drive-by",d:"The self-styled Artichoke Center of the World, with fields right along Highway 156. A fitting follow-up to the Pescadero bread.",map:gm("Castroville, CA")},
+  {n:"Cannery Row",kind:"see",at:[36.6165,-121.9005],t:"30 min+",d:"Steinbeck's old sardine-cannery waterfront. The Monterey Bay Aquarium is here if you want a long stop.",map:gm("Cannery Row, Monterey, CA")},
+  {n:"Lovers Point & Ocean View Blvd",kind:"see",at:[36.626,-121.9165],t:"Drive",d:"Slow, rocky waterfront road through Pacific Grove.",map:gm("Lovers Point, Pacific Grove, CA")},
+  {n:"Point Pinos Lighthouse",kind:"opt",at:[36.6355,-121.934],t:"15 min",d:"Lit in 1855, the oldest continuously operating lighthouse on the West Coast. Limited opening hours.",map:gm("Point Pinos Lighthouse, Pacific Grove, CA")},
+  {n:"Bird Rock",kind:"see",at:[36.5925,-121.9625],t:"10 min",d:"A rock crowded with sea lions, harbor seals and cormorants. Binoculars help.",map:gm("Bird Rock, 17-Mile Drive, Pebble Beach, CA")},
+  {n:"Cypress Point Lookout",kind:"see",at:[36.580,-121.9745],t:"10 min",d:"One of the best views on the drive, looking down the coast toward Point Lobos.",map:gm("Cypress Point Lookout, Pebble Beach, CA")},
+  S.lone,
+  {n:"Pebble Beach Lodge & 18th hole",kind:"see",at:[36.5675,-121.9485],t:"20 min",d:"Walk out to see the famous oceanfront finishing hole.",map:gm("The Lodge at Pebble Beach, CA")},
+  S.carmel,
+  {n:"Carmel Mission",kind:"opt",at:[36.5428,-121.9197],t:"30 min",d:"Founded in 1771, with lovely gardens and courtyards. Entry fee.",map:gm("Carmel Mission Basilica, Carmel, CA")}],
+ r5:[
+  S.lone, S.carmel,
+  {n:"Point Lobos",kind:"see",at:[36.516,-121.942],t:"45 min",d:"Short coastal walks with sea otters and seals. The lot fills early; roadside parking is common.",map:gm("Point Lobos State Natural Reserve, CA")},
+  {n:"Soberanes Point (Garrapata)",kind:"opt",at:[36.452,-121.928],t:"20 min",d:"Quiet bluff walk and whale-watching point with roadside parking.",map:gm("Soberanes Point, Garrapata State Park, CA")},
+  {n:"Bixby Creek Bridge",kind:"see",at:[36.3716,-121.9017],t:"10 min",d:"The famous arch bridge. Use the marked pull-out on the north side and park fully off the road.",map:gm("Bixby Creek Bridge, CA")},
+  {n:"Point Sur Lighthouse",kind:"see",at:[36.3066,-121.9012],t:"Drive-by",d:"A lighthouse on a volcanic rock high above the sea. Admire it from the highway; tours are limited and scheduled.",map:gm("Point Sur State Historic Park, CA")},
+  {n:"Pfeiffer Big Sur State Park",kind:"see",at:[36.2505,-121.7845],t:"30 min",d:"Shaded redwoods along the Big Sur River to stretch your legs.",map:gm("Pfeiffer Big Sur State Park, CA")},
+  {n:"Nepenthe",kind:"eat",at:[36.2225,-121.7600],t:"Lunch",d:"The famous cliff-side terrace, open since 1949. Come for the view as much as the food; your natural turnaround.",map:gm("Nepenthe, Big Sur, CA")},
+  {n:"McWay Falls",kind:"opt",at:[36.1578,-121.6722],t:"+25 min each way",d:"A waterfall pouring onto a beach cove, a short walk from the road. Farther south than Nepenthe.",map:gm("McWay Falls, Big Sur, CA")}],
+ r6:[
+  {n:"Crystal Springs Reservoir",kind:"see",at:[37.53,-122.36],t:"Drive-by",d:"I-280 runs along the hills above long, blue reservoirs; a pretty start.",map:gm("Crystal Springs Reservoir, CA")},
+  {n:"Vista Point (north end of the bridge)",kind:"see",at:[37.8325,-122.4806],t:"10 min",d:"First pull-off after crossing northbound: the city skyline framed by the bridge towers.",map:gm("H. Dana Bowers Memorial Vista Point, Sausalito, CA")},
+  {n:"Battery Spencer",kind:"see",at:[37.8297,-122.4826],t:"15 min",d:"The classic view looking down onto the bridge. Small lot, so be patient.",map:gm("Battery Spencer, Sausalito, CA")},
+  {n:"Hawk Hill",kind:"see",at:[37.8255,-122.4990],t:"15 min",d:"Higher up Conzelman Road: bridge, city and ocean in one view. Hawks migrate past in autumn.",map:gm("Hawk Hill, Marin Headlands, CA")},
+  {n:"Point Bonita Lighthouse",kind:"opt",at:[37.8156,-122.5297],t:"45 min",d:"Reached through a rock tunnel and over a small suspension footbridge. Limited opening hours.",map:gm("Point Bonita Lighthouse, CA")},
+  {n:"Muir Beach Overlook",kind:"see",at:[37.8625,-122.588],t:"10 min",d:"Quick pull-out with sweeping views up and down the coast.",map:gm("Muir Beach Overlook, CA")},
+  {n:"Stinson Beach",kind:"see",at:[37.9005,-122.6442],t:"30 min",d:"Long sandy beach. Skip it on hot weekends, when parking jams up.",map:gm("Stinson Beach, CA")},
+  {n:"Muir Woods",kind:"opt",at:[37.897,-122.5811],t:"1 hr",d:"Old-growth redwoods. Parking or shuttle reservations are required in advance.",map:gm("Muir Woods National Monument, CA")},
+  {n:"Mt. Tamalpais East Peak",kind:"see",at:[37.9293,-122.5797],t:"30 min",d:"The whole Bay laid out below on a clear day.",map:gm("Mount Tamalpais East Peak, CA")}]
+};
+const KIND = {see:"", eat:"Famous food stop", opt:"Optional detour"};
+
+// ---------- extended versions ----------
+const MODE = {r1:"std", r2:"std", r3:"std", r7:"std"};
+const R = id => ALL.find(r=>r.id===id);
+const r3BaseIdx = R("r3").path.findIndex(p=>p[0]===37.126&&p[1]===-122.122);
+const EXT = {
+ r2:{ sub:"Extended: on past Davenport to Natural Bridges and West Cliff Drive",
+  chain:["San Jose","CA-84 West","San Gregorio State Beach","Highway 1 South","Pigeon Point","Davenport","Natural Bridges","West Cliff Drive (turnaround)","Highway 1 North","CA-84 East","San Jose"],
+  miles:"~135 mi", drive:4, driveText:"4–4.5 hrs", stops:1.75, traffic:0.25, feel:"Easy: the same broad coast road, then a slow seaside drive",
+  why:["Carries on about 12 miles past Davenport along the bluffs to Santa Cruz's quiet west side, the part of town the beach crowds mostly skip.","Natural Bridges has a sea arch, tide pools and, in fall and winter, clusters of monarch butterflies in its eucalyptus grove.","West Cliff Drive is a slow oceanfront cruise past the surfers at Steamer Lane: perfect top-down territory."],
+  note:"<b>The return:</b> stay on the west side and skip the Boardwalk and downtown, the crowded parts of Santa Cruz on a hot Sunday. Head home the way you came on Highway 1 rather than Highway 17.",
+  wps:["Woodside, CA","San Gregorio State Beach, CA","Pigeon Point Lighthouse, CA","Davenport, CA","Natural Bridges State Beach, Santa Cruz, CA","Lighthouse Point, Santa Cruz, CA","San Gregorio, CA","Woodside, CA"],
+  path:[...R("r2").path,[37.00,-122.18],[36.99,-122.15],[36.965,-122.09],[36.952,-122.06],[36.950,-122.04],[36.951,-122.026]],
+  sights:[...SIGHTS.r2.slice(0,6), SIGHTS.r2[7], SIGHTS.r2[8],
+   {...S.shark, kind:"see"},
+   {n:"Wilder Ranch State Park",kind:"opt",at:[36.962,-122.085],t:"20–45 min",d:"A restored 1800s dairy ranch with a flat bluff trail out to hidden coves.",map:gm("Wilder Ranch State Park, Santa Cruz, CA")},
+   {n:"Natural Bridges State Beach",kind:"see",at:[36.9515,-122.0575],t:"20 min",d:"Sea arch and tide pools; in fall and winter, monarch butterflies gather in the eucalyptus grove.",map:gm("Natural Bridges State Beach, Santa Cruz, CA")},
+   {n:"West Cliff Drive & Steamer Lane",kind:"see",at:[36.951,-122.026],t:"20 min",d:"Slow oceanfront drive to the little lighthouse at Lighthouse Point, home to a small surfing museum overlooking the surfers. Your turnaround.",map:gm("Lighthouse Point, West Cliff Drive, Santa Cruz, CA")}]},
+ r1:{ sub:"Extended: back through Loma Mar's redwoods, then Skyline south to Saratoga",
+  chain:["San Jose","I-280 North","CA-84 West","Skyline Blvd","Stage Road","Pescadero","Pescadero Creek Rd (Loma Mar)","CA-84 East","Skyline Blvd South","Saratoga Gap","Highway 9","Saratoga","San Jose"],
+  miles:"~120 mi", drive:3.75, driveText:"3.5–4 hrs", stops:1.5, traffic:0, feel:"Easy to moderate: Skyline narrows south of Page Mill; Highway 9 is twisty",
+  why:["Instead of retracing CA-84, it loops back through the redwoods around Loma Mar on Pescadero Creek Road.","Then a long run south along the ridge on Skyline Blvd, ocean on one side and the valley on the other, much of it under trees.","It drops down Highway 9 into Saratoga, so the return is traffic-free and ends close to home."],
+  note:"Skyline south of Page Mill Road and Highway 9 into Saratoga are narrower and twistier than the standard loop, and popular with weekend cyclists. Keep an easy pace and give riders room.",
+  wps:["Woodside, CA","Alice's Restaurant, Woodside, CA","San Gregorio, CA","Pescadero, CA","Loma Mar, CA","La Honda, CA","Russian Ridge Open Space Preserve, CA","Saratoga, CA"],
+  path:[...SJ_WOODSIDE,...HWY84_W,[37.30,-122.375],[37.275,-122.375],[37.255,-122.383],[37.27,-122.33],[37.278,-122.30],[37.29,-122.28],[37.31,-122.272],[37.32,-122.275],[37.36,-122.29],[37.388,-122.266],[37.364,-122.245],[37.345,-122.225],[37.316,-122.205],[37.29,-122.165],[37.27,-122.14],[37.257,-122.123],[37.25,-122.08],[37.264,-122.03],[37.29,-121.98],[37.32,-121.93],[37.335,-121.89]],
+  sights:[SIGHTS.r1[0], SIGHTS.r1[1], SIGHTS.r1[3], SIGHTS.r1[4], SIGHTS.r1[5], SIGHTS.r1[6], SIGHTS.r1[7],
+   {n:"Memorial Park",kind:"see",at:[37.2775,-122.2865],t:"20–30 min",d:"Old county park on Pescadero Creek Road with old-growth redwoods and a creek-side trail. Day-use fee.",map:gm("Memorial Park, Loma Mar, CA")},
+   SIGHTS.r1[2],
+   {n:"Russian Ridge",kind:"see",at:[37.316,-122.207],t:"20 min",d:"Grassy summit a short walk from the Skyline lot at Alpine Road, looking out to the ocean and across the Bay.",map:gm("Russian Ridge Open Space Preserve, CA")},
+   SIGHTS.r3[9], SIGHTS.r3[11]]},
+ r3:{ sub:"Extended: a slow detour through Big Basin on Highway 236",
+  chain:["San Jose","CA-84 West","San Gregorio","Highway 1 South","Davenport","Bonny Doon Rd","Felton","Highway 9 North","Boulder Creek","Highway 236 through Big Basin","Waterman Gap","Saratoga Gap","Saratoga","San Jose"],
+  miles:"~155 mi", drive:5.25, driveText:"5–5.5 hrs", stops:1.25, traffic:0, feel:"Moderate: Highway 236 is a slow, narrow forest road",
+  why:["Adds a slow drive on Highway 236 through Big Basin, California's oldest state park, where giant redwoods are recovering from the 2020 fire.","You can drive straight through without stopping; parking inside the park needs a day-use reservation booked ahead.","It rejoins Highway 9 near Waterman Gap for the same traffic-free finish into Saratoga."],
+  note:"Highway 236 is narrow and slow, so take it easy. Book a Big Basin day-use reservation in advance if you want to stop and walk among the big trees.",
+  wps:["Woodside, CA","San Gregorio State Beach, CA","Pigeon Point Lighthouse, CA","Davenport, CA","Bonny Doon, CA","Felton, CA","Boulder Creek, CA","Big Basin Redwoods State Park, CA","Saratoga, CA"],
+  path:[...R("r3").path.slice(0,r3BaseIdx+1),[37.15,-122.17],[37.172,-122.222],[37.19,-122.20],[37.207,-122.165],[37.207,-122.145],[37.23,-122.13],...R("r3").path.slice(r3BaseIdx+3)],
+  sights:[...SIGHTS.r3.slice(0,9),
+   {n:"Big Basin Redwoods (drive-through)",kind:"see",at:[37.172,-122.222],t:"Drive",d:"Highway 236 winds through the park's giant redwoods, scorched in 2020 and sprouting back green. Stopping or parking needs a day-use reservation.",map:gm("Big Basin Redwoods State Park, CA")},
+   SIGHTS.r3[9], SIGHTS.r3[11]]}
+};
+const V = (r, m) => { m = m || MODE[r.id]; return m==="ext" ? {...r, ...EXT[r.id], ext:true} : {...r, sights:SIGHTS[r.id], ext:false}; };
+
+// ---------- the combined route's sights and extended version ----------
+const SG_BEACH = {...SIGHTS.r2[2], t:"", d:"Half a mile from the general store: sandstone cliffs and a creek lagoon meeting the surf. Your first look at the ocean."};
+const RUSSIAN = {...EXT.r1.sights[9], d:"Grassy summit a short walk from the Skyline lot at Alpine Road, looking out to the ocean and across the Bay. A beautiful place to catch the sunset."};
+SIGHTS.r7 = [S.alice, SIGHTS.r1[3], S.sggs, SG_BEACH, SIGHTS.r1[5], S.arc, SIGHTS.r2[4], S.pp, SIGHTS.r2[7], S.dav, SIGHTS.r3[5], SIGHTS.r3[6], SIGHTS.r3[7], SIGHTS.r3[8], SIGHTS.r3[9], RUSSIAN, SIGHTS.r1[2], SIGHTS.r1[8]];
+EXT.r7 = { sub:"Extended: plus a slow drive through Big Basin's giant redwoods on Highway 236",
+  chain:["San Jose","CA-84 West","Alice's","San Gregorio","Stage Road","Pescadero","Highway 1 South","Davenport","Bonny Doon Rd","Felton","Boulder Creek","Highway 236 through Big Basin","Waterman Gap","Saratoga Gap","Skyline Blvd North","Windy Hill","CA-84 East","Alpine Inn","San Jose"],
+  miles:"~185 mi", drive:6, stops:1.5, traffic:0, feel:"Moderate: Highway 236 is a slow, narrow forest road",
+  why:[EXT.r3.why[0], EXT.r3.why[1], "It rejoins Highway 9 near Waterman Gap and finishes with the same Skyline ridge run past Russian Ridge and Windy Hill."],
+  note:"Highway 236 is narrow and slow, so take it easy. Book a Big Basin day-use reservation in advance if you want to stop and walk among the big trees. Otherwise the loop has no turning around: the only repeat is a few miles of CA-84 between Woodside and Alice's.",
+  wps:["Alice's Restaurant, Woodside, CA","San Gregorio State Beach, CA","Stage Rd, Pescadero, CA","Davenport, CA","Felton, CA","Boulder Creek, CA","Big Basin Redwoods State Park, CA","Windy Hill Open Space Preserve, Skyline Blvd, CA","Rossotti's Alpine Inn, Portola Valley, CA"],
+  path:[...SJ_WOODSIDE,...HWY84_W,[37.322,-122.403],[37.326,-122.387],[37.30,-122.375],[37.275,-122.375],[37.255,-122.383],[37.252,-122.41],[37.229,-122.410],[37.18,-122.394],[37.12,-122.34],[37.07,-122.27],[37.04,-122.23],[37.012,-122.196],[37.00,-122.18],[37.02,-122.15],[37.04,-122.14],[37.05,-122.09],[37.05,-122.073],[37.08,-122.09],[37.126,-122.122],[37.15,-122.17],[37.172,-122.222],[37.19,-122.20],[37.207,-122.165],[37.207,-122.145],[37.23,-122.13],[37.257,-122.123],[37.27,-122.14],[37.29,-122.165],[37.316,-122.205],[37.345,-122.225],[37.364,-122.245],[37.388,-122.266],[37.41,-122.275],[37.43,-122.255],[37.42,-122.23],[37.3998,-122.1972],[37.37,-122.11],[37.33,-122.04],[37.32,-121.95],[37.335,-121.89]],
+  sights:[S.alice, SIGHTS.r1[3], S.sggs, SG_BEACH, SIGHTS.r1[5], S.arc, SIGHTS.r2[4], S.pp, SIGHTS.r2[7], S.dav, SIGHTS.r3[5], SIGHTS.r3[6], SIGHTS.r3[7], SIGHTS.r3[8], EXT.r3.sights[9], SIGHTS.r3[9], RUSSIAN, SIGHTS.r1[2], SIGHTS.r1[8]]};
+
+const START = 11, FIVE = 17, END_SCALE = 21;
+const fmt = h => { const hr = Math.floor(h), m = Math.round((h-hr)*60/15)*15; let H = hr + (m===60?1:0), M = m===60?0:m;
+  const ap = H>=12?"PM":"AM"; const h12 = ((H+11)%12)+1; return h12 + ":" + String(M).padStart(2,"0") + " " + ap; };
+const totalH = r => { const h=Math.round(r.drive*2)/2; return `About ${h%1?Math.floor(h)+"½":h} hrs`; };
+const backAt = r => START + r.drive + r.stops + r.traffic;
+
+let selected = "r7";
+let filter = "all";
+
+function renderRoutes(){
+  const box = document.getElementById("routes");
+  box.innerHTML = "";
+  const groups = [["all",""]];
+  groups.forEach(([g,label])=>{
+    const list = ROUTES;
+    const visible = list.filter(r => filter==="all" || filter===r.group);
+    if(!visible.length) return;
+    if(label){ const h = document.createElement("h2"); h.className="group-title"; h.textContent=label; box.appendChild(h); }
+    visible.forEach(r0=>{
+      const r = V(r0);
+      const back = backAt(r), late = back > FIVE + 0.01;
+      const el = document.createElement("article");
+      el.className = "route" + (r.id===selected?" open":"");
+      el.id = r.id;
+      el.style.setProperty("--rc", `var(${r.color})`);
+      el.setAttribute("aria-current", r.id===selected ? "true":"false");
+      const pct = h => Math.max(0,Math.min(100,(h-START)/(END_SCALE-START)*100));
+      el.innerHTML = `
+        <button class="route-head" aria-expanded="${r.id===selected}" aria-controls="${r.id}-d">
+          <span class="swatch" aria-hidden="true"></span>
+          <span><span class="pick">${PICK[r.id].badge}</span><span class="route-name">${r.name}</span><span class="route-sub">${r.ext?`<b class="extlabel">${r.sub}</b>`:r.sub}</span></span>
+          <span class="route-meta">${r.miles}<span class="back">${totalH(r)}</span></span>
+        </button>
+        <div class="detail" id="${r.id}-d">
+          <div class="modes" role="group" aria-label="Route version">
+            <button type="button" data-mode="std" aria-pressed="${!r.ext}">Standard<span>${V(r0,"std").miles}, ${totalH(V(r0,"std")).toLowerCase()}</span></button>
+            <button type="button" data-mode="ext" aria-pressed="${r.ext}">Extended<span>${V(r0,"ext").miles}, ${totalH(V(r0,"ext")).toLowerCase()}</span></button>
+          </div>
+          <p class="bestif"><b>Choose this if</b> ${PICK[r.id].best}</p>
+          <p class="chain">${r.chain.map(c=>`<span>${c}</span>`).join(" ")}</p>
+          <dl class="stats">
+            <div class="stat"><dt>Distance</dt><dd>${r.miles}</dd></div>
+            <div class="stat"><dt>Driving time</dt><dd>${totalH(r)}</dd></div>
+            <div class="stat"><dt>Air temp</dt><dd>${r.temp}</dd></div>
+          </dl>
+          <h3>Things to see along the way</h3>
+          <p class="fine" style="margin-top:0">In driving order. Numbers match the map.</p>
+          <ol class="sights">${r.sights.map((s,i)=>`<li class="k-${s.kind}"><span class="num" aria-hidden="true">${i+1}</span><div><b>${s.n}</b>${KIND[s.kind]?` <span class="tag">${KIND[s.kind]}</span>`:""}<br>${s.d} <a class="maplink" href="${s.map}" target="_blank" rel="noopener">Map</a></div></li>`).join("")}</ol>
+          ${r.note?`<div class="note">${r.note}</div>`:""}${!r.ext&&PICK[r.id].tip?`<div class="note">${PICK[r.id].tip}</div>`:""}
+          <a class="go" href="${dir(r.wps)}" target="_blank" rel="noopener">Open this route in Google Maps</a>
+        </div>`;
+      el.querySelectorAll(".modes button").forEach(b=>b.addEventListener("click",()=>{
+        MODE[r.id]=b.dataset.mode; renderRoutes(); highlight();
+        const nb=document.querySelector(`#${r.id} .modes button[data-mode="${b.dataset.mode}"]`); if(nb) nb.focus();
+      }));
+      el.querySelector(".route-head").addEventListener("click",()=>{
+        selected = (selected===r.id && el.classList.contains("open")) ? null : r.id;
+        renderRoutes(); highlight();
+      });
+      box.appendChild(el);
+    });
+  });
+}
+
+function renderTable(){
+  const tb = document.getElementById("cmp");
+  tb.innerHTML = ROUTES.flatMap(r0=>[V(r0,"std"),V(r0,"ext")]).map(r=>{
+    const back = backAt(r), late = back > FIVE + 0.01;
+    return `<tr data-id="${r.id}" data-mode="${r.ext?"ext":"std"}" tabindex="0"><td>${r.ext?`<span class="dot" style="border:2px solid var(${r.color})"></span><span style="color:var(--muted)">Extended version</span>`:`<span class="dot" style="background:var(${r.color})"></span>${r.name}`}</td><td>${r.miles}</td><td>${totalH(r)}</td><td>${r.temp}</td><td>${r.feel}</td></tr>`;
+  }).join("");
+  tb.querySelectorAll("tr").forEach(tr=>{
+    const go = ()=>{ MODE[tr.dataset.id]=tr.dataset.mode; selectRoute(tr.dataset.id, true); };
+    tr.addEventListener("click",go);
+    tr.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault();go();}});
+  });
+}
+
+function selectRoute(id, scroll){
+  selected = id;
+  const r = ROUTES.find(x=>x.id===id);
+  if(filter!=="all" && filter!==r.group){ filter="all"; syncFilters(); }
+  renderRoutes(); highlight();
+  if(scroll){ const el=document.getElementById(id); if(el) el.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth", block:"start"}); }
+}
+
+// ---------- map ----------
+const LNG0=-122.48, LNG1=-121.85, LAT0=37.52, LAT1=36.93, COS=0.795, K=1000;
+const W=(LNG1-LNG0)*COS*K, H=(LAT0-LAT1)*K;
+const P = ([lat,lng]) => [((lng-LNG0)*COS*K).toFixed(1), ((LAT0-lat)*K).toFixed(1)];
+const pts = arr => arr.map(p=>P(p).join(",")).join(" ");
+
+const COAST=[[37.98,-122.72],[37.91,-122.69],[37.90,-122.64],[37.86,-122.58],[37.825,-122.53],[37.81,-122.48],[37.78,-122.51],[37.73,-122.505],[37.62,-122.50],[37.53,-122.52],[37.50,-122.50],[37.47,-122.45],[37.40,-122.42],[37.32,-122.41],[37.25,-122.415],[37.18,-122.40],[37.11,-122.34],[37.05,-122.25],[37.01,-122.20],[36.96,-122.06],[36.95,-122.02],[36.97,-121.95],[36.94,-121.89],[36.88,-121.82],[36.80,-121.79],[36.70,-121.80],[36.61,-121.85],[36.60,-121.89],[36.635,-121.93],[36.58,-121.975],[36.55,-121.93],[36.515,-121.955],[36.44,-121.92],[36.37,-121.905],[36.31,-121.905],[36.24,-121.82],[36.16,-121.69],[36.10,-121.62],[36.10,-121.45],[37.98,-121.45]];
+const BAY=[[37.835,-122.485],[37.812,-122.476],[37.81,-122.42],[37.80,-122.39],[37.71,-122.38],[37.62,-122.37],[37.58,-122.30],[37.52,-122.24],[37.48,-122.15],[37.45,-122.08],[37.43,-121.98],[37.46,-121.95],[37.53,-122.06],[37.60,-122.14],[37.70,-122.20],[37.78,-122.27],[37.84,-122.30],[37.92,-122.37],[37.98,-122.42],[37.98,-122.50],[37.88,-122.47],[37.86,-122.48]];
+const PLACES=[
+ ["San Jose",37.335,-121.89,"l"],["Woodside",37.43,-122.255,"r"],["Pescadero",37.255,-122.383,"r"],["Half Moon Bay",37.463,-122.428,"r"],
+ ["Davenport",37.012,-122.196,"l"],["Santa Cruz",36.974,-122.03,"r"],["Saratoga",37.264,-122.03,"r",30],["Felton",37.05,-122.073,"r",22],["Boulder Creek",37.126,-122.122,"r"],["Los Gatos",37.226,-121.98,"r"]
+];
+const CROWDS=[
+ {label:"Hwy 17",at:[37.08,-121.995],path:[[37.30,-121.93],[37.226,-121.98],[37.17,-121.985],[37.10,-122.0],[37.03,-122.02],[36.98,-122.03]]},
+ {label:"Hwy 92",at:[37.485,-122.385],path:[[37.52,-122.33],[37.50,-122.36],[37.48,-122.39],[37.465,-122.425]]}
+];
+
+function drawMap(){
+  const svg = document.getElementById("map");
+  svg.setAttribute("viewBox",`0 0 ${W.toFixed(0)} ${H.toFixed(0)}`);
+  let s = `<rect width="${W}" height="${H}" fill="var(--ocean)"/>`;
+  s += `<polygon points="${pts(COAST)}" fill="var(--land)" stroke="var(--line)" stroke-width="1.5"/>`;
+  s += `<polygon points="${pts(BAY)}" fill="var(--bay)" stroke="var(--line)" stroke-width="1.2"/>`;
+  const [ox,oy]=P([37.02,-122.44]); s+=`<text class="water-label" x="${ox}" y="${oy}" transform="rotate(-50 ${ox} ${oy})">Pacific Ocean</text>`;
+  const [mx,my]=P([36.945,-121.99]); s+=`<text class="water-label" x="${mx}" y="${my}">Monterey Bay</text>`;
+  const [bx,by]=P([37.49,-122.15]); s+=`<text class="water-label" x="${bx}" y="${by}" style="font-size:12px">SF Bay</text>`;
+  s += CROWDS.map(c=>{const [x,y]=P(c.at); return `<polyline points="${pts(c.path)}" fill="none" stroke="var(--warn)" stroke-width="3" stroke-dasharray="6 5" stroke-linecap="round" opacity=".8"/><text class="crowd" x="${c.end?+x-8:+x+8}" y="${y}" text-anchor="${c.end?"end":"start"}">${c.label}</text>`;}).join("");
+  s += `<g id="lines">` + ROUTES.map(r=>`<polyline class="rline" data-id="${r.id}" points="${pts(r.path)}" stroke="var(${r.color})"><title>${r.name}</title></polyline>`).join("") + `</g>`;
+  s += PLACES.map(([n,la,ln,side,off])=>{const [x,y]=P([la,ln]); const dx= (side==="l"?-1:1)*(off||8); const anchor= side==="l"?"end":"start";
+    return `<g class="place"><circle cx="${x}" cy="${y}" r="${n==="San Jose"?5.5:3.5}"/><text x="${+x+dx}" y="${+y+4}" text-anchor="${anchor}">${n}</text></g>`;}).join("");
+  svg.innerHTML = s;
+  svg.querySelectorAll(".rline").forEach(l=>l.addEventListener("click",()=>selectRoute(l.dataset.id,true)));
+  highlight();
+}
+
+function highlight(){
+  const svg = document.getElementById("map");
+  const lines = svg.querySelectorAll(".rline");
+  const g = svg.querySelector("#lines");
+  lines.forEach(l=>{
+    const on = l.dataset.id===selected;
+    const r = ROUTES.find(x=>x.id===l.dataset.id);
+    const shown = filter==="all" || filter===r.group;
+    l.style.opacity = !shown ? 0 : (selected ? (on?1:.28) : .85);
+    l.style.strokeWidth = on ? 6 : 3.5;
+    l.style.pointerEvents = shown ? "auto" : "none";
+    l.setAttribute("points", pts(V(r).path));
+    if(on) g.appendChild(l);
+  });
+  const old = svg.querySelector("#markers"); if(old) old.remove();
+  const r = ROUTES.find(x=>x.id===selected);
+  if(r && (filter==="all"||filter===r.group)){
+    const mg = document.createElementNS("http://www.w3.org/2000/svg","g"); mg.id="markers"; mg.setAttribute("class","mk");
+    mg.innerHTML = V(r).sights.map((s,i)=>{const [x,y]=P(s.at); const c=`var(${r.color})`;
+      const shape = s.kind==="eat" ? `<rect x="${x-9}" y="${y-9}" width="18" height="18" rx="4" fill="${c}" stroke="var(--land)" stroke-width="2"/>`
+        : s.kind==="opt" ? `<circle cx="${x}" cy="${y}" r="9" fill="var(--land)" stroke="${c}" stroke-width="2" stroke-dasharray="3 2"/>`
+        : `<circle cx="${x}" cy="${y}" r="9" fill="${c}" stroke="var(--land)" stroke-width="2"/>`;
+      const tc = s.kind==="opt" ? ` style="fill:${c}"` : "";
+      return `<g>${shape}<text x="${x}" y="${+y+4}" text-anchor="middle"${tc}>${i+1}</text><title>${i+1}. ${s.n}</title></g>`;}).join("");
+    svg.appendChild(mg);
+  }
+  document.getElementById("mapcap").textContent = r ? `Showing: ${r.name}${MODE[r.id]==="ext"?" (extended)":""}. Dashed orange lines are where the beach crowds go. Circles are sights, squares are famous food stops, dashed circles are optional detours.` : "Tap a line or a route to highlight it.";
+}
+
+function syncFilters(){
+  document.querySelectorAll(".filters button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.filter===filter));
+}
+document.querySelectorAll(".filters button").forEach(b=>b.addEventListener("click",()=>{
+  filter=b.dataset.filter; syncFilters();
+  const cur = ROUTES.find(x=>x.id===selected);
+  if(cur && filter!=="all" && cur.group!==filter){ selected = ROUTES.find(x=>x.group===filter).id; }
+  renderRoutes(); highlight();
+}));
+
+const REGIONS = {
+  W:"Woodside & Skyline", L:"La Honda & San Gregorio", P:"Pescadero & Pigeon Point", D:"Año Nuevo to Davenport",
+  S:"Santa Cruz west side", F:"Felton, Boulder Creek & Big Basin", N:"Redwoods & the coast", V:"Saratoga & the valley"};
+const TRIVIA = [
+ ["W","Woodside's early economy was built on what?","Redwood logging. In the 1850s the hills around Woodside were full of sawmills supplying lumber to booming San Francisco."],
+ ["W","The Woodside Store, now a small museum, opened in which decade?","The 1850s (1854). Its co-founder was a dentist, so the store doubled as a dentist's office for loggers."],
+ ["W","What do Stanford students traditionally call Rossotti's Alpine Inn?","Zott's."],
+ ["W","What computing milestone is marked by a plaque at the Alpine Inn?","In 1976, SRI researchers sent data from a van in its parking lot across linked networks, an early step toward the internet."],
+ ["W","The Alpine Inn began in the 1850s as what kind of establishment?","A gambling house, known as Casa de Tableta."],
+ ["W","Filoli, the grand estate near Woodside, appeared in the opening credits of which 1980s TV drama?","Dynasty. It stood in for the Carrington mansion."],
+ ["W","What do the letters in 'Filoli' stand for?","Fight, Love, Live: from the owner's credo, 'Fight for a just cause; Love your fellow man; Live a good life.'"],
+ ["W","Which famous fault does I-280 follow past Crystal Springs Reservoir?","The San Andreas Fault. The reservoir sits right in the rift valley."],
+ ["W","Crystal Springs Reservoir stores water that comes mostly from where?","Hetch Hetchy, in Yosemite National Park, about 160 miles away."],
+ ["W","What's the local name for the spot where CA-84 crosses Skyline Blvd, home of Alice's Restaurant?","Skylonda."],
+ ["W","Alice's Restaurant takes its name from what?","Arlo Guthrie's 1967 song 'Alice's Restaurant', which runs over 18 minutes."],
+ ["W","Skyline Boulevard carries which state route number?","California Route 35."],
+ ["W","Which agency protects Windy Hill and Russian Ridge as open space?","The Midpeninsula Regional Open Space District."],
+ ["W","CA-84 has different names on each side of the ridge. What's it called on the coast side?","La Honda Road. On the Bay side it's Woodside Road."],
+ ["W","Portola Valley is named after which explorer?","Gaspar de Portolá, who led the 1769 Spanish expedition up this coast."],
+ ["W","What did Portolá's expedition stumble upon in November 1769?","San Francisco Bay. They were the first Europeans known to see it, from Sweeney Ridge."],
+ ["W","Skyline Boulevard runs along the crest of which mountain range?","The Santa Cruz Mountains."],
+ ["W","What's the highest peak in the Santa Cruz Mountains?","Loma Prieta, at about 3,790 feet."],
+ ["W","The 1989 Loma Prieta earthquake struck during what famous event?","Game 3 of the World Series between the Giants and the A's. It measured 6.9."],
+ ["W","Castle Rock State Park, near Saratoga Gap, is a favorite of which athletes?","Rock climbers. Its wind-carved sandstone is great for bouldering."],
+ ["W","Which trail runs about 30 miles from Castle Rock through Big Basin to the ocean at Waddell Beach?","The Skyline-to-the-Sea Trail."],
+ ["L","Which author lived in La Honda in the early 1960s and hosted the Merry Pranksters?","Ken Kesey."],
+ ["L","What was Ken Kesey's famous 1962 novel?","One Flew Over the Cuckoo's Nest."],
+ ["L","What name was painted on the Merry Pranksters' psychedelic school bus?","Further (sometimes spelled Furthur)."],
+ ["L","Which band became the house band at Kesey's 'Acid Test' parties?","The Grateful Dead."],
+ ["L","Which writer chronicled Kesey's crew in The Electric Kool-Aid Acid Test?","Tom Wolfe, in 1968."],
+ ["L","What does 'La Honda' mean in Spanish?","'The deep one', a nod to the deep redwood canyon the town sits in."],
+ ["L","Since what year has the San Gregorio General Store been operating?","1889."],
+ ["L","San Gregorio is named after which saint?","Saint Gregory, via the Mexican-era land grant Rancho San Gregorio."],
+ ["L","In summer, what forms where San Gregorio Creek meets the sea?","A lagoon, when sand builds up and blocks the creek mouth."],
+ ["L","In what year did the Portolá expedition camp near San Gregorio?","1769. Many of the men were sick and rested there."],
+ ["L","Highway 1 is California's longest state route. Roughly how long is it?","About 650 miles, from Dana Point to near Leggett."],
+ ["P","What does 'Pescadero' mean in Spanish?","Roughly 'fisherman' or 'fishing place'. The creeks were full of trout and salmon."],
+ ["P","Arcangeli Grocery, home of the artichoke garlic bread, is also known locally as what?","Norm's Market."],
+ ["P","Duarte's Tavern in Pescadero is famous for which two dishes?","Cream of artichoke soup and olallieberry pie."],
+ ["P","The olallieberry is a cross of which two berries?","The loganberry and the youngberry."],
+ ["P","Roughly what share of artichokes grown in the U.S. come from California?","Nearly all of them, about 99 percent."],
+ ["P","Botanically speaking, what is an artichoke?","The flower bud of a thistle. Left alone, it blooms bright purple."],
+ ["P","According to local legend, where did the white paint on many of Pescadero's buildings come from?","The cargo of a shipwreck, the steamer Columbia, which ran aground near Pigeon Point in 1896."],
+ ["P","Pigeon Point is named after what?","The clipper ship Carrier Pigeon, which wrecked there in 1853."],
+ ["P","How tall is Pigeon Point Lighthouse?","115 feet, tied for the tallest lighthouse on the West Coast."],
+ ["P","When was Pigeon Point Lighthouse first lit?","1872."],
+ ["P","What kind of lens did Pigeon Point use?","A first-order Fresnel lens, the largest and most powerful size."],
+ ["P","Besides being a lighthouse, what can you do overnight at Pigeon Point?","Stay in its hostel, in the old keepers' houses."],
+ ["P","Which endangered snake lives around Pescadero Marsh?","The San Francisco garter snake, one of the most colorful snakes in North America."],
+ ["P","Bean Hollow's 'Pebble Beach' is named for what?","Its colorful pebbles, including bits of agate and jasper."],
+ ["P","What's the name for the honeycomb pattern weathered into sandstone along this coast?","Tafoni."],
+ ["P","Half Moon Bay, just north of the route, hosts what famous October festival?","The Art & Pumpkin Festival, with a giant pumpkin weigh-off where winners top 2,000 pounds."],
+ ["P","What's the big-wave surf spot near Half Moon Bay famous for 50-foot waves?","Mavericks, off Pillar Point."],
+ ["D","What does 'Año Nuevo' mean, and why?","'New Year'. A Spanish expedition named the point in early January 1603."],
+ ["D","Año Nuevo is famous for a large colony of which animal?","Northern elephant seals."],
+ ["D","Why are they called elephant seals?","The adult males have a large, inflatable, trunk-like nose."],
+ ["D","How much can a bull elephant seal weigh?","Up to about 5,000 pounds."],
+ ["D","By the late 1800s, hunting had cut elephant seals to roughly how many?","Perhaps fewer than 100, on Guadalupe Island off Mexico. Today there are well over 100,000."],
+ ["D","How deep can elephant seals dive?","More than a mile, staying under for up to two hours."],
+ ["D","What's on Año Nuevo Island, just offshore?","The abandoned buildings of an old light station, now taken over by seals, sea lions and seabirds."],
+ ["D","Waddell Creek and Waddell Beach are named after whom?","Lumberman William Waddell, who was killed by a grizzly bear there in 1875."],
+ ["D","What does 'Rancho del Oso', the area around Waddell Creek, mean?","'Bear Ranch'."],
+ ["D","The grizzly bear is on California's flag. When was the last one seen in the state?","In the 1920s."],
+ ["D","Davenport is named after whom?","Captain John Davenport, a whaler who set up a whaling operation there in the 1860s."],
+ ["D","How did Davenport's whalers hunt?","Shore whaling: lookouts spotted whales from the bluffs, and crews rowed out from the beach."],
+ ["D","What industry dominated Davenport for about a century, until 2010?","Cement. The big plant's towers still stand by the highway."],
+ ["D","Gray whales pass Davenport on a migration between which two places?","Arctic feeding grounds near Alaska and breeding lagoons in Baja California, over 10,000 miles round trip."],
+ ["D","When's the best time to spot gray whales from these bluffs?","Roughly December through April, heading south in winter and north in spring."],
+ ["D","The ranch lands around Davenport became part of which national monument in 2017?","The California Coastal National Monument (the Cotoni-Coast Dairies unit)."],
+ ["D","What's a lone rock pillar standing offshore, like the one at Shark Fin Cove, called?","A sea stack."],
+ ["S","How many arches did Natural Bridges State Beach originally have?","Three. Only one is still standing."],
+ ["S","What insect gathers by the thousands at Natural Bridges in fall and winter?","Monarch butterflies, roughly October through February."],
+ ["S","What kind of trees do the monarchs cluster on at Natural Bridges?","Eucalyptus."],
+ ["S","The first recorded surfing in North America happened in Santa Cruz in 1885. Who was surfing?","Three Hawaiian princes, riding redwood boards at the mouth of the San Lorenzo River."],
+ ["S","The Santa Cruz Surfing Museum is housed in what?","The Mark Abbott Memorial Lighthouse at Lighthouse Point, built in memory of a young surfer."],
+ ["S","How did the surf break Steamer Lane get its name?","It lies in the channel once used by steamships."],
+ ["S","Which Santa Cruz surfer popularized the wetsuit?","Jack O'Neill."],
+ ["S","The Santa Cruz Boardwalk's wooden Giant Dipper roller coaster opened in what year?","1924. It's now a National Historic Landmark."],
+ ["S","What is UC Santa Cruz's mascot?","The banana slug."],
+ ["S","What was Wilder Ranch, just north of Santa Cruz?","A dairy ranch, now a state park with restored 1800s buildings."],
+ ["S","The Monterey Bay National Marine Sanctuary covers the coast from where to where?","From Marin County south to Cambria, about 276 miles of shoreline."],
+ ["F","When was the Felton Covered Bridge built?","1892."],
+ ["F","Which river does the Felton Covered Bridge cross?","The San Lorenzo River."],
+ ["F","Roaring Camp's steam trains use what kind of geared locomotive built for logging?","Shay locomotives."],
+ ["F","Which U.S. president visited the giant redwoods in today's Henry Cowell park in 1903?","Theodore Roosevelt."],
+ ["F","Which explorer, legend says, camped inside a hollow redwood in Henry Cowell park?","John C. Frémont. The 'Fremont Tree' is still there."],
+ ["F","When was Big Basin Redwoods established?","1902, making it California's oldest state park."],
+ ["F","Which group campaigned to save Big Basin's redwoods?","The Sempervirens Club, founded in 1900, with photographer Andrew P. Hill among its leaders."],
+ ["F","What was the 2020 fire that swept through Big Basin called?","The CZU Lightning Complex fire. It burned about 97 percent of the park."],
+ ["F","What was Boulder Creek known for in the late 1800s?","Being a rough logging and railroad town, famous for its saloons."],
+ ["F","Lumber from the Santa Cruz Mountains helped rebuild which city after 1906?","San Francisco, after the great earthquake and fire."],
+ ["F","Highway 236 through Big Basin starts and ends on which highway?","Highway 9. It's a loop."],
+ ["N","What is the coast redwood's scientific name?","Sequoia sempervirens."],
+ ["N","What does 'sempervirens' mean?","'Ever-living' or 'always green'."],
+ ["N","What is the tallest known living tree, and how tall is it?","Hyperion, a coast redwood in Northern California, about 380 feet tall."],
+ ["N","How long can coast redwoods live?","More than 2,000 years."],
+ ["N","How do redwoods survive wildfires?","Bark up to a foot thick, little flammable resin, and the ability to resprout from the trunk and roots."],
+ ["N","What's a circle of young redwoods growing around an old stump called?","A fairy ring. The young trees are clones sprouted from the parent's roots."],
+ ["N","Where do coast redwoods get much of their summer moisture?","Fog. It drips from the branches and is absorbed through the needles."],
+ ["N","Why is the coast often foggy when it's very hot inland?","Hot inland air rises and pulls in cool, moist air off the cold ocean, bringing the fog bank with it."],
+ ["N","Why is the ocean here so cold, even in summer?","Upwelling: winds push surface water offshore, and cold water rises from the deep to replace it."],
+ ["N","What bright yellow creature lives on the redwood forest floor?","The banana slug, one of the largest slugs in the world."],
+ ["N","Which big cat roams the Santa Cruz Mountains?","The mountain lion. UC Santa Cruz researchers track them with GPS collars."],
+ ["N","What is California's official state tree?","The California redwood, covering both the coast redwood and the giant sequoia."],
+ ["V","Saratoga is named after which other town?","Saratoga Springs, New York. Local mineral springs reminded settlers of it."],
+ ["V","When were Hakone Gardens in Saratoga created?","In the 1910s, making them among the oldest Japanese-style gardens in the Western Hemisphere."],
+ ["V","Villa Montalvo in Saratoga was built by whom?","Senator James D. Phelan, a former mayor of San Francisco, in 1912."],
+ ["V","What does 'Los Gatos' mean?","'The cats', after the wildcats and mountain lions in the hills."],
+ ["V","What was the Santa Clara Valley called before it became Silicon Valley?","The Valley of Heart's Delight, for its orchards."],
+ ["V","Who popularized the name 'Silicon Valley' in 1971?","Journalist Don Hoefler."],
+ ["V","What is Highway 9 called as it runs through downtown Saratoga?","Big Basin Way."]
+];
+
+// ---------- tabs ----------
+const tabs=[...document.querySelectorAll('[role="tab"]')];
+function showTab(t){
+  tabs.forEach(b=>{const on=b===t; b.setAttribute("aria-selected",on); b.tabIndex=on?0:-1; document.getElementById(b.getAttribute("aria-controls")).hidden=!on;});
+  window.scrollTo({top:0});
+}
+tabs.forEach((b,i)=>{
+  b.addEventListener("click",()=>showTab(b));
+  b.addEventListener("keydown",e=>{ if(e.key==="ArrowRight"||e.key==="ArrowLeft"){ const n=tabs[(i+(e.key==="ArrowRight"?1:tabs.length-1))%tabs.length]; n.focus(); showTab(n);} });
+});
+
+// ---------- trivia ----------
+let tvOrder = TRIVIA.map((_,i)=>i), tvRegion="all", tvAll=false;
+document.getElementById("tv-count").textContent = TRIVIA.length;
+const tvF = document.getElementById("tv-filters");
+tvF.innerHTML = `<button type="button" data-r="all" aria-pressed="true">All areas</button>` + Object.entries(REGIONS).map(([k,v])=>`<button type="button" data-r="${k}" aria-pressed="false">${v}</button>`).join("");
+tvF.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{tvRegion=b.dataset.r; tvF.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b)); renderTrivia();}));
+function renderTrivia(){
+  const g=document.getElementById("tv-grid");
+  g.innerHTML = tvOrder.filter(i=>tvRegion==="all"||TRIVIA[i][0]===tvRegion).map(i=>{const [r,q,a]=TRIVIA[i];
+    return `<button type="button" class="tv-card" data-i="${i}" aria-expanded="${tvAll}"><span class="tv-q"><span class="tv-r">${REGIONS[r]}</span>${q}</span><span class="tv-hint">Tap for the answer</span><span class="tv-a">${a}</span></button>`;}).join("");
+  g.querySelectorAll(".tv-card").forEach(c=>c.addEventListener("click",()=>c.setAttribute("aria-expanded", c.getAttribute("aria-expanded")!=="true")));
+}
+document.getElementById("tv-shuffle").addEventListener("click",()=>{ for(let i=tvOrder.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [tvOrder[i],tvOrder[j]]=[tvOrder[j],tvOrder[i]];} renderTrivia(); });
+document.getElementById("tv-revealall").addEventListener("click",e=>{ tvAll=!tvAll; e.currentTarget.setAttribute("aria-pressed",tvAll); e.currentTarget.textContent=tvAll?"Hide all answers":"Show all answers"; renderTrivia(); });
+document.getElementById("tv-random").addEventListener("click",()=>{
+  const cards=[...document.querySelectorAll("#tv-grid .tv-card")]; if(!cards.length) return;
+  const c=cards[Math.floor(Math.random()*cards.length)];
+  cards.forEach(x=>x.classList.remove("flash")); c.setAttribute("aria-expanded","false"); c.classList.add("flash");
+  c.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth", block:"center"}); c.focus({preventScroll:true});
+});
+renderTrivia();
+
+renderRoutes(); renderTable(); drawMap();
+</script>
+</body>
+</html>
