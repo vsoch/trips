@@ -1,0 +1,1414 @@
+<title>Oakhurst Snow Basecamp</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;800;900&family=Overpass+Mono:wght@400;600&display=swap">
+<style>
+
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-container,
+.leaflet-pane > svg,
+.leaflet-pane > canvas,
+.leaflet-zoom-box,
+.leaflet-image-layer,
+.leaflet-layer {
+	position: absolute;
+	left: 0;
+	top: 0;
+	}
+.leaflet-container {
+	overflow: hidden;
+	}
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	-webkit-user-select: none;
+	   -moz-user-select: none;
+	        user-select: none;
+	  -webkit-user-drag: none;
+	}
+
+.leaflet-tile::selection {
+	background: transparent;
+}
+
+.leaflet-safari .leaflet-tile {
+	image-rendering: -webkit-optimize-contrast;
+	}
+
+.leaflet-safari .leaflet-tile-container {
+	width: 1600px;
+	height: 1600px;
+	-webkit-transform-origin: 0 0;
+	}
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	display: block;
+	}
+
+
+.leaflet-container .leaflet-overlay-pane svg {
+	max-width: none !important;
+	max-height: none !important;
+	}
+.leaflet-container .leaflet-marker-pane img,
+.leaflet-container .leaflet-shadow-pane img,
+.leaflet-container .leaflet-tile-pane img,
+.leaflet-container img.leaflet-image-layer,
+.leaflet-container .leaflet-tile {
+	max-width: none !important;
+	max-height: none !important;
+	width: auto;
+	padding: 0;
+	}
+
+.leaflet-container img.leaflet-tile {
+	
+	mix-blend-mode: plus-lighter;
+}
+
+.leaflet-container.leaflet-touch-zoom {
+	-ms-touch-action: pan-x pan-y;
+	touch-action: pan-x pan-y;
+	}
+.leaflet-container.leaflet-touch-drag {
+	-ms-touch-action: pinch-zoom;
+	
+	touch-action: none;
+	touch-action: pinch-zoom;
+}
+.leaflet-container.leaflet-touch-drag.leaflet-touch-zoom {
+	-ms-touch-action: none;
+	touch-action: none;
+}
+.leaflet-container {
+	-webkit-tap-highlight-color: transparent;
+}
+.leaflet-container a {
+	-webkit-tap-highlight-color: rgba(51, 181, 229, 0.4);
+}
+.leaflet-tile {
+	filter: inherit;
+	visibility: hidden;
+	}
+.leaflet-tile-loaded {
+	visibility: inherit;
+	}
+.leaflet-zoom-box {
+	width: 0;
+	height: 0;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	z-index: 800;
+	}
+
+.leaflet-overlay-pane svg {
+	-moz-user-select: none;
+	}
+
+.leaflet-pane         { z-index: 400; }
+
+.leaflet-tile-pane    { z-index: 200; }
+.leaflet-overlay-pane { z-index: 400; }
+.leaflet-shadow-pane  { z-index: 500; }
+.leaflet-marker-pane  { z-index: 600; }
+.leaflet-tooltip-pane   { z-index: 650; }
+.leaflet-popup-pane   { z-index: 700; }
+
+.leaflet-map-pane canvas { z-index: 100; }
+.leaflet-map-pane svg    { z-index: 200; }
+
+.leaflet-vml-shape {
+	width: 1px;
+	height: 1px;
+	}
+.lvml {
+	behavior: url(#default#VML);
+	display: inline-block;
+	position: absolute;
+	}
+
+
+
+
+.leaflet-control {
+	position: relative;
+	z-index: 800;
+	pointer-events: visiblePainted; 
+	pointer-events: auto;
+	}
+.leaflet-top,
+.leaflet-bottom {
+	position: absolute;
+	z-index: 1000;
+	pointer-events: none;
+	}
+.leaflet-top {
+	top: 0;
+	}
+.leaflet-right {
+	right: 0;
+	}
+.leaflet-bottom {
+	bottom: 0;
+	}
+.leaflet-left {
+	left: 0;
+	}
+.leaflet-control {
+	float: left;
+	clear: both;
+	}
+.leaflet-right .leaflet-control {
+	float: right;
+	}
+.leaflet-top .leaflet-control {
+	margin-top: 10px;
+	}
+.leaflet-bottom .leaflet-control {
+	margin-bottom: 10px;
+	}
+.leaflet-left .leaflet-control {
+	margin-left: 10px;
+	}
+.leaflet-right .leaflet-control {
+	margin-right: 10px;
+	}
+
+
+
+
+.leaflet-fade-anim .leaflet-popup {
+	opacity: 0;
+	-webkit-transition: opacity 0.2s linear;
+	   -moz-transition: opacity 0.2s linear;
+	        transition: opacity 0.2s linear;
+	}
+.leaflet-fade-anim .leaflet-map-pane .leaflet-popup {
+	opacity: 1;
+	}
+.leaflet-zoom-animated {
+	-webkit-transform-origin: 0 0;
+	    -ms-transform-origin: 0 0;
+	        transform-origin: 0 0;
+	}
+svg.leaflet-zoom-animated {
+	will-change: transform;
+}
+
+.leaflet-zoom-anim .leaflet-zoom-animated {
+	-webkit-transition: -webkit-transform 0.25s cubic-bezier(0,0,0.25,1);
+	   -moz-transition:    -moz-transform 0.25s cubic-bezier(0,0,0.25,1);
+	        transition:         transform 0.25s cubic-bezier(0,0,0.25,1);
+	}
+.leaflet-zoom-anim .leaflet-tile,
+.leaflet-pan-anim .leaflet-tile {
+	-webkit-transition: none;
+	   -moz-transition: none;
+	        transition: none;
+	}
+
+.leaflet-zoom-anim .leaflet-zoom-hide {
+	visibility: hidden;
+	}
+
+
+
+
+.leaflet-interactive {
+	cursor: pointer;
+	}
+.leaflet-grab {
+	cursor: -webkit-grab;
+	cursor:    -moz-grab;
+	cursor:         grab;
+	}
+.leaflet-crosshair,
+.leaflet-crosshair .leaflet-interactive {
+	cursor: crosshair;
+	}
+.leaflet-popup-pane,
+.leaflet-control {
+	cursor: auto;
+	}
+.leaflet-dragging .leaflet-grab,
+.leaflet-dragging .leaflet-grab .leaflet-interactive,
+.leaflet-dragging .leaflet-marker-draggable {
+	cursor: move;
+	cursor: -webkit-grabbing;
+	cursor:    -moz-grabbing;
+	cursor:         grabbing;
+	}
+
+
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-image-layer,
+.leaflet-pane > svg path,
+.leaflet-tile-container {
+	pointer-events: none;
+	}
+
+.leaflet-marker-icon.leaflet-interactive,
+.leaflet-image-layer.leaflet-interactive,
+.leaflet-pane > svg path.leaflet-interactive,
+svg.leaflet-image-layer.leaflet-interactive path {
+	pointer-events: visiblePainted; 
+	pointer-events: auto;
+	}
+
+
+
+.leaflet-container {
+	background: #ddd;
+	outline-offset: 1px;
+	}
+.leaflet-container a {
+	color: #0078A8;
+	}
+.leaflet-zoom-box {
+	border: 2px dotted #38f;
+	background: rgba(255,255,255,0.5);
+	}
+
+
+
+.leaflet-container {
+	font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-size: 0.75rem;
+	line-height: 1.5;
+	}
+
+
+
+
+.leaflet-bar {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+	border-radius: 4px;
+	}
+.leaflet-bar a {
+	background-color: #fff;
+	border-bottom: 1px solid #ccc;
+	width: 26px;
+	height: 26px;
+	line-height: 26px;
+	display: block;
+	text-align: center;
+	text-decoration: none;
+	color: black;
+	}
+.leaflet-bar a,
+.leaflet-control-layers-toggle {
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	display: block;
+	}
+.leaflet-bar a:hover,
+.leaflet-bar a:focus {
+	background-color: #f4f4f4;
+	}
+.leaflet-bar a:first-child {
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	}
+.leaflet-bar a:last-child {
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+	border-bottom: none;
+	}
+.leaflet-bar a.leaflet-disabled {
+	cursor: default;
+	background-color: #f4f4f4;
+	color: #bbb;
+	}
+
+.leaflet-touch .leaflet-bar a {
+	width: 30px;
+	height: 30px;
+	line-height: 30px;
+	}
+.leaflet-touch .leaflet-bar a:first-child {
+	border-top-left-radius: 2px;
+	border-top-right-radius: 2px;
+	}
+.leaflet-touch .leaflet-bar a:last-child {
+	border-bottom-left-radius: 2px;
+	border-bottom-right-radius: 2px;
+	}
+
+
+
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+	font: bold 18px 'Lucida Console', Monaco, monospace;
+	text-indent: 1px;
+	}
+
+.leaflet-touch .leaflet-control-zoom-in, .leaflet-touch .leaflet-control-zoom-out  {
+	font-size: 22px;
+	}
+
+
+
+
+.leaflet-control-layers {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+	background: #fff;
+	border-radius: 5px;
+	}
+.leaflet-control-layers-toggle {
+	background-image: url(images/layers.png);
+	width: 36px;
+	height: 36px;
+	}
+.leaflet-retina .leaflet-control-layers-toggle {
+	background-image: url(images/layers-2x.png);
+	background-size: 26px 26px;
+	}
+.leaflet-touch .leaflet-control-layers-toggle {
+	width: 44px;
+	height: 44px;
+	}
+.leaflet-control-layers .leaflet-control-layers-list,
+.leaflet-control-layers-expanded .leaflet-control-layers-toggle {
+	display: none;
+	}
+.leaflet-control-layers-expanded .leaflet-control-layers-list {
+	display: block;
+	position: relative;
+	}
+.leaflet-control-layers-expanded {
+	padding: 6px 10px 6px 6px;
+	color: #333;
+	background: #fff;
+	}
+.leaflet-control-layers-scrollbar {
+	overflow-y: scroll;
+	overflow-x: hidden;
+	padding-right: 5px;
+	}
+.leaflet-control-layers-selector {
+	margin-top: 2px;
+	position: relative;
+	top: 1px;
+	}
+.leaflet-control-layers label {
+	display: block;
+	font-size: 13px;
+	font-size: 1.08333em;
+	}
+.leaflet-control-layers-separator {
+	height: 0;
+	border-top: 1px solid #ddd;
+	margin: 5px -10px 5px -6px;
+	}
+
+
+.leaflet-default-icon-path { 
+	background-image: url(images/marker-icon.png);
+	}
+
+
+
+
+.leaflet-container .leaflet-control-attribution {
+	background: #fff;
+	background: rgba(255, 255, 255, 0.8);
+	margin: 0;
+	}
+.leaflet-control-attribution,
+.leaflet-control-scale-line {
+	padding: 0 5px;
+	color: #333;
+	line-height: 1.4;
+	}
+.leaflet-control-attribution a {
+	text-decoration: none;
+	}
+.leaflet-control-attribution a:hover,
+.leaflet-control-attribution a:focus {
+	text-decoration: underline;
+	}
+.leaflet-attribution-flag {
+	display: inline !important;
+	vertical-align: baseline !important;
+	width: 1em;
+	height: 0.6669em;
+	}
+.leaflet-left .leaflet-control-scale {
+	margin-left: 5px;
+	}
+.leaflet-bottom .leaflet-control-scale {
+	margin-bottom: 5px;
+	}
+.leaflet-control-scale-line {
+	border: 2px solid #777;
+	border-top: none;
+	line-height: 1.1;
+	padding: 2px 5px 1px;
+	white-space: nowrap;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	background: rgba(255, 255, 255, 0.8);
+	text-shadow: 1px 1px #fff;
+	}
+.leaflet-control-scale-line:not(:first-child) {
+	border-top: 2px solid #777;
+	border-bottom: none;
+	margin-top: -2px;
+	}
+.leaflet-control-scale-line:not(:first-child):not(:last-child) {
+	border-bottom: 2px solid #777;
+	}
+
+.leaflet-touch .leaflet-control-attribution,
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	box-shadow: none;
+	}
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	border: 2px solid rgba(0,0,0,0.2);
+	background-clip: padding-box;
+	}
+
+
+
+
+.leaflet-popup {
+	position: absolute;
+	text-align: center;
+	margin-bottom: 20px;
+	}
+.leaflet-popup-content-wrapper {
+	padding: 1px;
+	text-align: left;
+	border-radius: 12px;
+	}
+.leaflet-popup-content {
+	margin: 13px 24px 13px 20px;
+	line-height: 1.3;
+	font-size: 13px;
+	font-size: 1.08333em;
+	min-height: 1px;
+	}
+.leaflet-popup-content p {
+	margin: 17px 0;
+	margin: 1.3em 0;
+	}
+.leaflet-popup-tip-container {
+	width: 40px;
+	height: 20px;
+	position: absolute;
+	left: 50%;
+	margin-top: -1px;
+	margin-left: -20px;
+	overflow: hidden;
+	pointer-events: none;
+	}
+.leaflet-popup-tip {
+	width: 17px;
+	height: 17px;
+	padding: 1px;
+
+	margin: -10px auto 0;
+	pointer-events: auto;
+
+	-webkit-transform: rotate(45deg);
+	   -moz-transform: rotate(45deg);
+	    -ms-transform: rotate(45deg);
+	        transform: rotate(45deg);
+	}
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+	background: white;
+	color: #333;
+	box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+	}
+.leaflet-container a.leaflet-popup-close-button {
+	position: absolute;
+	top: 0;
+	right: 0;
+	border: none;
+	text-align: center;
+	width: 24px;
+	height: 24px;
+	font: 16px/24px Tahoma, Verdana, sans-serif;
+	color: #757575;
+	text-decoration: none;
+	background: transparent;
+	}
+.leaflet-container a.leaflet-popup-close-button:hover,
+.leaflet-container a.leaflet-popup-close-button:focus {
+	color: #585858;
+	}
+.leaflet-popup-scrolled {
+	overflow: auto;
+	}
+
+.leaflet-oldie .leaflet-popup-content-wrapper {
+	-ms-zoom: 1;
+	}
+.leaflet-oldie .leaflet-popup-tip {
+	width: 24px;
+	margin: 0 auto;
+
+	-ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678)";
+	filter: progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678);
+	}
+
+.leaflet-oldie .leaflet-control-zoom,
+.leaflet-oldie .leaflet-control-layers,
+.leaflet-oldie .leaflet-popup-content-wrapper,
+.leaflet-oldie .leaflet-popup-tip {
+	border: 1px solid #999;
+	}
+
+
+
+
+.leaflet-div-icon {
+	background: #fff;
+	border: 1px solid #666;
+	}
+
+
+
+
+.leaflet-tooltip {
+	position: absolute;
+	padding: 6px;
+	background-color: #fff;
+	border: 1px solid #fff;
+	border-radius: 3px;
+	color: #222;
+	white-space: nowrap;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	pointer-events: none;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+	}
+.leaflet-tooltip.leaflet-interactive {
+	cursor: pointer;
+	pointer-events: auto;
+	}
+.leaflet-tooltip-top:before,
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	position: absolute;
+	pointer-events: none;
+	border: 6px solid transparent;
+	background: transparent;
+	content: "";
+	}
+
+
+
+.leaflet-tooltip-bottom {
+	margin-top: 6px;
+}
+.leaflet-tooltip-top {
+	margin-top: -6px;
+}
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-top:before {
+	left: 50%;
+	margin-left: -6px;
+	}
+.leaflet-tooltip-top:before {
+	bottom: 0;
+	margin-bottom: -12px;
+	border-top-color: #fff;
+	}
+.leaflet-tooltip-bottom:before {
+	top: 0;
+	margin-top: -12px;
+	margin-left: -6px;
+	border-bottom-color: #fff;
+	}
+.leaflet-tooltip-left {
+	margin-left: -6px;
+}
+.leaflet-tooltip-right {
+	margin-left: 6px;
+}
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	top: 50%;
+	margin-top: -6px;
+	}
+.leaflet-tooltip-left:before {
+	right: 0;
+	margin-right: -12px;
+	border-left-color: #fff;
+	}
+.leaflet-tooltip-right:before {
+	left: 0;
+	margin-left: -12px;
+	border-right-color: #fff;
+	}
+
+
+
+@media print {
+	
+	.leaflet-control {
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
+		}
+	}
+</style>
+<style>
+/* Layout: trail-map app. Zoomable map on the left; on the right a basecamp panel with tabs (Plan, Day trips, Drive & charge, Snow driving). Phones: map on top, panel below. */
+:root {
+  --paper: #eef0ec;
+  --panel: #fafbf8;
+  --land: #e4e6dc;
+  --water: #c3d6dd;
+  --county: #b8bcae;
+  --ink: #1b2622;
+  --muted: #5b6862;
+  --line: #d3d8cf;
+  --pine: #275c43;
+  --granite: #6c7a78;
+  --volt: #e0a100;
+  --volt-ink: #261c00;
+  --base: #b5372e;
+  --c-snow: #2f78b7;
+  --c-falls: #138a85;
+  --c-trees: #a4502a;
+  --c-easy: #6a6f5a;
+  --c-evening: #6d4bb8;
+  --font-display: "Overpass", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "Overpass", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Overpass Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #11171a; --panel: #172024; --land: #232c2c; --water: #12303c; --county: #3a4745; --ink: #e7ece6;
+    --muted: #9aa8a3; --line: #2d393a; --pine: #5cc08f; --granite: #9aa9a7; --volt: #f2b928; --volt-ink: #201800; --base: #ef6a5e;
+    --c-snow: #73b4ef; --c-falls: #49c7c0; --c-trees: #e08a5c; --c-easy: #b4b99e; --c-evening: #ab92f3;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #11171a; --panel: #172024; --land: #232c2c; --water: #12303c; --county: #3a4745; --ink: #e7ece6;
+  --muted: #9aa8a3; --line: #2d393a; --pine: #5cc08f; --granite: #9aa9a7; --volt: #f2b928; --volt-ink: #201800; --base: #ef6a5e;
+  --c-snow: #73b4ef; --c-falls: #49c7c0; --c-trees: #e08a5c; --c-easy: #b4b99e; --c-evening: #ab92f3;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body { background: var(--paper); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.5; }
+button, select, input { font: inherit; color: inherit; }
+select, input { box-sizing: border-box; }
+
+.app { display: grid; grid-template-columns: minmax(0, 1fr) 460px; height: 100%; }
+#map { height: 100%; min-height: 0; background: var(--land); }
+.panel { display: flex; flex-direction: column; min-height: 0; background: var(--panel); border-left: 1px solid var(--line); }
+.scroll { overflow-y: auto; flex: 1; min-height: 0; }
+@media (max-width: 900px) {
+  html, body { height: auto; }
+  .app { display: block; height: auto; }
+  #map { height: 52vh; min-height: 320px; }
+  .panel { border-left: 0; border-top: 1px solid var(--line); }
+  .scroll { overflow: visible; }
+}
+.gut { padding-left: max(18px, env(safe-area-inset-left, 0px)); padding-right: max(18px, env(safe-area-inset-right, 0px)); }
+.top { padding-block: 16px 0; border-bottom: 1px solid var(--line); display: grid; gap: 10px; }
+.titlerow { display: flex; align-items: center; gap: 12px; }
+.badge { flex: none; width: 38px; height: 38px; display: grid; place-items: center; background: var(--pine); border-radius: 8px; }
+h1 { font: 900 24px/1.05 var(--font-display); margin: 0; letter-spacing: -0.01em; }
+.sub { font: 400 12.5px var(--font-mono); color: var(--muted); }
+.tabs { display: flex; gap: 2px; overflow-x: auto; margin-bottom: -1px; }
+.tab { flex: none; border: 1px solid transparent; border-bottom: 0; background: transparent; border-radius: 8px 8px 0 0; padding: 7px 9px 8px; cursor: pointer; font-weight: 800; font-size: 13.5px; color: var(--muted); }
+.tab[aria-selected="true"] { background: var(--panel); color: var(--ink); border-color: var(--line); box-shadow: inset 0 3px 0 var(--pine); }
+.tab:focus-visible, .btn:focus-visible, .chip:focus-visible, .trip:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--pine); outline-offset: 2px; }
+
+.body { padding-block: 16px 30px; display: grid; gap: 20px; }
+.eyebrow { font: 600 11px var(--font-mono); text-transform: uppercase; letter-spacing: .12em; color: var(--muted); }
+h2 { font: 900 22px/1.15 var(--font-display); margin: 2px 0 0; text-wrap: balance; }
+h3 { font: 800 12px var(--font-display); text-transform: uppercase; letter-spacing: .14em; color: var(--muted); margin: 0 0 8px; }
+p { margin: 0; }
+.lede { color: var(--muted); max-width: 60ch; margin-top: 6px; }
+.facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.facts div { padding: 8px 10px; border-right: 1px solid var(--line); min-width: 0; }
+.facts div:last-child { border-right: 0; }
+.facts dt { font: 600 10.5px var(--font-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.facts dd { margin: 0; font: 800 16px/1.25 var(--font-display); font-variant-numeric: tabular-nums; }
+
+/* planner */
+.plan { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.plan > li { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 4px 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.plan .dt { font: 600 12.5px/1.3 var(--font-mono); }
+.plan .dt small { display: block; color: var(--muted); font-weight: 400; }
+.plan .slots { display: grid; gap: 6px; min-width: 0; }
+.plan .fixed { font-weight: 800; }
+.plan .fixed span { display: block; font-weight: 400; color: var(--muted); font-size: 13.5px; }
+.slot { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; align-items: center; gap: 8px; }
+.slot label { font: 600 10.5px var(--font-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.slot select { width: 100%; min-width: 0; background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 5px 6px; font-size: 14px; }
+.slot .go { border: 1px solid var(--line); background: var(--panel); border-radius: 6px; width: 30px; height: 30px; cursor: pointer; display: grid; place-items: center; }
+.slot .go:disabled { opacity: .35; cursor: default; }
+.note { font-size: 12.5px; color: var(--muted); }
+.warn { font-size: 12.5px; color: var(--base); font-weight: 600; }
+
+/* trip cards */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 3px 11px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.chip i { width: 9px; height: 9px; border-radius: 50%; background: var(--c); }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+.trips { display: grid; gap: 10px; }
+.trip { text-align: left; border: 1px solid var(--line); border-left: 5px solid var(--c); border-radius: 8px; background: var(--panel); padding: 11px 13px; cursor: pointer; display: grid; gap: 6px; width: 100%; }
+.trip:hover { border-color: color-mix(in srgb, var(--c) 55%, var(--line)); border-left-color: var(--c); }
+.trip.on { box-shadow: 0 0 0 2px var(--c); }
+.trip .hd { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.trip .hd b { font: 800 16px/1.25 var(--font-display); }
+.trip .cat { font: 600 10.5px var(--font-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--c); white-space: nowrap; }
+.trip .meta { display: flex; flex-wrap: wrap; gap: 4px 14px; font: 600 12px var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.trip .bl { font-size: 14px; color: var(--ink); }
+.trip ul { margin: 0; padding-left: 18px; font-size: 13.5px; color: var(--muted); display: grid; gap: 2px; }
+.fit { display: inline-block; font: 600 11.5px var(--font-body); padding: 1px 8px; border-radius: 999px; background: color-mix(in srgb, var(--c) 14%, var(--panel)); color: var(--ink); width: fit-content; }
+.elev { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+.elev .bar { position: relative; height: 6px; border-radius: 3px; background: color-mix(in srgb, var(--granite) 20%, transparent); }
+.elev .bar b { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: var(--c); }
+.elev .bar s { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink); opacity: .35; }
+.elev span { font: 600 11.5px var(--font-mono); color: var(--muted); }
+
+.card { border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; display: grid; gap: 8px; }
+.card.base { border-left: 5px solid var(--base); }
+.card.volt { border-left: 5px solid var(--volt); }
+.card .hd { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.card .hd b { font: 800 16px var(--font-display); }
+.card .hd span { font: 400 12px var(--font-mono); color: var(--muted); }
+.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.fields label { display: grid; gap: 2px; font: 600 11px var(--font-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); min-width: 0; }
+.fields label.wide { grid-column: 1 / -1; }
+.fields input, .fields select { font: 400 14px var(--font-body); color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; min-width: 0; text-transform: none; letter-spacing: 0; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.btn { border: 1px solid var(--line); background: var(--panel); border-radius: 7px; padding: 6px 12px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.btn.primary { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+.status { font: 600 12.5px var(--font-body); }
+.status.ok { color: var(--pine); } .status.no { color: var(--base); }
+ul.notes { margin: 0; padding-left: 18px; color: var(--muted); font-size: 14px; display: grid; gap: 5px; max-width: 64ch; }
+ul.notes b { color: var(--ink); }
+table.sc { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+table.sc th { text-align: left; font: 600 10.5px var(--font-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); padding: 4px 6px 4px 0; border-bottom: 1px solid var(--line); }
+table.sc td { padding: 7px 6px 7px 0; border-bottom: 1px solid var(--line); vertical-align: top; font-variant-numeric: tabular-nums; }
+table.sc td b { display: block; }
+.tw { overflow-x: auto; }
+textarea.copyfallback { width: 100%; height: 110px; font: 12px var(--font-mono); }
+.legend-inline { display: inline-flex; align-items: center; gap: 6px; }
+
+/* map */
+.leaflet-container { background: var(--land); font-family: var(--font-body); }
+.v-land { fill: var(--land); stroke: color-mix(in srgb, var(--muted) 45%, transparent); stroke-width: .8; fill-opacity: 1; }
+.v-water { fill: var(--water); }
+.v-county { fill: none; stroke: var(--county); stroke-width: .9; stroke-dasharray: 3 4; }
+.tiles-on .v-land { fill-opacity: 0; stroke-opacity: 0; }
+.tiles-on .v-county { stroke-opacity: 0; }
+.rt { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.rt-casing { stroke: var(--panel); }
+.rt-road { stroke: var(--granite); stroke-opacity: .55; }
+.rt-drive { stroke: var(--pine); }
+.rt-active { stroke: var(--c); }
+.mk { background: none; border: 0; }
+.mk-trip { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: var(--c); border: 2px solid var(--panel); box-shadow: 0 1px 3px rgb(0 0 0 / .3); transition: transform .15s; }
+.mk-trip.dim { opacity: .4; transform: scale(.8); }
+.mk-trip.on { transform: scale(1.25); }
+.mk-charge { width: 24px; height: 24px; border-radius: 6px; display: grid; place-items: center; background: var(--volt); border: 2px solid var(--panel); box-shadow: 0 1px 3px rgb(0 0 0 / .3); }
+.mk-base { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: var(--base); border: 2px solid var(--panel); box-shadow: 0 1px 4px rgb(0 0 0 / .35); }
+.mk-home { width: 20px; height: 20px; background: var(--ink); border: 2px solid var(--panel); transform: rotate(45deg); }
+.mk-gate { font: 800 10px var(--font-mono); color: var(--pine); background: var(--panel); border: 1.5px solid var(--pine); border-radius: 4px; padding: 1px 4px; white-space: nowrap; }
+.mk-town { font: 600 11px var(--font-body); color: var(--muted); white-space: nowrap; text-shadow: 0 0 3px var(--land), 0 0 3px var(--land), 0 0 2px var(--land); pointer-events: none; }
+.mk-park { font: 800 12px var(--font-display); letter-spacing: .25em; color: var(--pine); opacity: .55; white-space: nowrap; pointer-events: none; }
+.hide-towns .mk-town { display: none; }
+.leaflet-popup-content-wrapper, .leaflet-popup-tip { background: var(--panel); color: var(--ink); box-shadow: 0 3px 14px rgb(0 0 0 / .25); }
+.leaflet-popup-content { margin: 12px 14px; font-size: 14px; line-height: 1.4; min-width: 210px; }
+.leaflet-popup-content .pk { font: 600 10.5px var(--font-mono); text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+.leaflet-popup-content b { font: 800 16px var(--font-display); display: block; margin: 1px 0 3px; }
+.leaflet-popup-content a { color: var(--pine); font-weight: 600; }
+.leaflet-container a.leaflet-popup-close-button { color: var(--muted); }
+.leaflet-bar a, .leaflet-control-layers { background: var(--panel); color: var(--ink); border-color: var(--line); }
+.leaflet-control-layers-toggle { background-image: none !important; width: auto !important; height: auto !important; padding: 5px 11px; font: 600 13px var(--font-body); color: var(--ink); text-decoration: none; }
+.leaflet-control-layers-toggle::before { content: "Layers"; }
+.leaflet-control-layers-expanded { padding: 8px 12px; font-size: 13px; }
+.leaflet-control-attribution { background: color-mix(in srgb, var(--panel) 80%, transparent) !important; color: var(--muted); }
+.leaflet-control-attribution a { color: var(--muted); }
+.maplegend { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; font-size: 12px; display: grid; gap: 4px; color: var(--ink); }
+.maplegend div { display: flex; align-items: center; gap: 7px; }
+.maplegend i { width: 11px; height: 11px; display: inline-block; flex: none; border-radius: 50%; }
+.trip { cursor: default; box-sizing: border-box; min-width: 0; }
+.trip .hd button { all: unset; cursor: pointer; font: 800 16px/1.25 var(--font-display); }
+.trip .hd button:hover { text-decoration: underline; }
+.trip .hd button:focus-visible { outline: 2px solid var(--pine); outline-offset: 2px; }
+.links { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; font-weight: 600; }
+.links a, .card a, table.dist a { color: var(--pine); text-decoration: none; }
+.links a:hover, .card a:hover, table.dist a:hover { text-decoration: underline; }
+.links button { all: unset; cursor: pointer; color: var(--ink); }
+.links button:focus-visible { outline: 2px solid var(--pine); outline-offset: 2px; }
+table.dist { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+table.dist th { text-align: left; font: 600 10.5px var(--font-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); padding: 4px 8px 4px 0; border-bottom: 1px solid var(--line); white-space: nowrap; }
+table.dist td { padding: 6px 8px 6px 0; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; vertical-align: top; }
+table.dist td.n { white-space: nowrap; font-family: var(--font-mono); font-size: 12.5px; }
+table.dist i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--c); margin-right: 6px; }
+table.dist button { all: unset; cursor: pointer; font-weight: 600; }
+table.dist button:hover { text-decoration: underline; }
+.daymi { font: 600 11.5px var(--font-mono); color: var(--muted); }
+.checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.checks label { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 8px; align-items: start; padding: 6px 0; border-bottom: 1px solid var(--line); cursor: pointer; font-size: 14px; }
+.checks input { margin: 3px 0 0; accent-color: var(--pine); width: 16px; height: 16px; }
+.checks b { font-weight: 800; }
+.checks span span { display: block; color: var(--muted); font-size: 13px; }
+.checks input:checked + span { opacity: .55; }
+.checks input:checked + span b { text-decoration: line-through; }
+.tag { display: inline-block; font: 600 10.5px var(--font-mono); text-transform: uppercase; letter-spacing: .06em; padding: 0 6px; border-radius: 4px; margin-left: 6px; vertical-align: 1px; }
+.tag.buy { background: color-mix(in srgb, var(--base) 15%, var(--panel)); color: var(--base); }
+.tag.rent { background: color-mix(in srgb, var(--c-snow) 15%, var(--panel)); color: var(--c-snow); }
+.progress { height: 6px; border-radius: 3px; background: color-mix(in srgb, var(--granite) 20%, transparent); overflow: hidden; }
+.progress b { display: block; height: 100%; background: var(--pine); }
+@media (prefers-reduced-motion: reduce) { .mk-trip { transition: none; } }
+@media (max-width: 900px) { .maplegend, .mk-park { display: none; } }
+</style>
+
+<div class="app">
+  <div id="map" aria-label="Map of Oakhurst, Fish Camp and southern Yosemite"></div>
+  <aside class="panel">
+    <div class="top gut">
+      <div class="titlerow">
+        <div class="badge" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M12 2 5 12h3l-4 6h6v4h4v-4h6l-4-6h3z" fill="#fff"/></svg></div>
+        <div>
+          <h1>Oakhurst Snow Basecamp</h1>
+          <div class="sub">Dec 25–29, 2026 · The Inelle, Oakhurst</div>
+        </div>
+      </div>
+      <div class="tabs" role="tablist" id="tabs">
+        <button class="tab" role="tab" data-v="plan">My week</button>
+        <button class="tab" role="tab" data-v="trips">Day trips</button>
+        <button class="tab" role="tab" data-v="drive">Drive</button>
+        <button class="tab" role="tab" data-v="snow">Snow roads</button>
+        <button class="tab" role="tab" data-v="gear">Gear</button>
+      </div>
+    </div>
+    <div class="scroll" id="scroll"><div class="body gut" id="body"></div></div>
+  </aside>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+/* =================================================================
+   YOUR LODGING — Claude fills this in when you send your booking.
+   (Anything you type into the page is also remembered in this browser.)
+   ================================================================= */
+const LODGING_DEFAULT = { confirmation: "", room: "" };
+const HOTEL = {
+  name: "The Inelle, Oakhurst Yosemite",
+  brand: "a Tribute Portfolio Hotel (Marriott)",
+  address: "48800 Royal Oaks Dr, Oakhurst, CA 93644",
+  phone: "559-566-2323",
+  url: "https://marriott.com/en-us/hotels/fatot-the-inelle-oakhurst-yosemite-a-tribute-portfolio-hotel",
+  nights: "Fri Dec 25 – Tue Dec 29 · 4 nights",
+};
+
+const LAND = {"type":"Feature","properties":{},"geometry":{"type":"MultiPolygon","coordinates":[[[[-118.8,38.4],[-118.8,36.4],[-121.9058,36.4],[-121.955,36.522],[-121.929,36.523],[-121.924,36.545],[-121.979,36.581],[-121.936,36.637],[-121.887,36.601],[-121.845,36.626],[-121.807,36.739],[-121.794,36.721],[-121.791,36.739],[-121.806,36.742],[-121.79,36.809],[-121.772,36.8],[-121.756,36.809],[-121.772,36.823],[-121.79,36.81],[-121.81,36.862],[-121.904,36.967],[-121.938,36.978],[-121.975,36.954],[-122.106,36.956],[-122.223,37.025],[-122.297,37.111],[-122.337,37.118],[-122.367,37.173],[-122.406,37.197],[-122.419,37.242],[-122.4,37.357],[-122.45,37.477],[-122.471,37.501],[-122.499,37.496],[-122.518,37.524],[-122.521,37.594],[-122.501,37.601],[-122.494,37.644],[-122.515,37.781],[-122.487,37.79],[-122.478,37.811],[-122.41,37.811],[-122.385,37.787],[-122.399,37.771],[-122.382,37.775],[-122.376,37.749],[-122.393,37.747],[-122.357,37.729],[-122.365,37.716],[-122.387,37.724],[-122.374,37.709],[-122.394,37.707],[-122.381,37.672],[-122.395,37.665],[-122.376,37.655],[-122.403,37.643],[-122.365,37.628],[-122.355,37.615],[-122.378,37.606],[-122.338,37.592],[-122.358,37.589],[-122.315,37.592],[-122.293,37.569],[-122.253,37.568],[-122.25,37.549],[-122.272,37.545],[-122.261,37.533],[-122.248,37.55],[-122.23,37.549],[-122.243,37.553],[-122.233,37.552],[-122.226,37.547],[-122.249,37.521],[-122.245,37.508],[-122.233,37.506],[-122.244,37.524],[-122.236,37.516],[-122.221,37.52],[-122.236,37.516],[-122.242,37.527],[-122.224,37.543],[-122.195,37.536],[-122.22,37.522],[-122.206,37.523],[-122.226,37.495],[-122.205,37.518],[-122.177,37.5],[-122.197,37.524],[-122.166,37.498],[-122.132,37.505],[-122.136,37.475],[-122.116,37.466],[-122.137,37.454],[-122.1,37.461],[-122.126,37.431],[-122.101,37.455],[-122.104,37.437],[-122.068,37.431],[-122.068,37.417],[-122.068,37.431],[-122.036,37.436],[-122.036,37.457],[-122.018,37.463],[-122.026,37.44],[-121.992,37.414],[-121.973,37.44],[-121.926,37.437],[-121.959,37.462],[-121.924,37.448],[-121.932,37.463],[-121.973,37.475],[-121.959,37.498],[-122.009,37.492],[-122.006,37.495],[-122.015,37.5],[-122.015,37.51],[-122.016,37.501],[-122.006,37.494],[-122.034,37.491],[-122.08,37.505],[-122.052,37.51],[-122.08,37.545],[-122.103,37.545],[-122.096,37.579],[-122.124,37.605],[-122.146,37.588],[-122.15,37.638],[-122.196,37.715],[-122.217,37.7],[-122.251,37.724],[-122.252,37.748],[-122.208,37.731],[-122.218,37.761],[-122.248,37.787],[-122.343,37.806],[-122.295,37.829],[-122.315,37.837],[-122.298,37.84],[-122.3,37.858],[-122.325,37.874],[-122.307,37.871],[-122.328,37.889],[-122.31,37.888],[-122.324,37.912],[-122.391,37.909],[-122.388,37.934],[-122.401,37.928],[-122.422,37.947],[-122.429,37.965],[-122.381,37.952],[-122.399,37.964],[-122.359,37.989],[-122.367,38.012],[-122.333,38.001],[-122.3,38.01],[-122.244,38.058],[-122.191,38.052],[-122.149,38.022],[-122.07,38.053],[-122.05,38.038],[-122.056,38.051],[-122.023,38.058],[-121.957,38.039],[-121.95,38.05],[-121.946,38.036],[-121.945,38.049],[-121.928,38.036],[-121.889,38.042],[-121.884,38.034],[-121.807,38.016],[-121.733,38.02],[-121.698,38.008],[-121.69,38.025],[-121.724,38.027],[-121.693,38.056],[-121.756,38.03],[-121.783,38.034],[-121.79,38.056],[-121.739,38.084],[-121.728,38.08],[-121.709,38.085],[-121.706,38.111],[-121.675,38.117],[-121.696,38.128],[-121.802,38.063],[-121.852,38.074],[-121.853,38.088],[-121.869,38.063],[-121.917,38.05],[-121.934,38.055],[-121.912,38.083],[-121.974,38.074],[-122.013,38.094],[-121.984,38.113],[-122.007,38.141],[-122.08,38.14],[-122.08,38.117],[-122.076,38.135],[-122.058,38.135],[-122.069,38.105],[-122.138,38.04],[-122.165,38.044],[-122.188,38.071],[-122.194,38.06],[-122.227,38.065],[-122.245,38.08],[-122.281,38.065],[-122.304,38.104],[-122.365,38.135],[-122.344,38.135],[-122.344,38.182],[-122.3,38.172],[-122.341,38.169],[-122.284,38.117],[-122.256,38.113],[-122.268,38.117],[-122.274,38.129],[-122.261,38.135],[-122.292,38.144],[-122.296,38.186],[-122.274,38.204],[-122.3,38.212],[-122.366,38.204],[-122.369,38.136],[-122.41,38.156],[-122.411,38.137],[-122.439,38.118],[-122.489,38.111],[-122.516,38.126],[-122.488,38.104],[-122.501,38.016],[-122.447,37.986],[-122.498,37.962],[-122.52,37.984],[-122.52,37.962],[-122.498,37.962],[-122.478,37.942],[-122.51,37.946],[-122.497,37.921],[-122.438,37.882],[-122.463,37.872],[-122.458,37.862],[-122.474,37.875],[-122.463,37.892],[-122.502,37.898],[-122.497,37.877],[-122.525,37.897],[-122.524,37.879],[-122.478,37.859],[-122.472,37.837],[-122.5,37.82],[-122.52,37.829],[-122.528,37.815],[-122.562,37.852],[-122.6,37.8694],[-122.6,38.4]]]]}};
+const COUNTIES = {"type":"FeatureCollection","features":[{"type":"Feature","properties":{"name":"San Benito"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-121.6433,36.894],[-121.6289,36.912],[-121.5822,36.8991],[-121.5607,36.8974],[-121.4889,36.9833],[-121.453,36.9885],[-121.4171,36.961],[-121.2161,36.961],[-121.2341,36.9266],[-121.1982,36.9146],[-121.1515,36.8656],[-121.1408,36.8364],[-120.9326,36.7522],[-120.9182,36.7402],[-120.6024,36.4885],[-120.5952,36.3287],[-120.6598,36.3158],[-120.6777,36.2677],[-120.7459,36.3107],[-120.7172,36.26],[-120.7065,36.2041],[-120.7603,36.2033],[-120.8644,36.2926],[-120.9254,36.3089],[-120.9541,36.2754],[-120.9864,36.2926],[-121.0115,36.2668],[-121.0115,36.2668],[-121.0367,36.2746],[-121.0403,36.3098],[-121.0762,36.3536],[-121.2305,36.4773],[-121.2413,36.5057],[-121.313,36.5022],[-121.2951,36.5289],[-121.3274,36.5546],[-121.3202,36.6105],[-121.3633,36.656],[-121.4674,36.6852],[-121.4853,36.7127],[-121.453,36.723],[-121.4782,36.7625],[-121.5212,36.7711],[-121.5966,36.8373],[-121.6217,36.8459],[-121.6433,36.894]]]]}},{"type":"Feature","properties":{"name":"Fresno"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-120.5413,37.0443],[-120.509,37.0074],[-120.4516,36.9111],[-120.4552,36.863],[-120.3691,36.8106],[-120.3691,36.7849],[-120.2291,36.7694],[-120.0783,36.8252],[-120.0281,36.8149],[-119.985,36.8407],[-119.9419,36.8338],[-119.8845,36.8587],[-119.8127,36.8501],[-119.7912,36.8957],[-119.7338,36.9464],[-119.7409,36.9704],[-119.7015,37.0048],[-119.6691,37.0091],[-119.6512,37.0417],[-119.6189,37.0271],[-119.6045,37.0709],[-119.5615,37.0666],[-119.5363,37.1053],[-119.5651,37.1156],[-119.5507,37.1448],[-119.5256,37.1285],[-119.4897,37.1388],[-119.4825,37.1104],[-119.4287,37.1637],[-119.3856,37.15],[-119.3282,37.2092],[-119.3353,37.3132],[-119.3138,37.3518],[-119.0231,37.5855],[-118.9764,37.5572],[-118.9154,37.5503],[-118.8508,37.4755],[-118.797,37.4884],[-118.7754,37.4627],[-118.7611,37.4352],[-118.7862,37.3862],[-118.779,37.3355],[-118.6929,37.3003],[-118.6677,37.2573],[-118.6857,37.2299],[-118.6462,37.1396],[-118.596,37.1379],[-118.5313,37.1104],[-118.438,37.0546],[-118.4201,36.9919],[-118.3662,36.8948],[-118.3662,36.8398],[-118.3914,36.833],[-118.3591,36.7445],[-118.9836,36.7419],[-118.9836,36.6569],[-119.303,36.6603],[-119.3066,36.5735],[-119.4646,36.5752],[-119.5722,36.4885],[-119.6656,36.4189],[-119.6727,36.4309],[-119.7481,36.4163],[-119.7553,36.4017],[-119.9599,36.4009],[-119.9599,36.1818],[-120.3152,35.9069],[-120.3583,35.9636],[-120.4337,35.9688],[-120.4803,36.01],[-120.5413,36.0366],[-120.5916,36.0718],[-120.6024,36.1019],[-120.649,36.1079],[-120.6706,36.1646],[-120.6275,36.2033],[-120.6813,36.2514],[-120.6777,36.2677],[-120.6598,36.3158],[-120.5952,36.3287],[-120.6024,36.4885],[-120.9182,36.7402],[-120.6562,36.9532],[-120.5916,36.9524],[-120.5988,36.9988],[-120.5413,37.0443]]]]}},{"type":"Feature","properties":{"name":"Amador"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-121.0259,38.5081],[-120.9398,38.5287],[-120.9254,38.515],[-120.8428,38.5554],[-120.7639,38.5537],[-120.6275,38.5038],[-120.527,38.5098],[-120.3762,38.5451],[-120.3116,38.5459],[-120.2327,38.5958],[-120.2111,38.6293],[-120.1358,38.6439],[-120.1214,38.6971],[-120.0712,38.7031],[-120.0712,38.5098],[-120.1537,38.4944],[-120.2004,38.5004],[-120.2793,38.4755],[-120.3834,38.4617],[-120.4157,38.4738],[-120.4588,38.4471],[-120.4983,38.448],[-120.527,38.4231],[-120.6131,38.3904],[-120.6311,38.3458],[-120.807,38.2874],[-120.8967,38.2212],[-120.9972,38.2255],[-121.0259,38.3002],[-121.0259,38.5081]]]]}},{"type":"Feature","properties":{"name":"Monterey"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-121.812,36.851],[-121.7868,36.8854],[-121.7007,36.9197],[-121.6433,36.894],[-121.6217,36.8459],[-121.5966,36.8373],[-121.5212,36.7711],[-121.4782,36.7625],[-121.453,36.723],[-121.4853,36.7127],[-121.4674,36.6852],[-121.3633,36.656],[-121.3202,36.6105],[-121.3274,36.5546],[-121.2951,36.5289],[-121.313,36.5022],[-121.2413,36.5057],[-121.2305,36.4773],[-121.0762,36.3536],[-121.0403,36.3098],[-121.0367,36.2746],[-121.0115,36.2668],[-121.0115,36.2668],[-120.9864,36.2926],[-120.9541,36.2754],[-120.9254,36.3089],[-120.8644,36.2926],[-120.7603,36.2033],[-120.7065,36.2041],[-120.7172,36.26],[-120.7459,36.3107],[-120.6777,36.2677],[-120.6813,36.2514],[-120.6275,36.2033],[-120.6706,36.1646],[-120.649,36.1079],[-120.6024,36.1019],[-120.5916,36.0718],[-120.5413,36.0366],[-120.4803,36.01],[-120.4337,35.9688],[-120.3583,35.9636],[-120.3152,35.9069],[-120.2757,35.906],[-120.2398,35.8657],[-120.2578,35.845],[-120.2219,35.8193],[-120.2147,35.7892],[-121.1156,35.7935],[-121.3453,35.7952],[-121.4135,35.8554],[-121.4638,35.8854],[-121.4853,35.9705],[-121.5033,36.0005],[-121.5751,36.0254],[-121.6289,36.1148],[-121.7186,36.1955],[-121.8371,36.2505],[-121.8766,36.2892],[-121.9053,36.3579],[-121.9017,36.394],[-121.9412,36.4808],[-121.934,36.5598],[-121.9735,36.5735],[-121.9376,36.6371],[-121.873,36.6045],[-121.8407,36.6302],[-121.8155,36.6826],[-121.7868,36.8038],[-121.812,36.851]]]]}},{"type":"Feature","properties":{"name":"Tuolumne"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-120.0209,38.4334],[-119.8845,38.3561],[-119.802,38.4016],[-119.7517,38.4171],[-119.6979,38.4102],[-119.7015,38.3655],[-119.6404,38.3269],[-119.6476,38.2831],[-119.6045,38.2367],[-119.6297,38.1972],[-119.5148,38.137],[-119.4969,38.1542],[-119.4466,38.0966],[-119.4287,38.1121],[-119.3533,38.0846],[-119.3066,38.0305],[-119.321,37.9686],[-119.303,37.9446],[-119.2133,37.8991],[-119.2169,37.8544],[-119.2025,37.7943],[-119.2707,37.7393],[-119.3102,37.7779],[-119.3784,37.8398],[-119.4287,37.8664],[-119.4933,37.863],[-119.5292,37.893],[-119.5758,37.8956],[-119.6045,37.8578],[-119.6512,37.8389],[-119.6512,37.82],[-119.7481,37.7754],[-119.8127,37.7573],[-119.8666,37.7728],[-119.9383,37.7633],[-120.0245,37.8114],[-120.0819,37.8278],[-120.1286,37.7814],[-120.1824,37.7951],[-120.186,37.7702],[-120.2398,37.7642],[-120.2614,37.7341],[-120.3439,37.7264],[-120.308,37.6645],[-120.3296,37.6499],[-120.3906,37.6834],[-120.387,37.6336],[-120.6526,37.8321],[-120.6311,37.8613],[-120.5378,37.9257],[-120.5162,37.9609],[-120.5413,37.9747],[-120.5162,38.0039],[-120.466,38.0133],[-120.4552,38.0417],[-120.3403,38.174],[-120.2578,38.2856],[-120.2075,38.3269],[-120.1537,38.3879],[-120.0209,38.4334]]]]}},{"type":"Feature","properties":{"name":"Stanislaus"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-121.471,37.4824],[-121.471,37.4816],[-121.2413,37.6637],[-121.1443,37.7178],[-121.0582,37.7504],[-121.0295,37.741],[-120.9972,37.7599],[-120.9218,37.7376],[-120.9254,38.0777],[-120.8752,38.0288],[-120.6526,37.8321],[-120.387,37.6336],[-120.9828,37.3999],[-120.9649,37.3458],[-121.2269,37.1345],[-121.2807,37.1835],[-121.3274,37.1663],[-121.3561,37.1843],[-121.392,37.1482],[-121.4171,37.211],[-121.4566,37.2496],[-121.4602,37.2831],[-121.4064,37.3106],[-121.4243,37.3587],[-121.41,37.3819],[-121.4566,37.3956],[-121.471,37.4231],[-121.471,37.4824]]]]}},{"type":"Feature","properties":{"name":"San Joaquin"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-121.5787,38.0941],[-121.5858,38.1198],[-121.5356,38.1516],[-121.5284,38.1937],[-121.4817,38.2539],[-121.4279,38.2547],[-121.41,38.2315],[-121.3453,38.2281],[-121.27,38.2521],[-121.2233,38.2444],[-121.1731,38.2556],[-121.0654,38.2994],[-121.0259,38.3002],[-120.9972,38.2255],[-120.9398,38.0881],[-120.9254,38.0777],[-120.9218,37.7376],[-120.9972,37.7599],[-121.0295,37.741],[-121.0582,37.7504],[-121.1443,37.7178],[-121.2413,37.6637],[-121.471,37.4816],[-121.5033,37.5262],[-121.5571,37.5425],[-121.5571,37.8166],[-121.5356,37.8501],[-121.5787,37.8613],[-121.5571,37.9326],[-121.5822,37.9841],[-121.5571,38.0167],[-121.5858,38.0356],[-121.5787,38.0941]]]]}},{"type":"Feature","properties":{"name":"Calaveras"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-120.0712,38.5098],[-120.0712,38.4471],[-120.0209,38.4334],[-120.1537,38.3879],[-120.2075,38.3269],[-120.2578,38.2856],[-120.3403,38.174],[-120.4552,38.0417],[-120.466,38.0133],[-120.5162,38.0039],[-120.5413,37.9747],[-120.5162,37.9609],[-120.5378,37.9257],[-120.6311,37.8613],[-120.6526,37.8321],[-120.8752,38.0288],[-120.9254,38.0777],[-120.9398,38.0881],[-120.9972,38.2255],[-120.8967,38.2212],[-120.807,38.2874],[-120.6311,38.3458],[-120.6131,38.3904],[-120.527,38.4231],[-120.4983,38.448],[-120.4588,38.4471],[-120.4157,38.4738],[-120.3834,38.4617],[-120.2793,38.4755],[-120.2004,38.5004],[-120.1537,38.4944],[-120.0712,38.5098]]]]}},{"type":"Feature","properties":{"name":"Madera"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-120.5413,37.0443],[-120.4767,37.0967],[-120.2291,37.1637],[-120.107,37.1671],[-120.0532,37.1835],[-119.7625,37.4171],[-119.6512,37.418],[-119.6512,37.4609],[-119.6153,37.4618],[-119.6153,37.4944],[-119.583,37.4944],[-119.583,37.5606],[-119.3102,37.7779],[-119.2707,37.7393],[-119.2169,37.7144],[-119.199,37.7367],[-119.1236,37.7341],[-119.0661,37.6843],[-119.0338,37.6302],[-119.0231,37.5855],[-119.3138,37.3518],[-119.3353,37.3132],[-119.3282,37.2092],[-119.3856,37.15],[-119.4287,37.1637],[-119.4825,37.1104],[-119.4897,37.1388],[-119.5256,37.1285],[-119.5507,37.1448],[-119.5651,37.1156],[-119.5363,37.1053],[-119.5615,37.0666],[-119.6045,37.0709],[-119.6189,37.0271],[-119.6512,37.0417],[-119.6691,37.0091],[-119.7015,37.0048],[-119.7409,36.9704],[-119.7338,36.9464],[-119.7912,36.8957],[-119.8127,36.8501],[-119.8845,36.8587],[-119.9419,36.8338],[-119.985,36.8407],[-120.0281,36.8149],[-120.0783,36.8252],[-120.2291,36.7694],[-120.3691,36.7849],[-120.3691,36.8106],[-120.4552,36.863],[-120.4516,36.9111],[-120.509,37.0074],[-120.5413,37.0443]]]]}},{"type":"Feature","properties":{"name":"Contra Costa"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-122.2678,38.0597],[-122.1852,38.0537],[-122.1422,38.0314],[-122.0596,38.0623],[-121.9842,38.0674],[-121.9268,38.0468],[-121.8622,38.0657],[-121.8335,38.0314],[-121.7904,38.0185],[-121.7366,38.0271],[-121.6827,38.0614],[-121.6612,38.0958],[-121.5787,38.0941],[-121.5858,38.0356],[-121.5571,38.0167],[-121.5822,37.9841],[-121.5571,37.9326],[-121.5787,37.8613],[-121.5356,37.8501],[-121.5571,37.8166],[-121.9555,37.7195],[-122.013,37.747],[-121.9986,37.7633],[-122.0453,37.7985],[-122.1386,37.8046],[-122.1781,37.8166],[-122.2247,37.8784],[-122.2714,37.9059],[-122.3145,37.8973],[-122.3791,37.9051],[-122.4293,37.9635],[-122.4006,37.9558],[-122.3683,37.9781],[-122.3683,38.0125],[-122.3001,38.0107],[-122.2678,38.0597]]]]}},{"type":"Feature","properties":{"name":"Sonoma"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-123.5348,38.7684],[-123.4989,38.7787],[-123.3697,38.777],[-123.3697,38.8062],[-123.1364,38.8088],[-123.1364,38.8397],[-123.0826,38.8526],[-122.8205,38.85],[-122.7488,38.8045],[-122.6913,38.7109],[-122.6483,38.7066],[-122.6267,38.6679],[-122.6447,38.5983],[-122.6195,38.5605],[-122.5442,38.5202],[-122.5298,38.4695],[-122.4832,38.4523],[-122.4975,38.4239],[-122.4473,38.3793],[-122.458,38.3672],[-122.3934,38.3045],[-122.4042,38.2813],[-122.3683,38.247],[-122.3504,38.1937],[-122.3719,38.1576],[-122.4078,38.1559],[-122.397,38.1422],[-122.4401,38.1173],[-122.4903,38.1095],[-122.5693,38.1868],[-122.6483,38.1808],[-122.7416,38.2066],[-122.9103,38.3209],[-122.9677,38.3166],[-123.0036,38.2959],[-123.0646,38.302],[-123.0682,38.3595],[-123.1292,38.4506],[-123.201,38.4944],[-123.2513,38.5107],[-123.3302,38.5657],[-123.463,38.7169],[-123.5348,38.7684]]]]}},{"type":"Feature","properties":{"name":"Merced"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-121.2269,37.1345],[-120.9649,37.3458],[-120.9828,37.3999],[-120.387,37.6336],[-120.2793,37.4584],[-120.265,37.4008],[-120.1824,37.2917],[-120.1788,37.2616],[-120.0855,37.2187],[-120.0532,37.1835],[-120.107,37.1671],[-120.2291,37.1637],[-120.4767,37.0967],[-120.5413,37.0443],[-120.5988,36.9988],[-120.5916,36.9524],[-120.6562,36.9532],[-120.9182,36.7402],[-120.9326,36.7522],[-121.1408,36.8364],[-121.1515,36.8656],[-121.1982,36.9146],[-121.2341,36.9266],[-121.2161,36.961],[-121.2448,36.9833],[-121.2448,37.0254],[-121.209,37.0683],[-121.2448,37.0898],[-121.2269,37.1345]]]]}},{"type":"Feature","properties":{"name":"Tulare"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-118.3591,36.7445],[-118.3339,36.7058],[-118.3662,36.6921],[-118.3196,36.6277],[-118.2873,36.6036],[-118.2909,36.5589],[-118.2478,36.534],[-118.2442,36.4799],[-118.2119,36.4326],[-118.1437,36.4215],[-118.1581,36.388],[-118.1006,36.339],[-118.1258,36.3012],[-118.1006,36.2084],[-118.0576,36.1586],[-118.0683,36.0976],[-118.0504,36.0796],[-118.0324,36.0091],[-118.0073,35.9902],[-118.0181,35.961],[-117.9929,35.9438],[-117.9822,35.8674],[-118.0037,35.8631],[-118.0073,35.7892],[-118.0683,35.7918],[-118.377,35.7901],[-118.8041,35.7901],[-119.5363,35.7892],[-119.5363,36.138],[-119.5292,36.2694],[-119.4753,36.2694],[-119.4753,36.4009],[-119.5292,36.4017],[-119.5256,36.4885],[-119.5722,36.4885],[-119.4646,36.5752],[-119.3066,36.5735],[-119.303,36.6603],[-118.9836,36.6569],[-118.9836,36.7419],[-118.3591,36.7445]]]]}},{"type":"Feature","properties":{"name":"Sacramento"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-121.593,38.3131],[-121.5822,38.332],[-121.5212,38.3604],[-121.532,38.4291],[-121.5033,38.4411],[-121.5069,38.4695],[-121.5428,38.4772],[-121.5535,38.5141],[-121.5248,38.5193],[-121.5105,38.6009],[-121.5535,38.6035],[-121.5643,38.6421],[-121.593,38.6439],[-121.6325,38.686],[-121.6038,38.7358],[-121.4853,38.7349],[-121.1408,38.7117],[-121.1192,38.7169],[-121.0259,38.5081],[-121.0259,38.3002],[-121.0654,38.2994],[-121.1731,38.2556],[-121.2233,38.2444],[-121.27,38.2521],[-121.3453,38.2281],[-121.41,38.2315],[-121.4279,38.2547],[-121.4817,38.2539],[-121.5284,38.1937],[-121.5356,38.1516],[-121.5858,38.1198],[-121.5787,38.0941],[-121.6612,38.0958],[-121.6827,38.0614],[-121.7366,38.0271],[-121.7904,38.0185],[-121.8335,38.0314],[-121.8622,38.0657],[-121.7976,38.0606],[-121.7438,38.0872],[-121.7115,38.0855],[-121.6863,38.1594],[-121.6145,38.1954],[-121.593,38.3131]]]]}},{"type":"Feature","properties":{"name":"Solano"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-122.4078,38.1559],[-122.196,38.1551],[-122.214,38.18],[-122.1924,38.2135],[-122.2175,38.2624],[-122.1888,38.2719],[-122.2068,38.3157],[-122.0632,38.3157],[-122.0883,38.3844],[-122.1278,38.4291],[-122.1027,38.5133],[-122.056,38.5176],[-122.013,38.4884],[-121.9412,38.533],[-121.8586,38.5382],[-121.7868,38.5227],[-121.7402,38.5373],[-121.6935,38.527],[-121.6935,38.3148],[-121.593,38.3131],[-121.6145,38.1954],[-121.6863,38.1594],[-121.7115,38.0855],[-121.7438,38.0872],[-121.7976,38.0606],[-121.8622,38.0657],[-121.9268,38.0468],[-121.9842,38.0674],[-122.0596,38.0623],[-122.1422,38.0314],[-122.1852,38.0537],[-122.2678,38.0597],[-122.3001,38.1052],[-122.397,38.1422],[-122.4078,38.1559]]]]}},{"type":"Feature","properties":{"name":"San Francisco"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-122.3324,37.7857],[-122.3288,37.7831],[-122.3324,37.7857],[-122.3324,37.7857]]],[[[-122.3898,37.7083],[-122.5011,37.7083],[-122.5155,37.7805],[-122.4652,37.8046],[-122.4078,37.8114],[-122.3862,37.7908],[-122.3611,37.7152],[-122.3898,37.7083]]]]}},{"type":"Feature","properties":{"name":"Mariposa"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-119.3102,37.7779],[-119.583,37.5606],[-119.583,37.4944],[-119.6153,37.4944],[-119.6153,37.4618],[-119.6512,37.4609],[-119.6512,37.418],[-119.7625,37.4171],[-120.0532,37.1835],[-120.0855,37.2187],[-120.1788,37.2616],[-120.1824,37.2917],[-120.265,37.4008],[-120.2793,37.4584],[-120.387,37.6336],[-120.3906,37.6834],[-120.3296,37.6499],[-120.308,37.6645],[-120.3439,37.7264],[-120.2614,37.7341],[-120.2398,37.7642],[-120.186,37.7702],[-120.1824,37.7951],[-120.1286,37.7814],[-120.0819,37.8278],[-120.0245,37.8114],[-119.9383,37.7633],[-119.8666,37.7728],[-119.8127,37.7573],[-119.7481,37.7754],[-119.6512,37.82],[-119.6512,37.8389],[-119.6045,37.8578],[-119.5758,37.8956],[-119.5292,37.893],[-119.4933,37.863],[-119.4287,37.8664],[-119.3784,37.8398],[-119.3102,37.7779]]]]}},{"type":"Feature","properties":{"name":"Santa Clara"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-122.1099,37.4661],[-122.0453,37.4592],[-121.9484,37.4678],[-121.9268,37.4541],[-121.8694,37.4833],[-121.471,37.4824],[-121.471,37.4231],[-121.4566,37.3956],[-121.41,37.3819],[-121.4243,37.3587],[-121.4064,37.3106],[-121.4602,37.2831],[-121.4566,37.2496],[-121.4171,37.211],[-121.392,37.1482],[-121.3561,37.1843],[-121.3274,37.1663],[-121.2807,37.1835],[-121.2269,37.1345],[-121.2448,37.0898],[-121.209,37.0683],[-121.2448,37.0254],[-121.2448,36.9833],[-121.2161,36.961],[-121.4171,36.961],[-121.453,36.9885],[-121.4889,36.9833],[-121.5607,36.8974],[-121.5822,36.8991],[-121.5822,36.9189],[-121.6469,36.9326],[-121.7581,37.0494],[-121.8622,37.1044],[-121.8909,37.1053],[-121.9914,37.1439],[-122.0309,37.1903],[-122.0883,37.223],[-122.1529,37.2857],[-122.1924,37.3183],[-122.1745,37.3261],[-122.2032,37.3604],[-122.1888,37.4317],[-122.1637,37.4532],[-122.1099,37.4661]]]]}},{"type":"Feature","properties":{"name":"San Mateo"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-122.5011,37.7083],[-122.3898,37.7083],[-122.3539,37.6156],[-122.3611,37.5924],[-122.2642,37.5726],[-122.1673,37.5039],[-122.1386,37.5082],[-122.1099,37.4661],[-122.1637,37.4532],[-122.1888,37.4317],[-122.2032,37.3604],[-122.1745,37.3261],[-122.1924,37.3183],[-122.1529,37.2857],[-122.1529,37.2152],[-122.2427,37.2152],[-122.2427,37.1903],[-122.318,37.1869],[-122.2929,37.107],[-122.336,37.1173],[-122.3432,37.1439],[-122.4042,37.1955],[-122.4185,37.2488],[-122.4006,37.3596],[-122.4437,37.436],[-122.4509,37.4807],[-122.4939,37.4927],[-122.5155,37.5211],[-122.519,37.5761],[-122.4939,37.6439],[-122.5011,37.7083]]]]}},{"type":"Feature","properties":{"name":"Mono"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-119.6404,38.3269],[-119.6081,38.3664],[-119.6225,38.3939],[-119.5615,38.4111],[-119.5435,38.4995],[-119.6189,38.6043],[-119.6153,38.6662],[-119.5866,38.7134],[-119.3282,38.5348],[-119.1559,38.4145],[-119.0841,38.3612],[-118.858,38.2049],[-118.4273,37.8965],[-118.054,37.625],[-117.8314,37.4652],[-118.7754,37.4627],[-118.797,37.4884],[-118.8508,37.4755],[-118.9154,37.5503],[-118.9764,37.5572],[-119.0231,37.5855],[-119.0338,37.6302],[-119.0661,37.6843],[-119.1236,37.7341],[-119.199,37.7367],[-119.2169,37.7144],[-119.2707,37.7393],[-119.2025,37.7943],[-119.2169,37.8544],[-119.2133,37.8991],[-119.303,37.9446],[-119.321,37.9686],[-119.3066,38.0305],[-119.3533,38.0846],[-119.4287,38.1121],[-119.4466,38.0966],[-119.4969,38.1542],[-119.5148,38.137],[-119.6297,38.1972],[-119.6045,38.2367],[-119.6476,38.2831],[-119.6404,38.3269]]]]}},{"type":"Feature","properties":{"name":"Napa"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-122.6267,38.6679],[-122.4652,38.7049],[-122.397,38.8036],[-122.3719,38.8174],[-122.3934,38.8646],[-122.3504,38.8354],[-122.2893,38.8397],[-122.2247,38.6997],[-122.1673,38.655],[-122.1278,38.5837],[-122.1027,38.5133],[-122.1278,38.4291],[-122.0883,38.3844],[-122.0632,38.3157],[-122.2068,38.3157],[-122.1888,38.2719],[-122.2175,38.2624],[-122.1924,38.2135],[-122.214,38.18],[-122.196,38.1551],[-122.4078,38.1559],[-122.3719,38.1576],[-122.3504,38.1937],[-122.3683,38.247],[-122.4042,38.2813],[-122.3934,38.3045],[-122.458,38.3672],[-122.4473,38.3793],[-122.4975,38.4239],[-122.4832,38.4523],[-122.5298,38.4695],[-122.5442,38.5202],[-122.6195,38.5605],[-122.6447,38.5983],[-122.6267,38.6679]]]]}},{"type":"Feature","properties":{"name":"Alameda"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-122.3145,37.8973],[-122.2714,37.9059],[-122.2247,37.8784],[-122.1781,37.8166],[-122.1386,37.8046],[-122.0453,37.7985],[-121.9986,37.7633],[-122.013,37.747],[-121.9555,37.7195],[-121.5571,37.8166],[-121.5571,37.5425],[-121.5033,37.5262],[-121.471,37.4816],[-121.471,37.4824],[-121.8694,37.4833],[-121.9268,37.4541],[-121.9484,37.4678],[-122.0453,37.4592],[-122.0668,37.491],[-122.1099,37.5073],[-122.1458,37.5821],[-122.1709,37.6757],[-122.2463,37.7221],[-122.2534,37.7616],[-122.3288,37.7831],[-122.3324,37.7857],[-122.3001,37.8475],[-122.3145,37.8973]]]]}},{"type":"Feature","properties":{"name":"Santa Cruz"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-122.1529,37.2857],[-122.0883,37.223],[-122.0309,37.1903],[-121.9914,37.1439],[-121.8909,37.1053],[-121.8622,37.1044],[-121.7581,37.0494],[-121.6469,36.9326],[-121.5822,36.9189],[-121.5822,36.8991],[-121.6289,36.912],[-121.6433,36.894],[-121.7007,36.9197],[-121.7868,36.8854],[-121.812,36.851],[-121.8622,36.9318],[-121.9053,36.9687],[-121.9412,36.9781],[-121.9735,36.9541],[-122.1063,36.9558],[-122.2068,37.0142],[-122.2929,37.107],[-122.318,37.1869],[-122.2427,37.1903],[-122.2427,37.2152],[-122.1529,37.2152],[-122.1529,37.2857]]]]}}]};
+
+/* ---------------- fixed places ---------------- */
+const BASE = { name: "The Inelle", ll: [37.3405, -119.6462], elev: 2300 };
+const HOME = { name: "Pleasanton", ll: [37.662, -121.875] };
+const GATE = [37.5068, -119.6322];
+const CHARGERS = [
+  { id: "sc-hotel", dest: true, name: "The Inelle · Tesla wall connectors", ll: [37.3399, -119.6452], addr: "At your hotel", spec: "Destination charging · on request", note: "Guests report Tesla wall connectors (with an adapter for other EVs). Ask the front desk to hold one; gas cars sometimes park in the spots." },
+  { id: "sc-inn", name: "Oakhurst Supercharger · Oakhurst Inn", ll: [37.3318, -119.6497], addr: "40489 CA-41, Oakhurst", spec: "8 stalls · up to 250 kW · 24/7", note: "In town on Hwy 41. Charge here while you grab groceries or coffee." },
+  { id: "sc-49", name: "Oakhurst Supercharger · Hwy 49", ll: [37.3335, -119.6585], addr: "40041 CA-49, Oakhurst", spec: "8 stalls · up to 325 kW · 24/7", note: "Newer site (opened Dec 2025). Confirm it shows in your car's map before relying on it." },
+  { id: "sc-tenaya", name: "Fish Camp Supercharger · Tenaya Lodge", ll: [37.4738, -119.6418], addr: "1122 CA-41, Fish Camp", spec: "8 stalls · up to 150 kW · 24/7", note: "Two minutes from the railroad and 10 from the park entrance. Top up here before the drive back down at night." },
+];
+const TOWNS = [
+  ["Oakhurst", 37.3280, -119.6493, 1], ["Fish Camp", 37.4785, -119.6393, 1], ["Wawona", 37.5366, -119.6555, 1], ["Bass Lake", 37.3222, -119.5592, 1],
+  ["Coarsegold", 37.262, -119.700, 1], ["Ahwahnee", 37.365, -119.725, 1], ["Mariposa", 37.4849, -119.9663, 1], ["El Portal", 37.674, -119.784, 1],
+  ["Yosemite Valley", 37.7486, -119.5870, 1], ["Madera", 36.9613, -120.0607, 0], ["Fresno", 36.7378, -119.7871, 0], ["Merced", 37.3022, -120.4830, 0],
+  ["Chowchilla", 37.1230, -120.2602, 0], ["Los Banos", 37.0583, -120.8499, 0], ["Tracy", 37.7397, -121.4252, 0], ["Livermore", 37.6819, -121.7680, 0],
+  ["Pleasanton", 37.662, -121.875, 0], ["Oakland", 37.8044, -122.2712, 0], ["San Jose", 37.3382, -121.8863, 0],
+];
+
+/* ---------------- road segments (lat, lon) ---------------- */
+const SEG = {
+  oak_fc:    [[37.3280,-119.6493],[37.345,-119.645],[37.362,-119.640],[37.385,-119.628],[37.405,-119.627],[37.425,-119.629],[37.445,-119.628],[37.462,-119.633],[37.4738,-119.6400],[37.4785,-119.6393]],
+  fc_gate:   [[37.4785,-119.6393],[37.490,-119.636],[37.5068,-119.6322]],
+  gate_waw:  [[37.5068,-119.6322],[37.517,-119.640],[37.528,-119.650],[37.5366,-119.6555]],
+  waw_chq:   [[37.5366,-119.6555],[37.552,-119.668],[37.575,-119.682],[37.600,-119.690],[37.622,-119.703],[37.646,-119.714]],
+  chq_bdg:   [[37.646,-119.714],[37.652,-119.700],[37.657,-119.683],[37.6629,-119.6634]],
+  chq_val:   [[37.646,-119.714],[37.668,-119.712],[37.690,-119.700],[37.708,-119.688],[37.7158,-119.6774],[37.719,-119.660],[37.722,-119.645],[37.730,-119.625],[37.740,-119.605],[37.7486,-119.5870]],
+  gate_grove:[[37.5068,-119.6322],[37.509,-119.621],[37.512,-119.610],[37.5144,-119.6007]],
+  fc_goat:   [[37.4785,-119.6393],[37.488,-119.634],[37.4935,-119.6262]],
+  waw_chil:  [[37.5366,-119.6555],[37.541,-119.648],[37.5468,-119.6366]],
+  oak_bass:  [[37.3280,-119.6493],[37.334,-119.632],[37.336,-119.612],[37.330,-119.590],[37.3222,-119.5592]],
+  bass_angel:[[37.3222,-119.5592],[37.326,-119.556],[37.3330,-119.5550]],
+  oak_lewis: [[37.3280,-119.6493],[37.345,-119.645],[37.362,-119.640],[37.385,-119.628],[37.405,-119.627],[37.41662,-119.6266]],
+  oak_nelder:[[37.3280,-119.6493],[37.345,-119.645],[37.362,-119.640],[37.385,-119.628],[37.394,-119.612],[37.405,-119.598],[37.418,-119.590],[37.4275,-119.5860]],
+  oak_mari:  [[37.3280,-119.6493],[37.335,-119.668],[37.350,-119.695],[37.365,-119.725],[37.390,-119.770],[37.420,-119.820],[37.450,-119.870],[37.465,-119.915],[37.4849,-119.9663]],
+  drive:     [[37.662,-121.875],[37.700,-121.800],[37.720,-121.700],[37.737,-121.600],[37.730,-121.500],[37.700,-121.420],[37.640,-121.350],[37.560,-121.260],[37.450,-121.190],[37.300,-121.090],[37.180,-121.030],[37.095,-121.010],[37.080,-120.930],[37.058,-120.850],[37.060,-120.700],[37.065,-120.550],[37.075,-120.400],[37.090,-120.290],[37.080,-120.215],[37.020,-120.130],[36.9613,-120.0607],[36.935,-119.960],[36.910,-119.880],[36.900,-119.790],[36.960,-119.760],[37.050,-119.735],[37.150,-119.715],[37.262,-119.700],[37.300,-119.670],[37.3280,-119.6493]],
+};
+const path = (...names) => names.flatMap((n, i) => i ? SEG[n].slice(1) : SEG[n]);
+
+/* ---------------- categories ---------------- */
+const CATS = {
+  snow:    { label: "Snow",              css: "var(--c-snow)" },
+  falls:   { label: "Waterfalls",        css: "var(--c-falls)" },
+  trees:   { label: "Sequoias",          css: "var(--c-trees)" },
+  easy:    { label: "Easy & rainy-day",  css: "var(--c-easy)" },
+  evening: { label: "Evening",           css: "var(--c-evening)" },
+};
+const ICON = {
+  snow: '<path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>',
+  falls: '<path d="M7 4h10M9 4v8c0 2 1 3 3 3s3-1 3-3V4M8 20c1.3-1 2.7-1 4 0s2.7 1 4 0" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>',
+  trees: '<path d="M12 3 7 11h3l-3 5h10l-3-5h3zM12 16v5" stroke="#fff" stroke-width="1.8" fill="#fff" stroke-linejoin="round"/>',
+  easy: '<path d="M4 18c3-6 5-9 8-9s5 3 8 9" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="12" cy="6" r="1.8" fill="#fff"/>',
+  evening: '<path d="M15.5 4.5a7.5 7.5 0 1 0 4 12.5A6 6 0 0 1 15.5 4.5z" fill="#fff"/>',
+};
+const svgIcon = (cat, size) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true">${ICON[cat]}</svg>`;
+
+/* ---------------- day trips ---------------- */
+const TRIPS = [
+  { id: "badger", cat: "snow", name: "Badger Pass snow day", ll: [37.6629, -119.6634], route: ["oak_fc","fc_gate","gate_waw","waw_chq","chq_bdg"],
+    mi: 38, drive: "1 hr 10 min", elev: 7200, len: "Tubing hill · snowshoe trails", fit: "Clear day after a storm", park: true,
+    link: { label: "NPS winter activities", url: "https://www.nps.gov/yose/planyourvisit/wintersports.htm" },
+    blurb: "Yosemite's winter-sports area. Ride the snow-tubing hill, rent snowshoes or cross-country skis at the Nordic Center, or join a free ranger-led snowshoe walk.",
+    tips: ["Opens mid-December when there's enough snow", "Chains are often required on the road up, even when Hwy 41 is clear", "Sledding is only allowed on the tubing hill", "Calmer on a weekday, so Mon Dec 28 is ideal"] },
+  { id: "dewey", cat: "snow", name: "Dewey Point snowshoe", ll: [37.7151, -119.6487], route: ["oak_fc","fc_gate","gate_waw","waw_chq","chq_bdg"], routeEnd: [[37.6629,-119.6634],[37.680,-119.660],[37.700,-119.652],[37.7151,-119.6487]],
+    mi: 38, drive: "1 hr 10 min + ~7 mi on snowshoes", elev: 7385, len: "~7 mi round trip on snow", fit: "Clear, settled snow", park: true,
+    link: { label: "NPS winter activities", url: "https://www.nps.gov/yose/planyourvisit/wintersports.htm" },
+    blurb: "A big snowshoe outing from Badger Pass through red-fir forest to a cliff-edge view over Yosemite Valley and El Capitan.",
+    tips: ["Rent snowshoes at the Badger Pass Nordic Center", "Allow 4–5 hours; start by 10 AM because it gets dark around 4:45", "The route isn't groomed, so have the map on your phone"] },
+  { id: "goat", cat: "snow", name: "Goat Meadow snow play", ll: [37.4935, -119.6262], route: ["oak_fc","fc_goat"],
+    mi: 15, drive: "25 min", elev: 5100, len: "Sledding slopes + forest trails", fit: "Any day with snow on the ground",
+    link: { label: "Goat Meadow info", url: "https://www.yosemite.com/things-to-do/adventure-activities/goat-meadow-trailhead-and-snowplay-area/" },
+    blurb: "Gentle sledding slopes and a network of snowshoe trails in the national forest, just outside the park's south entrance. No park entry needed.",
+    tips: ["Bring your own sled (Oakhurst stores sell them)", "Only a porta-potty here; food and coffee at Tenaya Lodge up the road", "Trail signs are sparse, so use a phone map"] },
+  { id: "grove", cat: "trees", name: "Mariposa Grove of giant sequoias", ll: [37.5144, -119.6007], route: ["oak_fc","fc_gate","gate_grove"],
+    mi: 15, drive: "25 min + 2 mi walk in", elev: 5600, len: "2 mi each way, ~500 ft gain", fit: "Any day; magical after snow", park: true,
+    link: { label: "NPS Mariposa Grove", url: "https://home.nps.gov/yose/planyourvisit/mg.htm" },
+    blurb: "Over 500 giant sequoias, including the Grizzly Giant. In winter the road is closed to cars and the shuttle doesn't run, so you hike or snowshoe 2 miles in on the Washburn Trail or the closed road.",
+    tips: ["Park at the Welcome Plaza by the south entrance; water is only there", "Snowshoe if there's snow, otherwise it's a winter hike", "Pair it with Wawona on the way back"] },
+  { id: "chil", cat: "falls", name: "Chilnualna Falls", ll: [37.5468, -119.6366], route: ["oak_fc","fc_gate","gate_waw","waw_chil"],
+    mi: 21, drive: "40 min", elev: 4200, len: "Lower cascades: short · Top: 8.2 mi, 2,400 ft gain", fit: "Day after rain", park: true,
+    link: { label: "NPS Wawona hikes", url: "https://home.nps.gov/yose/planyourvisit/wawonahikes.htm" },
+    blurb: "One of Yosemite's best winter waterfall hikes. The lower cascades are a few minutes from the Wawona trailhead; the full climb to the top is a big day.",
+    tips: ["Microspikes help if the upper trail is icy", "Turn around wherever you like; the lower falls alone are worth it"] },
+  { id: "lewis", cat: "falls", name: "Lewis Creek Trail · Corlieu & Red Rock Falls", ll: [37.41662, -119.6266], route: ["oak_lewis"],
+    mi: 6, drive: "12 min", elev: 4100, len: "Corlieu Falls: 0.8 mi round trip", fit: "Any day without heavy rain",
+    link: { label: "Trail guide (Hikespeak)", url: "https://www.hikespeak.com/trails/corlieu-falls-lewis-creek-trail-sierra-nf/" },
+    blurb: "A creek-side trail off Hwy 41 with two waterfalls. Corlieu Falls is a short walk from the turnout; Red Rock Falls is about 1.75 mi further along the trail.",
+    tips: ["Trailhead is a paved turnout on the east side of Hwy 41", "Can be muddy; wear boots", "Good for the morning you drive home"] },
+  { id: "angel", cat: "falls", name: "Bass Lake · Angel Falls & Devil's Slide", ll: [37.3330, -119.5550], route: ["oak_bass","bass_angel"],
+    mi: 7, drive: "15 min", elev: 3400, len: "~2–3 mi round trip", fit: "Drizzly day is fine",
+    link: { label: "World of Waterfalls", url: "https://www.world-of-waterfalls.com/waterfalls/california-angel-falls-devils-slide/" },
+    blurb: "A rougher trail up Willow Creek from Bass Lake's north shore to a granite waterslide and Angel Falls. Add a walk along the lakeshore.",
+    tips: ["Start at the Willow Creek trailhead by the Falls Day Use Area", "Granite is slick when wet, so stay back from the water"] },
+  { id: "wawona", cat: "easy", name: "Wawona meadow & swinging bridge", ll: [37.5366, -119.6555], route: ["oak_fc","fc_gate","gate_waw"],
+    mi: 20, drive: "35 min", elev: 4000, len: "Meadow loop 3.5 mi · bridge 0.6 mi", fit: "Any weather", park: true,
+    link: { label: "NPS Wawona hikes", url: "https://home.nps.gov/yose/planyourvisit/wawonahikes.htm" },
+    blurb: "A mostly flat loop around Wawona Meadow from the historic Wawona Hotel, plus a short walk to the swinging bridge over the South Fork Merced River.",
+    tips: ["Good half day before or after Mariposa Grove", "Low and flat, so it's a safe outing in a storm"] },
+  { id: "valley", cat: "easy", name: "Yosemite Valley day", ll: [37.7486, -119.5870], route: ["oak_fc","fc_gate","gate_waw","waw_chq","chq_val"],
+    mi: 46, drive: "1 hr 20 min", elev: 4000, len: "Valley walks · Tunnel View", fit: "Clear day after snow", park: true,
+    link: { label: "NPS winter visit", url: "https://www.nps.gov/yose/planyourvisit/winter.htm" },
+    blurb: "Tunnel View, Bridalveil Fall, Lower Yosemite Fall and flat valley-floor walks. Snow on the granite cliffs is the classic winter sight. You visit and drive back out.",
+    tips: ["Chains may be required on the Wawona Road between Chinquapin and the valley", "Leave the valley by 3:30 to drive down before full dark"] },
+  { id: "mariposa", cat: "easy", name: "Mariposa town", ll: [37.4849, -119.9663], route: ["oak_mari"],
+    mi: 29, drive: "40 min", elev: 1950, len: "Main street · museum", fit: "Rainy day",
+    blurb: "A Gold Rush town with a historic main street, the Mariposa Museum and History Center, and an 1854 courthouse.",
+    tips: ["Low elevation, so it's rain rather than snow", "The museum is indoors; go at a quiet hour or mask up"] },
+  { id: "train", cat: "evening", name: "Holiday Magic Train", ll: [37.4741, -119.6363], route: ["oak_fc"],
+    mi: 11, drive: "20 min", elev: 5000, len: "1-hour ride", fit: "Any evening it runs",
+    link: { label: "Tickets & dates", url: "https://ymsprr.com/holiday-magic-train/" },
+    blurb: "An open-air steam train decorated with lights, running through the forest to the Lewis Creek amphitheater, with hot cocoa. From about $64 per adult.",
+    tips: ["Last year it didn't run Dec 24, Dec 25 or Jan 1; check this year's calendar", "Book early, it sells out", "Choose the open cars, not the enclosed first-class caboose or cupola", "Charge at Tenaya before the 20-minute drive down"] },
+  { id: "stars", cat: "evening", name: "Stargazing", ll: [37.4935, -119.6262], route: ["oak_fc","fc_goat"],
+    mi: 15, drive: "25 min", elev: 5100, len: "As long as you can stand the cold", fit: "Clear, moonless night",
+    blurb: "On a clear night, drive up out of the town lights. Goat Meadow, or any safe pullout above Fish Camp, gets very dark skies.",
+    tips: ["Dress for well below freezing", "Check the forecast for black ice before driving up"] },
+];
+const T = Object.fromEntries(TRIPS.map(t => [t.id, t]));
+
+/* ---------------- week ---------------- */
+const WEEK = [
+  { key: "d25", d: "Fri", n: "Dec 25", fixed: "Drive up from Pleasanton", sub: "~185 mi, about 3.5 hrs. Leave mid-morning; check in at the Inelle and ask for a charger." },
+  { key: "d26", d: "Sat", n: "Dec 26" },
+  { key: "d27", d: "Sun", n: "Dec 27" },
+  { key: "d28", d: "Mon", n: "Dec 28" },
+  { key: "d29", d: "Tue", n: "Dec 29", fixed: "Drive home", sub: "Optional quick stop at Corlieu Falls (12 min up 41) before you leave. Midweek, so you'll miss the weekend return traffic." },
+];
+const PLAN_DEFAULT = {
+  d26: { day: "grove", eve: "train" },
+  d27: { day: "chil", eve: "" },
+  d28: { day: "badger", eve: "stars" },
+};
+
+/* ---------------- state ---------------- */
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+};
+const savedPlan = store.get("oh-plan2", {}); for (const k in savedPlan) if (!WEEK.some(w => w.key === k && !w.fixed)) delete savedPlan[k];
+const plan = Object.assign({}, JSON.parse(JSON.stringify(PLAN_DEFAULT)), savedPlan);
+const lodging = Object.assign({}, LODGING_DEFAULT, store.get("oh-lodging2", {}));
+const gearDone = store.get("oh-gear", {});
+let view = store.get("oh-view", "plan");
+let filter = "all";
+let selected = null;
+
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const gmaps = ll => `https://www.google.com/maps/search/?api=1&query=${ll[0]},${ll[1]}`;
+const gdir = ll => `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(HOTEL.address)}&destination=${ll[0]},${ll[1]}&travelmode=driving`;
+const fmtFt = n => n.toLocaleString("en-US") + " ft";
+const BOLT = `<svg width="12" height="14" viewBox="0 0 12 14" aria-hidden="true"><path d="M7 0 1 8h4l-1 6 6-8H6z" fill="var(--volt-ink)"/></svg>`;
+const CABIN = `<svg width="18" height="16" viewBox="0 0 18 16" aria-hidden="true" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M1.5 8 9 1.5 16.5 8M3.5 6.5V14.5h11V6.5M7.5 14.5v-4h3v4"/></svg>`;
+const isNarrow = () => window.matchMedia("(max-width: 900px)").matches;
+
+/* ---------------- map ---------------- */
+const map = L.map("map", { minZoom: 7, maxZoom: 15, zoomSnap: 0.25 });
+map.attributionControl.setPrefix(false);
+L.geoJSON(LAND, { style: { className: "v-land" }, interactive: false }).addTo(map);
+L.geoJSON(COUNTIES, { style: { className: "v-county" }, interactive: false }).addTo(map);
+let tilesOn = false;
+const layersCtl = L.control.layers(null, {}, { collapsed: true, position: "topright" }).addTo(map);
+const probe = new Image();
+probe.onload = () => {
+  const tiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 18, attribution: "© OpenStreetMap contributors" });
+  tiles.addTo(map); tiles.bringToBack(); tilesOn = true;
+  map.getContainer().classList.add("tiles-on");
+  layersCtl.addBaseLayer(tiles, "Street map");
+};
+probe.src = "https://tile.openstreetmap.org/9/86/197.png";
+
+const roadLayer = L.layerGroup().addTo(map);
+const activeLayer = L.layerGroup().addTo(map);
+const tripLayer = L.layerGroup().addTo(map);
+const chargeLayer = L.layerGroup().addTo(map);
+const baseLayer = L.layerGroup().addTo(map);
+const townLayer = L.layerGroup().addTo(map);
+layersCtl.addOverlay(tripLayer, "Day trips");
+layersCtl.addOverlay(chargeLayer, "Superchargers");
+layersCtl.addOverlay(townLayer, "Town names");
+
+// faint road network
+["oak_fc","fc_gate","gate_waw","waw_chq","chq_bdg","chq_val","gate_grove","oak_bass","oak_mari","drive"].forEach(k =>
+  L.polyline(SEG[k], { className: "rt rt-road", weight: 2, interactive: false }).addTo(roadLayer));
+
+TOWNS.forEach(([n, la, lo, near]) => L.marker([la, lo], { interactive: false, keyboard: false,
+  icon: L.divIcon({ className: "mk", html: `<div class="mk-town" data-near="${near}">${n}</div>`, iconSize: [0, 0], iconAnchor: [-7, 7] }) }).addTo(townLayer));
+L.marker([37.70, -119.50], { interactive: false, keyboard: false, icon: L.divIcon({ className: "mk", html: `<div class="mk-park">YOSEMITE NATIONAL PARK</div>`, iconSize: [0, 0], iconAnchor: [90, 0] }) }).addTo(townLayer);
+L.marker(GATE, { keyboard: false, icon: L.divIcon({ className: "mk", html: `<div class="mk-gate">S. ENTRANCE</div>`, iconSize: [0, 0], iconAnchor: [-8, 8] }) })
+  .bindPopup(`<div class="pk">Park entrance</div><b>Yosemite South Entrance</b><div>Park entry fee or annual pass needed for trips marked "In the park". Chain controls are posted here.</div>`).addTo(baseLayer);
+const updTowns = () => map.getContainer().classList.toggle("hide-towns", map.getZoom() < 8.5);
+map.on("zoomend", updTowns);
+
+const tripMarkers = {};
+function tripPopup(t) {
+  return `<div class="pk" style="color:${CATS[t.cat].css}">${esc(CATS[t.cat].label)}${t.park ? " · In the park" : ""}</div><b>${esc(t.name)}</b>
+    <div class="pk" style="margin:2px 0 4px">~${t.mi} mi · ${esc(t.drive)} from the Inelle · ▲ ${fmtFt(t.elev)}</div><div>${esc(t.blurb)}</div>
+    <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px 12px">${t.link ? `<a href="${t.link.url}" target="_blank" rel="noopener">${esc(t.link.label)} ↗</a>` : ""}<a href="${gdir(t.ll)}" target="_blank" rel="noopener">Directions ↗</a></div>`;
+}
+TRIPS.forEach(t => {
+  const m = L.marker(t.ll, { title: t.name, riseOnHover: true, zIndexOffset: 300,
+    icon: L.divIcon({ className: "mk", html: `<div class="mk-trip" style="--c:${CATS[t.cat].css}">${svgIcon(t.cat, 14)}</div>`, iconSize: [24, 24], iconAnchor: [12, 12], popupAnchor: [0, -12] }) });
+  m.bindPopup(tripPopup(t), { maxWidth: 290 });
+  m.on("click", () => selectTrip(t.id, false));
+  m.addTo(tripLayer); tripMarkers[t.id] = m;
+});
+const chargeMarkers = {};
+CHARGERS.forEach(c => {
+  const m = L.marker(c.ll, { title: c.name, zIndexOffset: 500,
+    icon: L.divIcon({ className: "mk", html: `<div class="mk-charge" style="${c.dest ? "background:color-mix(in srgb,var(--volt) 55%,var(--panel));width:20px;height:20px" : ""}">${BOLT}</div>`, iconSize: [24, 24], iconAnchor: [12, 12], popupAnchor: [0, -12] }) });
+  m.bindPopup(`<div class="pk">${c.dest ? "Hotel charging" : "Tesla Supercharger"}</div><b>${esc(c.name)}</b><div class="pk" style="margin-bottom:4px">${esc(c.spec)}</div><div>${esc(c.addr)}. ${esc(c.note)}</div><div style="margin-top:6px"><a href="${gmaps(c.ll)}" target="_blank" rel="noopener">Open in Google Maps ↗</a></div>`, { maxWidth: 280 });
+  m.addTo(chargeLayer); chargeMarkers[c.id] = m;
+});
+const baseMarker = L.marker(BASE.ll, { title: "Your base: The Inelle", zIndexOffset: 800,
+  icon: L.divIcon({ className: "mk", html: `<div class="mk-base">${CABIN}</div>`, iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -16] }) }).addTo(baseLayer);
+function basePopup() {
+  return `<div class="pk">Your base · ${esc(HOTEL.nights)}</div><b>${esc(HOTEL.name)}</b><div>${esc(HOTEL.address)} · ${esc(HOTEL.phone)}</div>${lodging.confirmation ? `<div class="pk" style="margin-top:4px">Conf # ${esc(lodging.confirmation)}</div>` : ""}
+    <div class="note" style="margin-top:4px">Marker placed approximately; use the links for the exact spot.</div>
+    <div style="margin-top:6px;display:flex;gap:12px;flex-wrap:wrap"><a href="${HOTEL.url}" target="_blank" rel="noopener">Hotel site ↗</a><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(HOTEL.name + ", " + HOTEL.address)}" target="_blank" rel="noopener">Google Maps ↗</a></div>`;
+}
+baseMarker.bindPopup(basePopup, { maxWidth: 260 });
+const homeMarker = L.marker(HOME.ll, { title: "Pleasanton",
+  icon: L.divIcon({ className: "mk", html: `<div class="mk-home"></div>`, iconSize: [20, 20], iconAnchor: [10, 10], popupAnchor: [0, -10] }) })
+  .bindPopup(`<div class="pk">Home</div><b>Pleasanton</b><div>About 190 miles and 3.5 hours to Oakhurst.</div>`).addTo(baseLayer);
+
+const legend = L.control({ position: "bottomleft" });
+legend.onAdd = () => { const d = L.DomUtil.create("div", "maplegend");
+  d.innerHTML = Object.entries(CATS).map(([k, c]) => `<div><i style="background:${c.css}"></i>${c.label}</div>`).join("") +
+    `<div><i style="background:var(--volt);border-radius:3px"></i>Supercharger</div><div><i style="background:var(--base)"></i>Your base</div>`;
+  L.DomEvent.disableClickPropagation(d); return d; };
+legend.addTo(map);
+
+const AREA = L.latLngBounds([[37.30, -119.99], [37.76, -119.53]]);
+function fit(bounds, maxZoom) { map.flyToBounds(bounds, { padding: isNarrow() ? [22, 22] : [50, 50], duration: 0.6, maxZoom: maxZoom || 12 }); }
+
+function tripPath(t) { const p = path(...t.route); return t.routeEnd ? p.concat(t.routeEnd.slice(1)) : p; }
+function highlight(ids, opts) {
+  activeLayer.clearLayers();
+  const set = new Set(ids);
+  TRIPS.forEach(t => { const el = tripMarkers[t.id].getElement(); if (!el) return; const d = el.querySelector(".mk-trip");
+    d.classList.toggle("dim", set.size > 0 && !set.has(t.id)); d.classList.toggle("on", set.size === 1 && set.has(t.id)); });
+  const pts = [BASE.ll];
+  ids.forEach(id => { const t = T[id]; const p = tripPath(t);
+    L.polyline(p, { className: "rt rt-casing", weight: 8, interactive: false }).addTo(activeLayer);
+    L.polyline(p, { className: "rt rt-active", weight: 4.5, interactive: false, style: "" }).addTo(activeLayer).getElement()?.style.setProperty("--c", CATS[t.cat].css);
+    p.forEach(x => pts.push(x)); });
+  if (opts && opts.fit) fit(L.latLngBounds(pts), opts.maxZoom || 11);
+}
+function showDrive() {
+  activeLayer.clearLayers();
+  TRIPS.forEach(t => { const el = tripMarkers[t.id].getElement(); if (el) { const d = el.querySelector(".mk-trip"); d.classList.add("dim"); d.classList.remove("on"); } });
+  L.polyline(SEG.drive, { className: "rt rt-casing", weight: 8, interactive: false }).addTo(activeLayer);
+  L.polyline(SEG.drive, { className: "rt rt-drive", weight: 4.5, interactive: false }).addTo(activeLayer);
+  fit(L.latLngBounds(SEG.drive), 9);
+}
+
+/* ---------------- panel ---------------- */
+const tabsEl = document.getElementById("tabs");
+const bodyEl = document.getElementById("body");
+tabsEl.addEventListener("click", e => { const b = e.target.closest(".tab"); if (b) setView(b.dataset.v); });
+
+function elevBar(t) {
+  const pct = Math.min(100, t.elev / 80);
+  return `<div class="elev" title="Elevation; the tick marks roughly where rain usually turns to snow (~5,000 ft)"><div class="bar"><b style="width:${pct}%"></b><s style="left:62.5%"></s></div><span>▲ ${fmtFt(t.elev)}</span></div>`;
+}
+function tripCard(t, full) {
+  return `<div class="trip${selected === t.id ? " on" : ""}" data-trip="${t.id}" style="--c:${CATS[t.cat].css}">
+    <span class="hd"><button type="button" data-pick="${t.id}">${esc(t.name)}</button><span class="cat">${esc(CATS[t.cat].label)}</span></span>
+    <span class="meta"><span>~${t.mi} mi · ${esc(t.drive)}</span><span>${esc(t.len)}</span>${t.park ? "<span>In the park</span>" : ""}</span>
+    ${elevBar(t)}
+    <span class="bl">${esc(t.blurb)}</span>
+    <span class="fit">Best: ${esc(t.fit)}</span>
+    ${full ? `<ul>${t.tips.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}
+    <div class="links"><button type="button" data-pick="${t.id}">Show on map</button>${t.link ? `<a href="${t.link.url}" target="_blank" rel="noopener">${esc(t.link.label)} ↗</a>` : ""}<a href="${gdir(t.ll)}" target="_blank" rel="noopener">Directions from hotel ↗</a></div>
+  </div>`;
+}
+function optionList(cats, val) {
+  let h = `<option value="">Flexible / rest</option>`;
+  cats.forEach(c => { h += `<optgroup label="${esc(CATS[c].label)}">` + TRIPS.filter(t => t.cat === c).map(t => `<option value="${t.id}"${t.id === val ? " selected" : ""}>${esc(t.name)}</option>`).join("") + `</optgroup>`; });
+  return h;
+}
+
+function dayMiles(p) {
+  const ids = [p.day, p.eve].filter(Boolean); if (!ids.length) return "";
+  const total = ids.reduce((a, id) => a + T[id].mi * 2, 0);
+  return `~${total} mi`;
+}
+function renderPlan() {
+  const trainDays = WEEK.filter(w => plan[w.key] && plan[w.key].eve === "train").map(w => w.n);
+  bodyEl.innerHTML = `
+    <div><div class="eyebrow">Fri Dec 25 – Tue Dec 29 · 4 nights</div><h2>Base at the Inelle, a different day trip each day</h2>
+      <p class="lede">Each morning, check the weather and swap the day's trip. Snow days go best after a storm clears; waterfalls are best the day after rain.</p></div>
+    <dl class="facts"><div><dt>Base</dt><dd>Oakhurst · ${fmtFt(BASE.elev)}</dd></div><div><dt>Charging</dt><dd>At hotel + 3 sites</dd></div><div><dt>Drive</dt><dd>~3.5 hr each way</dd></div></dl>
+    <section><h3>Your week</h3><ol class="plan">${WEEK.map(w => {
+      if (w.fixed) return `<li><div class="dt">${w.n}<small>${w.d}</small></div><div class="fixed">${esc(w.fixed)}<span>${esc(w.sub)}</span></div></li>`;
+      const p = plan[w.key] || { day: "", eve: "" };
+      return `<li><div class="dt">${w.n}<small>${w.d}</small>${dayMiles(p) ? `<small class="daymi" title="Total driving that day">${dayMiles(p)}</small>` : ""}</div><div class="slots">
+        <div class="slot"><label for="${w.key}-day">Day</label><select id="${w.key}-day" data-k="${w.key}" data-s="day">${optionList(["snow","trees","falls","easy"], p.day)}</select>
+          <button type="button" class="go" data-show="${w.key}" aria-label="Show ${w.n} on the map" ${p.day || p.eve ? "" : "disabled"}><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1C4.5 1 2.6 2.9 2.6 5.3 2.6 8.6 7 13 7 13s4.4-4.4 4.4-7.7C11.4 2.9 9.5 1 7 1z" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="7" cy="5.3" r="1.5" fill="currentColor"/></svg></button></div>
+        ${p.day ? `<div class="links" style="padding-left:60px"><span class="note">~${T[p.day].mi} mi · ${esc(T[p.day].drive)}</span>${T[p.day].link ? `<a href="${T[p.day].link.url}" target="_blank" rel="noopener">${esc(T[p.day].link.label)} ↗</a>` : ""}<a href="${gdir(T[p.day].ll)}" target="_blank" rel="noopener">Directions ↗</a></div>` : ""}
+        <div class="slot"><label for="${w.key}-eve">Evening</label><select id="${w.key}-eve" data-k="${w.key}" data-s="eve"><option value="">Relax at hotel</option>${TRIPS.filter(t => t.cat === "evening").map(t => `<option value="${t.id}"${t.id === p.eve ? " selected" : ""}>${esc(t.name)}</option>`).join("")}</select><span></span></div>
+        ${p.eve ? `<div class="links" style="padding-left:60px"><span class="note">~${T[p.eve].mi} mi · ${esc(T[p.eve].drive)}</span>${T[p.eve].link ? `<a href="${T[p.eve].link.url}" target="_blank" rel="noopener">${esc(T[p.eve].link.label)} ↗</a>` : ""}</div>` : ""}
+        ${(w.d === "Sat" || w.d === "Sun") && (p.day === "badger" || p.day === "dewey") ? `<div class="warn">Weekend: Badger Pass will be busiest. Monday is calmer.</div>` : ""}
+      </div></li>`; }).join("")}</ol>
+      <div class="row" style="margin-top:8px"><button type="button" class="btn" id="reset">Reset to suggested plan</button>
+      ${trainDays.length ? `<span class="note">Train night: ${trainDays.join(", ")}. Check this year's dates before booking.</span>` : `<span class="note">No train night picked yet.</span>`}</div>
+    </section>
+    <section><h3>Where you're staying</h3>
+      <div class="card base">
+        <div class="hd"><b>${esc(HOTEL.name)}</b><span>${esc(HOTEL.nights)}</span></div>
+        <p class="note">${esc(HOTEL.brand)} · ${esc(HOTEL.address)} · ${esc(HOTEL.phone)}</p>
+        <div class="links"><a href="${HOTEL.url}" target="_blank" rel="noopener">Book / hotel site ↗</a><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(HOTEL.name + ", " + HOTEL.address)}" target="_blank" rel="noopener">Google Maps ↗</a></div>
+        <ul class="notes">
+          <li><b>Charging:</b> Tesla wall connectors on site, on request. Ask to hold one each night.</li>
+          <li><b>Parking &amp; Wi-Fi:</b> free (book direct as a Bonvoy member for Wi-Fi).</li>
+          <li><b>Room request:</b> ground floor, courtyard side, away from the stairwell, gym and restaurant. Confirm the window opens and the room has its own heating unit.</li>
+          <li><b>Bring earplugs:</b> reviewers say walls are thin.</li>
+        </ul>
+        <div class="fields">
+          <label>Confirmation #<input id="lg-confirmation" data-f="confirmation" value="${esc(lodging.confirmation)}"></label>
+          <label>Room #<input id="lg-room" data-f="room" value="${esc(lodging.room)}"></label>
+        </div>
+        <div class="row"><span id="lg-status">${lodging.confirmation ? `<span class="status ok">✓ Booked</span>` : `<span class="status no">Not booked yet</span>`}</span>
+          <button type="button" class="btn primary" id="copy">Copy plan</button><span class="note" id="copyhint">Paste to Claude to save it into the page.</span></div>
+        <div id="copyfb"></div>
+      </div>
+    </section>`;
+  bodyEl.querySelectorAll("select[data-k]").forEach(s => s.addEventListener("change", () => {
+    plan[s.dataset.k] = plan[s.dataset.k] || { day: "", eve: "" };
+    plan[s.dataset.k][s.dataset.s] = s.value; store.set("oh-plan2", plan);
+    const k = s.dataset.k; renderPlan(); showDay(k);
+    const again = document.getElementById(`${k}-${s.dataset.s}`); if (again) again.focus();
+  }));
+  bodyEl.querySelectorAll("[data-show]").forEach(b => b.addEventListener("click", () => { showDay(b.dataset.show); if (isNarrow()) document.getElementById("map").scrollIntoView({ behavior: "smooth" }); }));
+  document.getElementById("reset").addEventListener("click", () => { for (const k in plan) delete plan[k]; Object.assign(plan, JSON.parse(JSON.stringify(PLAN_DEFAULT))); store.set("oh-plan2", plan); renderPlan(); highlight([], null); fit(AREA); });
+  bodyEl.querySelectorAll("[data-f]").forEach(inp => inp.addEventListener("input", () => {
+    lodging[inp.dataset.f] = inp.value; store.set("oh-lodging2", lodging);
+    document.getElementById("lg-status").innerHTML = lodging.confirmation ? `<span class="status ok">✓ Booked</span>` : `<span class="status no">Not booked yet</span>`;
+  }));
+  document.getElementById("copy").addEventListener("click", copyPlan);
+}
+function showDay(k) {
+  const p = plan[k]; if (!p) return;
+  const ids = [p.day, p.eve].filter(Boolean);
+  highlight(ids, { fit: ids.length > 0, maxZoom: 11 });
+  if (!ids.length) fit(AREA);
+}
+function copyPlan() {
+  const lines = WEEK.map(w => w.fixed ? `${w.d} ${w.n}: ${w.fixed}` : `${w.d} ${w.n}: ${plan[w.key] && plan[w.key].day ? T[plan[w.key].day].name : "flexible"}${plan[w.key] && plan[w.key].eve ? " + evening: " + T[plan[w.key].eve].name : ""}`);
+  lines.push(`Lodging: ${HOTEL.name}${lodging.confirmation ? ", conf " + lodging.confirmation : ", not booked yet"}${lodging.room ? ", room " + lodging.room : ""}`);
+  const txt = lines.join("\n"); const hint = document.getElementById("copyhint");
+  const fallback = () => { document.getElementById("copyfb").innerHTML = `<textarea class="copyfallback" id="copyta" readonly>${esc(txt)}</textarea>`; const ta = document.getElementById("copyta"); ta.focus(); ta.select(); hint.textContent = "Select all and copy this text."; };
+  try { navigator.clipboard.writeText(txt).then(() => { hint.textContent = "Copied. Paste it to Claude."; }, fallback); } catch (e) { fallback(); }
+}
+
+function renderTrips() {
+  const list = TRIPS.filter(t => filter === "all" || t.cat === filter);
+  const byDist = TRIPS.slice().sort((a, b) => a.mi - b.mi);
+  bodyEl.innerHTML = `
+    <div><div class="eyebrow">${TRIPS.length} outings from the Inelle</div><h2>Day trips by weather</h2>
+      <p class="lede">Miles are one-way driving estimates from the hotel; tap Directions for the exact route. The bar on each card shows elevation, and the tick is about where rain usually turns to snow (5,000 ft).</p></div>
+    <section><h3>Distance from the hotel</h3><div class="tw"><table class="dist"><thead><tr><th>Spot</th><th>One way</th><th>Drive</th><th></th></tr></thead><tbody>
+      ${byDist.map(t => `<tr><td style="--c:${CATS[t.cat].css}"><button type="button" data-pick="${t.id}"><i></i>${esc(t.name)}</button></td><td class="n">~${t.mi} mi</td><td class="n">${esc(t.drive.split(" + ")[0])}</td><td class="n"><a href="${gdir(t.ll)}" target="_blank" rel="noopener">Route ↗</a></td></tr>`).join("")}
+    </tbody></table></div></section>
+    <div class="chips" role="group" aria-label="Filter day trips">
+      <button type="button" class="chip" data-f="all" aria-pressed="${filter === "all"}">All</button>
+      ${Object.entries(CATS).map(([k, c]) => `<button type="button" class="chip" data-f="${k}" aria-pressed="${filter === k}" style="--c:${c.css}"><i></i>${c.label}</button>`).join("")}
+    </div>
+    <div class="trips">${list.map(t => tripCard(t, true)).join("")}</div>`;
+  bodyEl.querySelectorAll(".chip").forEach(c => c.addEventListener("click", () => {
+    filter = c.dataset.f; renderTrips();
+    const ids = TRIPS.filter(t => filter === "all" || t.cat === filter).map(t => t.id);
+    highlight(filter === "all" ? [] : ids, { fit: false }); fit(filter === "all" ? AREA : L.latLngBounds(ids.map(i => T[i].ll).concat([BASE.ll])), 11);
+    const ch = bodyEl.querySelector(".chips"); if (ch) ch.scrollIntoView({ block: "nearest" });
+  }));
+  bodyEl.querySelectorAll("[data-pick]").forEach(b => b.addEventListener("click", () => { selectTrip(b.dataset.pick, true); if (isNarrow()) document.getElementById("map").scrollIntoView({ behavior: "smooth" }); }));
+}
+function selectTrip(id, fromList) {
+  selected = id;
+  if (view !== "trips") { filter = "all"; setView("trips", true); }
+  else bodyEl.querySelectorAll(".trip").forEach(b => b.classList.toggle("on", b.dataset.trip === id));
+  highlight([id], { fit: true, maxZoom: 11 });
+  if (fromList) setTimeout(() => tripMarkers[id].openPopup(), 650);
+  else { const card = bodyEl.querySelector(`[data-trip="${id}"]`); if (card && !isNarrow()) card.scrollIntoView({ block: "nearest", behavior: "smooth" }); }
+}
+
+function renderDrive() {
+  bodyEl.innerHTML = `
+    <div><div class="eyebrow">Fri Dec 25 up · Tue Dec 29 home</div><h2>Pleasanton to the Inelle</h2>
+      <p class="lede">About 185 miles: 580 over the Altamont, I-5 south, Hwy 152 east across the valley, 99 south to Madera, then Hwy 41 up into the foothills.</p></div>
+    <dl class="facts"><div><dt>Distance</dt><dd>~185 mi</dd></div><div><dt>Driving</dt><dd>~3.5 hr</dd></div><div><dt>Climb</dt><dd>to ${fmtFt(BASE.elev)}</dd></div></dl>
+    <section><h3>Charging on the way</h3><ul class="notes">
+      <li><b>Most Teslas can do it without stopping</b>, even in the cold. Arrive and charge in Oakhurst.</li>
+      <li><b>For your usual break around the 3-hour mark,</b> the Central Valley along 152 and 99 has several Supercharger sites. Let the car's trip planner choose one.</li>
+      <li><b>Christmas Day roads are quiet.</b> Coming home Tuesday Dec 29 keeps you out of weekend traffic.</li></ul></section>
+    <section><h3>Superchargers near your base</h3><div class="tw"><table class="sc"><thead><tr><th>Site</th><th>Stalls</th><th>From base</th></tr></thead><tbody>
+      ${CHARGERS.map((c, i) => `<tr><td><b>${esc(c.name.split(" · ")[c.dest ? 1 : 1])}</b>${esc(c.addr)}</td><td>${esc(c.spec.split(" · ").slice(0, 2).join(", "))}</td><td>${["At the hotel", "~1 mi, in town", "~1.5 mi, in town", "~13 mi up 41"][i]}</td></tr>`).join("")}
+    </tbody></table></div>
+    <p class="note" style="margin-top:6px">Hotel charging plus three Superchargers, so a storm outage at one doesn't strand you. The Hwy 49 site is new; confirm it in the Tesla app.</p></section>
+    <section><h3>Habits for the week</h3><ul class="notes">
+      <li><b>Plug in at the hotel each night</b> if a wall connector is free; otherwise top up at the Oakhurst Superchargers.</li>
+      <li><b>Keep 70%+ overnight.</b> That covers a round trip to Badger Pass plus heat, and gets you out if the power goes down.</li>
+      <li><b>Precondition before leaving</b> on cold mornings, ideally while still plugged in.</li>
+      <li><b>Top up at Tenaya</b> before driving down after the train.</li></ul></section>`;
+  showDrive();
+}
+
+function renderSnow() {
+  bodyEl.innerHTML = `
+    <div><div class="eyebrow">Driving at night with snow tires</div><h2>How the roads work up here</h2>
+      <p class="lede">Hwy 41 is the main year-round state highway into southern Yosemite, and Caltrans plows it. With a Tesla on snow tires, normal winter conditions are very manageable. The question each day is whether chains are required and whether there's black ice after dark.</p></div>
+    <section><h3>Chain control levels</h3><div class="tw"><table class="sc"><thead><tr><th>Level</th><th>What it means for you</th></tr></thead><tbody>
+      <tr><td><b>R-1</b></td><td>Chains or snow tires required. <b>Your AWD Tesla on snow tires can drive.</b></td></tr>
+      <tr><td><b>R-2</b></td><td>Chains required, except 4WD/AWD with snow tires on all four wheels. <b>You can drive, but must carry chains.</b></td></tr>
+      <tr><td><b>R-3</b></td><td>Chains on every vehicle, no exceptions. Rare; usually means stay put.</td></tr>
+    </tbody></table></div>
+    <p class="note" style="margin-top:6px">Yosemite requires every car to carry chains in a chain-control area, even AWD with snow tires. Check Tesla's guidance for traction devices that fit your wheel size. Many owners carry tire socks.</p></section>
+    <section><h3>Road by road</h3><ul class="notes">
+      <li><b>Oakhurst → Fish Camp (Hwy 41).</b> 20 min, climbing from 2,300 to 5,000 ft. Plowed state highway, fine on snow tires. Watch for black ice on shaded curves after dark.</li>
+      <li><b>Fish Camp → Wawona → Chinquapin.</b> Park road; often under chain control after storms.</li>
+      <li><b>Chinquapin → Badger Pass.</b> Plowed when the ski area is open. Chains are often required here even when 41 is clear.</li>
+      <li><b>Nelder Grove road.</b> Not reliably plowed. Skip after snow.</li></ul></section>
+    <section><h3>Every morning and evening</h3><ul class="notes">
+      <li><b>Caltrans QuickMap</b> (quickmap.dot.ca.gov) shows chain controls and closures on 41.</li>
+      <li><b>Yosemite road line:</b> 209-372-0200 for park roads and Badger Pass.</li>
+      <li><b>On the night drive down from the train,</b> go slow on the curves; 20 minutes becomes 30 and that's fine.</li>
+      <li><b>Keep in the car:</b> chains or socks, warm layers, water, snacks, a phone battery pack. The Tesla's heat makes it a safe place to wait.</li></ul></section>`;
+  highlight([], null);
+  activeLayer.clearLayers();
+  L.polyline(path("oak_fc","fc_gate","gate_waw","waw_chq","chq_bdg"), { className: "rt rt-casing", weight: 8, interactive: false }).addTo(activeLayer);
+  L.polyline(path("oak_fc","fc_gate","gate_waw","waw_chq","chq_bdg"), { className: "rt rt-active", weight: 4.5, interactive: false }).addTo(activeLayer).getElement()?.style.setProperty("--c", "var(--c-snow)");
+  fit(L.latLngBounds(path("oak_fc","fc_gate","gate_waw","waw_chq","chq_bdg")), 11);
+}
+
+const GEAR = [
+  { group: "For the car", items: [
+    { id: "chains", buy: true, t: "Snow chains or tire socks", d: "Required to carry in Yosemite chain controls, even with AWD and snow tires. Check your Tesla manual for which wheel sizes accept chains; tire socks are accepted by the park and fit more wheels." },
+    { id: "tires", buy: true, t: "Snow tires (3-peak mountain snowflake)", d: "With AWD, these let you drive through R-1 and R-2 chain controls without putting chains on." },
+    { id: "scraper", buy: true, t: "Ice scraper & snow brush", d: "For frosty mornings at 5,000+ ft." },
+    { id: "washer", t: "Winter washer fluid", d: "Rated below freezing; road grime is constant after storms." },
+    { id: "kit", t: "Blanket, water, snacks, phone battery pack", d: "The car stays warm, but have a backup if you wait out a closure." },
+    { id: "gloves-chain", t: "Work gloves + kneeling pad", d: "For putting chains or socks on in slush. Practice once at home." },
+  ]},
+  { group: "To wear (instead of a one-piece snowsuit)", items: [
+    { id: "pants", buy: true, t: "Waterproof snow pants or ski bibs", d: "The one essential for tubing, sledding and snowshoeing. More versatile than a snowsuit." },
+    { id: "shell", t: "Waterproof shell jacket", d: "Over layers; doubles as rain gear on wet days." },
+    { id: "puffy", t: "Insulated mid-layer (fleece or puffy)", d: "Days run 30s–40s °F up high; colder after dark." },
+    { id: "base", t: "Base layers, top and bottom", d: "Merino or synthetic, not cotton." },
+    { id: "boots", buy: true, t: "Waterproof insulated boots", d: "Snowshoes strap onto these. Plus wool socks and a spare pair." },
+    { id: "hands", t: "Waterproof gloves, beanie, neck gaiter", d: "Bring a dry spare pair of gloves for tubing." },
+    { id: "sun", t: "Sunglasses & sunscreen", d: "Snow glare is strong on clear days." },
+  ]},
+  { group: "For the trail", items: [
+    { id: "spikes", buy: true, t: "Microspikes", d: "Slip-on traction for icy trails like Mariposa Grove and Chilnualna." },
+    { id: "poles", t: "Trekking poles", d: "Helpful on snow; Badger Pass rents poles with snowshoes." },
+    { id: "lamp", t: "Headlamp", d: "Dark by about 5 PM." },
+    { id: "pack", t: "Daypack, thermos, hand warmers", d: "" },
+    { id: "snowshoes", rent: true, t: "Snowshoes / cross-country skis", d: "Rent at the Badger Pass Nordic Center, so no need to buy." },
+    { id: "sled", t: "Sled or saucer for Goat Meadow", d: "Optional; Oakhurst stores sell them in winter." },
+  ]},
+  { group: "Health & hotel", items: [
+    { id: "masks", t: "Masks", d: "For indoor stops: visitor centers, shops, charging-stop restrooms." },
+    { id: "hepa", t: "Small portable HEPA purifier (optional)", d: "Runs in the room alongside the wall unit." },
+    { id: "plugs", t: "Earplugs", d: "Reviewers say the Inelle's walls are thin." },
+  ]},
+];
+function renderGear() {
+  const all = GEAR.flatMap(g => g.items); const done = all.filter(i => gearDone[i.id]).length;
+  bodyEl.innerHTML = `
+    <div><div class="eyebrow">Packing &amp; ordering checklist</div><h2>What to bring for a snow week</h2>
+      <p class="lede">You don't need a one-piece snowsuit. Waterproof snow pants plus a shell jacket over layers does everything a snowsuit does, and works on rainy days too. Items tagged <span class="tag buy">order</span> are worth buying ahead; <span class="tag rent">rent</span> means rent there.</p></div>
+    <div><div class="row" style="justify-content:space-between"><span class="note">${done} of ${all.length} packed</span><button type="button" class="btn" id="gear-reset">Clear checks</button></div><div class="progress" style="margin-top:6px"><b style="width:${Math.round(done / all.length * 100)}%"></b></div></div>
+    ${GEAR.map(g => `<section><h3>${esc(g.group)}</h3><ul class="checks">${g.items.map(i => `<li><label for="g-${i.id}"><input type="checkbox" id="g-${i.id}" data-g="${i.id}"${gearDone[i.id] ? " checked" : ""}><span><b>${esc(i.t)}</b>${i.buy ? '<span class="tag buy" style="display:inline-block">order</span>' : ""}${i.rent ? '<span class="tag rent" style="display:inline-block">rent</span>' : ""}${i.d ? `<span>${esc(i.d)}</span>` : ""}</span></label></li>`).join("")}</ul></section>`).join("")}
+    <p class="note">Chain rules: <a href="https://www.nps.gov/yose/planyourvisit/chains.htm" target="_blank" rel="noopener" style="color:var(--pine)">NPS tire chain requirements ↗</a></p>`;
+  bodyEl.querySelectorAll("[data-g]").forEach(c => c.addEventListener("change", () => { gearDone[c.dataset.g] = c.checked; store.set("oh-gear", gearDone); const y = document.getElementById("scroll").scrollTop; renderGear(); document.getElementById("scroll").scrollTop = y; const again = document.getElementById("g-" + c.dataset.g); if (again) again.focus({ preventScroll: true }); }));
+  document.getElementById("gear-reset").addEventListener("click", () => { for (const k in gearDone) delete gearDone[k]; store.set("oh-gear", gearDone); renderGear(); });
+}
+
+function setView(v, keepMap) {
+  if (!keepMap) map.closePopup();
+  view = v; store.set("oh-view", v);
+  tabsEl.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.v === v));
+  if (v === "plan") { renderPlan(); if (!keepMap) { highlight([], null); fit(AREA); } }
+  else if (v === "trips") { renderTrips(); if (!keepMap) { selected = null; highlight([], null); fit(AREA); } }
+  else if (v === "drive") renderDrive();
+  else if (v === "gear") { renderGear(); if (!keepMap) { highlight([], null); fit(AREA); } }
+  else renderSnow();
+  if (!keepMap) document.getElementById("scroll").scrollTop = 0;
+}
+
+map.fitBounds(AREA);
+updTowns();
+setView(["plan","trips","drive","snow","gear"].includes(view) ? view : "plan");
+window.addEventListener("resize", () => map.invalidateSize());
+</script>
